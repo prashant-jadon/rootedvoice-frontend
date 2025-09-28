@@ -150,24 +150,39 @@ export default function DashboardPage() {
         <div className="mb-8">
           <nav className="flex space-x-8">
             {[
-              { id: 'overview', label: 'Overview', icon: <BarChart3 className="w-5 h-5" /> },
-              { id: 'sessions', label: 'Sessions', icon: <Video className="w-5 h-5" /> },
-              { id: 'clients', label: 'Clients', icon: <Users className="w-5 h-5" /> },
-              { id: 'resources', label: 'Resources', icon: <FileText className="w-5 h-5" /> },
-              { id: 'payments', label: 'Payments', icon: <DollarSign className="w-5 h-5" /> }
+              { id: 'overview', label: 'Overview', icon: <BarChart3 className="w-5 h-5" />, href: null },
+              { id: 'sessions', label: 'Sessions', icon: <Video className="w-5 h-5" />, href: '/sessions' },
+              { id: 'clients', label: 'Clients', icon: <Users className="w-5 h-5" />, href: '/client-dashboard' },
+              { id: 'resources', label: 'Resources', icon: <FileText className="w-5 h-5" />, href: '/resources' },
+              { id: 'payments', label: 'Payments', icon: <DollarSign className="w-5 h-5" />, href: '/payments' }
             ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-black text-white'
-                    : 'text-gray-600 hover:text-black hover:bg-gray-100'
-                }`}
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-              </button>
+              tab.href ? (
+                <Link
+                  key={tab.id}
+                  href={tab.href}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === tab.id
+                      ? 'bg-black text-white'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                  }`}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </Link>
+              ) : (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === tab.id
+                      ? 'bg-black text-white'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                  }`}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              )
             ))}
           </nav>
         </div>
