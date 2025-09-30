@@ -22,7 +22,7 @@ import {
   Video,
   BookOpen,
   Languages,
-  Certificate,
+  Award as Certificate,
   ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
@@ -49,7 +49,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
     states: ['California', 'Texas', 'New York'],
     experience: '8 years',
     languages: ['English', 'Mandarin', 'Spanish'],
-    availability: 'Mon-Fri, Evenings',
+    generalAvailability: 'Mon-Fri, Evenings',
     bio: 'Dr. Chen specializes in early intervention and bilingual language development. She has extensive experience working with children with autism spectrum disorder and developmental delays. Her research focuses on culturally responsive therapy approaches and family-centered care.',
     education: [
       'PhD in Communication Sciences, Stanford University (2016)',
@@ -219,7 +219,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                 </div>
                 <div className="flex items-center space-x-2 text-gray-600">
                   <Clock className="w-4 h-4" />
-                  <span>Availability: {therapist.availability}</span>
+                  <span>Availability: {therapist.generalAvailability}</span>
                 </div>
               </div>
 
