@@ -15,9 +15,11 @@ export default function LandingPage() {
               <h1 className="text-2xl font-bold text-black">Rooted Voices</h1>
             </div>
             <div className="hidden md:flex space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-black transition-colors">Features</a>
+              <Link href="/services" className="text-gray-600 hover:text-black transition-colors">Services</Link>
+              <Link href="/meet-our-therapists" className="text-gray-600 hover:text-black transition-colors">Meet Our Therapists</Link>
+              <Link href="/faq" className="text-gray-600 hover:text-black transition-colors">FAQ</Link>
               <a href="#pricing" className="text-gray-600 hover:text-black transition-colors">Pricing</a>
-              <a href="#about" className="text-gray-600 hover:text-black transition-colors">About</a>
+              <Link href="/who-we-are" className="text-gray-600 hover:text-black transition-colors">Who We Are</Link>
             </div>
             <div className="flex space-x-4">
               <Link href="/login" className="text-gray-600 hover:text-black transition-colors">
@@ -200,43 +202,57 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                name: "Starter",
-                price: "$29",
-                period: "/month",
-                description: "Perfect for individual therapists",
+                name: "Rooted",
+                price: "$50",
+                period: "/30min",
+                billing: "billed every 4 weeks",
+                description: "Build a strong foundation where growth begins",
+                tagline: "For clients starting their therapy journey, establishing essential skills and confidence.",
                 features: [
-                  "Up to 50 sessions/month",
-                  "Basic video calls",
-                  "Client management",
-                  "Email support"
-                ]
-              },
-              {
-                name: "Professional",
-                price: "$79",
-                period: "/month",
-                description: "For growing practices",
-                features: [
-                  "Unlimited sessions",
-                  "HD video calls",
-                  "Resource library",
-                  "Automated billing",
-                  "Priority support"
+                  "Weekly therapy sessions (2–4 per month)",
+                  "Personalized treatment plan with clear goals",
+                  "Progress updates every 8–10 weeks",
+                  "Caregiver tips for at-home reinforcement",
+                  "Secure, HIPAA-compliant teletherapy platform",
+                  "Email support for brief follow-up questions"
                 ],
-                popular: true
+                icon: "🌱"
               },
               {
-                name: "Enterprise",
-                price: "Custom",
-                period: "",
-                description: "For large organizations",
+                name: "Flourish",
+                price: "$85",
+                period: "/hour",
+                billing: "billed every 4 weeks",
+                description: "Grow, thrive, and expand your voice with care",
+                tagline: "For clients ready to dive deeper, strengthen abilities, and see meaningful progress.",
                 features: [
-                  "Everything in Professional",
-                  "Custom integrations",
-                  "Dedicated support",
-                  "Advanced analytics",
-                  "White-label options"
-                ]
+                  "Weekly or bi-weekly therapy sessions",
+                  "Advanced treatment strategies tailored to client needs",
+                  "Detailed progress reports with measurable outcomes",
+                  "Monthly caregiver/family coaching sessions",
+                  "Priority scheduling and flexible rescheduling options",
+                  "Collaboration with schools, physicians, or other providers",
+                  "Direct messaging access for timely support between sessions"
+                ],
+                popular: true,
+                icon: "🌿"
+              },
+              {
+                name: "Bloom",
+                price: "$90",
+                period: "/hour",
+                billing: "pay-as-you-go",
+                description: "Sustain your growth and keep your voice in full bloom",
+                tagline: "For clients maintaining progress through flexible, pay-as-you-go sessions.",
+                features: [
+                  "Pay-as-you-go pricing",
+                  "A few sessions per month (flexible scheduling, 2-3 sessions monthly)",
+                  "Focus on maintaining skills and building confidence",
+                  "Ongoing professional support without long-term commitment",
+                  "Perfect for maintenance check-ins rather than intensive therapy",
+                  "Month-to-month flexibility"
+                ],
+                icon: "🌸"
               }
             ].map((plan, index) => (
               <motion.div
@@ -256,12 +272,15 @@ export default function LandingPage() {
                   </div>
                 )}
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-2">{plan.name}</h3>
+                  <div className="text-4xl mb-2">{plan.icon}</div>
+                  <h3 className="text-2xl font-bold text-black mb-2">{plan.name} Tier</h3>
                   <div className="text-4xl font-bold text-black mb-2">
                     {plan.price}
                     <span className="text-lg text-gray-600">{plan.period}</span>
                   </div>
-                  <p className="text-gray-600">{plan.description}</p>
+                  <p className="text-sm text-gray-500 mb-2">{plan.billing}</p>
+                  <p className="text-gray-600 font-medium mb-2">{plan.description}</p>
+                  <p className="text-sm text-gray-500">{plan.tagline}</p>
                 </div>
                 <ul className="space-y-4 mb-8">
                   {plan.features.map((feature, featureIndex) => (
