@@ -104,20 +104,64 @@ export default function WhoWeArePage() {
           </p>
         </motion.div>
 
-        {/* Mission Statement */}
+        {/* Our Story */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="bg-white rounded-2xl premium-shadow p-8 mb-16"
         >
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-black mb-4">Our Mission</h2>
-            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-black mb-6 text-center">Our Story</h2>
+            <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
+              <p>
+                Rooted Voices began with a simple belief: <span className="font-semibold text-black">everyone deserves a voice</span>. 
+                Founded by speech-language pathologists who experienced firsthand the barriers families face in accessing quality therapy, 
+                we set out to create something different—a platform where geography, cost, and stigma would no longer stand in the way of care.
+              </p>
+              <p>
+                We've seen the transformative power of speech therapy—<span className="font-semibold text-black">the child who finds their first words</span>, 
+                the stroke survivor who reconnects with loved ones, the professional who reclaims their confident voice. 
+                These moments inspire everything we do.
+              </p>
+              <p>
+                Today, Rooted Voices serves thousands of clients nationwide, connecting them with passionate, licensed therapists 
+                who specialize in their unique needs. <span className="font-semibold text-black">From our roots in compassionate care, 
+                we help voices flourish and bloom</span>.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Mission & Vision */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="grid md:grid-cols-2 gap-8 mb-16"
+        >
+          <div className="bg-white rounded-2xl premium-shadow p-8">
+            <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+              <Target className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-black mb-4 text-center">Our Mission</h2>
+            <p className="text-gray-600 leading-relaxed text-center">
               To provide exceptional speech and language therapy services that empower individuals 
               to communicate effectively, build confidence, and achieve their personal and professional goals. 
               We believe that everyone deserves access to high-quality, evidence-based therapy that respects 
               their unique needs and circumstances.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl premium-shadow p-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lightbulb className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-black mb-4 text-center">Our Vision</h2>
+            <p className="text-gray-600 leading-relaxed text-center">
+              A world where every person, regardless of age, background, or circumstance, has access to 
+              compassionate, effective speech and language therapy. We envision a future where communication 
+              barriers dissolve, voices are heard, and every individual can express themselves with confidence and clarity.
             </p>
           </div>
         </motion.div>

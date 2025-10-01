@@ -354,6 +354,76 @@ export default function ClientProfilePage() {
                   </div>
                 </div>
 
+                {/* Homework & Practice Assignments */}
+                <div className="bg-white rounded-2xl premium-shadow p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-black">Homework & Practice</h2>
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                      3 active assignments
+                    </span>
+                  </div>
+                  <div className="space-y-4">
+                    {[
+                      {
+                        title: '/r/ Sound Practice - Initial Position',
+                        description: 'Practice /r/ sounds at the beginning of words. Complete 10 minutes daily.',
+                        dueDate: 'Due: Tomorrow',
+                        completed: false,
+                        type: 'Daily Practice'
+                      },
+                      {
+                        title: 'Breathing Exercises Video',
+                        description: 'Watch and practice the breathing techniques demonstrated in the video.',
+                        dueDate: 'Due: In 2 days',
+                        completed: false,
+                        type: 'Video Exercise'
+                      },
+                      {
+                        title: 'Communication Journal',
+                        description: 'Record situations where you successfully used your new techniques.',
+                        dueDate: 'Due: End of week',
+                        completed: true,
+                        type: 'Reflection'
+                      }
+                    ].map((assignment, index) => (
+                      <div key={index} className={`p-4 border rounded-lg ${
+                        assignment.completed ? 'bg-green-50 border-green-200' : 'border-gray-200'
+                      }`}>
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-start space-x-3 flex-1">
+                            <input
+                              type="checkbox"
+                              checked={assignment.completed}
+                              className="mt-1 h-5 w-5 text-green-600 focus:ring-black border-gray-300 rounded"
+                              readOnly
+                            />
+                            <div className="flex-1">
+                              <h4 className={`font-semibold mb-1 ${
+                                assignment.completed ? 'text-green-800 line-through' : 'text-black'
+                              }`}>
+                                {assignment.title}
+                              </h4>
+                              <p className="text-sm text-gray-600 mb-2">{assignment.description}</p>
+                              <div className="flex items-center space-x-3 text-xs">
+                                <span className={`px-2 py-1 rounded-full ${
+                                  assignment.completed 
+                                    ? 'bg-green-100 text-green-700' 
+                                    : 'bg-gray-100 text-gray-600'
+                                }`}>
+                                  {assignment.type}
+                                </span>
+                                <span className={assignment.completed ? 'text-green-600' : 'text-orange-600'}>
+                                  {assignment.dueDate}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Achievements */}
                 <div className="bg-white rounded-2xl premium-shadow p-6">
                   <h2 className="text-xl font-bold text-black mb-4">Achievements</h2>

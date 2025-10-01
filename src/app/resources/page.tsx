@@ -205,17 +205,31 @@ export default function ResourcesPage() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="space-y-6">
-              {/* Search */}
+              {/* AI-Powered Search */}
               <div className="bg-white rounded-2xl premium-shadow p-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <h3 className="font-semibold text-black">AI Smart Search</h3>
+                  <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full">✨ AI</span>
+                </div>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Search resources..."
+                    placeholder="Try: /r/ sounds for 5-year-old"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                   />
+                </div>
+                <div className="mt-3 space-y-2">
+                  <p className="text-xs text-gray-600">Quick Filters:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {['By Age', 'By Goal', 'By Domain', 'By Diagnosis'].map((filter) => (
+                      <button key={filter} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded hover:bg-gray-200 transition-colors">
+                        {filter}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
