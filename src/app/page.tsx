@@ -14,25 +14,19 @@ export default function LandingPage() {
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-black">Rooted Voices</h1>
             </div>
-            <div className="hidden md:flex space-x-8">
-              <Link href="/services" className="text-gray-600 hover:text-black transition-colors">Services</Link>
-              <Link href="/meet-our-therapists" className="text-gray-600 hover:text-black transition-colors">Meet Our Therapists</Link>
-              <Link href="/faq" className="text-gray-600 hover:text-black transition-colors">FAQ</Link>
-              <a href="#pricing" className="text-gray-600 hover:text-black transition-colors">Pricing</a>
-              <Link href="/who-we-are" className="text-gray-600 hover:text-black transition-colors">Who We Are</Link>
+            <div className="hidden md:flex space-x-6">
+              <Link href="/client-services" className="text-gray-600 hover:text-black transition-colors">Services</Link>
+              <Link href="/meet-our-therapists" className="text-gray-600 hover:text-black transition-colors">Therapists</Link>
+              <Link href="/pricing" className="text-gray-600 hover:text-black transition-colors">Pricing</Link>
+              <Link href="/community" className="text-gray-600 hover:text-black transition-colors">Community</Link>
+              <Link href="/who-we-are" className="text-gray-600 hover:text-black transition-colors">About</Link>
             </div>
-            <div className="flex space-x-4">
-              <Link href="/login" className="text-gray-600 hover:text-black transition-colors">
+            <div className="flex items-center space-x-4">
+              <Link href="/login" className="text-gray-600 hover:text-black transition-colors text-sm">
                 Sign In
               </Link>
-              <Link href="/signup" className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors">
+              <Link href="/signup" className="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-colors text-sm">
                 Get Started
-              </Link>
-              <Link href="/dashboard" className="text-gray-600 hover:text-black transition-colors">
-                Demo Dashboard
-              </Link>
-              <Link href="/client-dashboard" className="text-gray-600 hover:text-black transition-colors">
-                Client Demo
               </Link>
             </div>
           </div>
@@ -346,40 +340,69 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-black text-white py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid md:grid-cols-5 gap-12">
+            {/* Brand Column */}
+            <div className="md:col-span-2">
               <h3 className="text-2xl font-bold mb-4">Rooted Voices</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-400 mb-6 leading-relaxed">
                 Making speech & language therapy accessible, private, and effective for everyone.
               </p>
+              <div className="flex space-x-4">
+                <Link href="/login" className="bg-white text-black px-6 py-2 rounded-full hover:bg-gray-200 transition-colors text-sm font-medium">
+                  Sign In
+                </Link>
+                <Link href="/signup" className="border border-white text-white px-6 py-2 rounded-full hover:bg-white hover:text-black transition-colors text-sm font-medium">
+                  Get Started
+                </Link>
+              </div>
             </div>
+
+            {/* Platform Column */}
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
+              <h4 className="font-semibold mb-4 text-lg">Platform</h4>
+              <ul className="space-y-3 text-gray-400">
+                <li><Link href="/client-services" className="hover:text-white transition-colors">Services</Link></li>
+                <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                <li><Link href="/meet-our-therapists" className="hover:text-white transition-colors">Find Therapists</Link></li>
+                <li><Link href="/community" className="hover:text-white transition-colors">Community</Link></li>
+                <li><Link href="/resources" className="hover:text-white transition-colors">Resources</Link></li>
               </ul>
             </div>
+
+            {/* Company Column */}
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
+              <h4 className="font-semibold mb-4 text-lg">Company</h4>
+              <ul className="space-y-3 text-gray-400">
+                <li><Link href="/who-we-are" className="hover:text-white transition-colors">About Us</Link></li>
+                <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
+                <li><Link href="/cancellation-policy" className="hover:text-white transition-colors">Policies</Link></li>
+                <li><Link href="/telehealth-consent" className="hover:text-white transition-colors">Consent</Link></li>
               </ul>
             </div>
+
+            {/* Demo Access Column */}
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">HIPAA</a></li>
+              <h4 className="font-semibold mb-4 text-lg">Demo Access</h4>
+              <ul className="space-y-3 text-gray-400">
+                <li><Link href="/dashboard" className="hover:text-white transition-colors">Therapist Demo</Link></li>
+                <li><Link href="/my-practice" className="hover:text-white transition-colors">My Practice</Link></li>
+                <li><Link href="/client-dashboard" className="hover:text-white transition-colors">Client Demo</Link></li>
+                <li><Link href="/sessions" className="hover:text-white transition-colors">Sessions</Link></li>
+                <li><Link href="/video-call" className="hover:text-white transition-colors">Video Call</Link></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Rooted Voices. All rights reserved.</p>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-800 mt-12 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+              <p className="text-gray-400 text-sm">&copy; 2024 Rooted Voices. All rights reserved.</p>
+              <div className="flex space-x-6 text-sm text-gray-400">
+                <Link href="/cancellation-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                <Link href="/telehealth-consent" className="hover:text-white transition-colors">Terms of Service</Link>
+                <span>HIPAA Compliant</span>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
