@@ -25,7 +25,11 @@ import {
   RotateCcw,
   Download,
   Camera,
-  CameraOff
+  CameraOff,
+  CheckCircle,
+  FileText,
+  Calendar,
+  Lightbulb
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
@@ -335,43 +339,113 @@ export default function VideoCallPage() {
         </div>
       </div>
 
-      {/* Session Summary Modal */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      {/* AI-Generated SOAP Notes Modal */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl p-6 w-full max-w-md mx-4"
+          className="bg-white rounded-2xl p-6 w-full max-w-3xl mx-4 my-8"
         >
           <div className="text-center mb-6">
-            <h3 className="text-xl font-bold text-black mb-2">Session Complete</h3>
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-black mb-2">Session Complete</h3>
             <p className="text-gray-600">Session with {sessionInfo.client} has ended</p>
+            <div className="mt-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium inline-block">
+              ✨ AI-Generated Notes Ready
+            </div>
+          </div>
+          
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
+            <h4 className="font-semibold text-black mb-4 flex items-center">
+              <FileText className="w-4 h-4 mr-2" />
+              AI-Generated SOAP Note
+            </h4>
+            
+            <div className="space-y-4 text-sm">
+              <div>
+                <h5 className="font-semibold text-black mb-2">Subjective (S):</h5>
+                <p className="text-gray-700">
+                  Client reported feeling confident with /r/ sound production practice at home. 
+                  Parent noted improvement in clarity during daily conversations.
+                </p>
+              </div>
+              
+              <div>
+                <h5 className="font-semibold text-black mb-2">Objective (O):</h5>
+                <p className="text-gray-700">
+                  Client achieved 85% accuracy on /r/ sound in initial position during structured practice. 
+                  Demonstrated improved tongue placement and self-monitoring skills. Session duration: {formatTime(callDuration)}.
+                </p>
+              </div>
+              
+              <div>
+                <h5 className="font-semibold text-black mb-2">Assessment (A):</h5>
+                <p className="text-gray-700">
+                  Client is making excellent progress toward speech clarity goals. Ready to advance 
+                  to conversational-level practice with /r/ sounds.
+                </p>
+              </div>
+              
+              <div>
+                <h5 className="font-semibold text-black mb-2">Plan (P):</h5>
+                <p className="text-gray-700">
+                  Continue /r/ sound practice in conversational contexts. Assign home practice activities. 
+                  Next session: Focus on generalization to spontaneous speech.
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <h5 className="font-semibold text-black mb-2 flex items-center">
+                <Lightbulb className="w-4 h-4 mr-2 text-blue-600" />
+                Recommended Activities for Next Session:
+              </h5>
+              <ul className="space-y-1 text-sm text-gray-700">
+                <li>• Practice /r/ sounds in short conversational exchanges</li>
+                <li>• Introduce self-monitoring strategies during speaking tasks</li>
+                <li>• Review home practice recordings together</li>
+                <li>• Set new goals for carryover to daily communication</li>
+              </ul>
+            </div>
           </div>
           
           <div className="space-y-4 mb-6">
-            <div className="flex justify-between">
+            <div className="flex justify-between text-sm">
               <span className="text-gray-600">Duration:</span>
               <span className="font-semibold">{formatTime(callDuration)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between text-sm">
               <span className="text-gray-600">Type:</span>
               <span className="font-semibold">{sessionInfo.type}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between text-sm">
               <span className="text-gray-600">Status:</span>
               <span className="font-semibold text-green-600">Completed</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Recording:</span>
+              <span className="font-semibold text-blue-600">Available for download</span>
             </div>
           </div>
           
           <div className="space-y-3">
-            <button className="w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
-              Save Session Notes
+            <button className="w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center">
+              <Download className="w-4 h-4 mr-2" />
+              Save AI-Generated SOAP Note
             </button>
-            <button className="w-full py-3 border border-gray-300 text-black rounded-lg hover:bg-gray-50 transition-colors">
-              Schedule Follow-up
+            <button className="w-full py-3 border border-gray-300 text-black rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
+              <Calendar className="w-4 h-4 mr-2" />
+              Schedule Follow-up Session
             </button>
-            <button className="w-full py-3 border border-gray-300 text-black rounded-lg hover:bg-gray-50 transition-colors">
-              Download Recording
+            <button className="w-full py-3 border border-gray-300 text-black rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
+              <Download className="w-4 h-4 mr-2" />
+              Download Session Recording
+            </button>
+            <button className="w-full py-3 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+              Edit Notes Manually
             </button>
           </div>
         </motion.div>

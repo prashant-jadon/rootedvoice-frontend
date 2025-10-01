@@ -15,7 +15,9 @@ export default function SignupPage() {
     phone: '',
     password: '',
     confirmPassword: '',
-    location: ''
+    location: '',
+    states: [] as string[],
+    expertise: [] as string[]
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -160,26 +162,81 @@ export default function SignupPage() {
               </div>
 
               {userType === 'therapist' && (
-                <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                    Practice location
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <MapPin className="h-5 w-5 text-gray-400" />
+                <>
+                  <div>
+                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                      Practice location
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <MapPin className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id="location"
+                        name="location"
+                        type="text"
+                        required
+                        value={formData.location}
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        placeholder="City, State"
+                      />
                     </div>
-                    <input
-                      id="location"
-                      name="location"
-                      type="text"
-                      required
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="City, State"
-                    />
                   </div>
-                </div>
+
+                  <div>
+                    <label htmlFor="states" className="block text-sm font-medium text-gray-700 mb-2">
+                      States Licensed In
+                    </label>
+                    <select
+                      id="states"
+                      name="states"
+                      multiple
+                      className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      size={4}
+                    >
+                      <option value="CA">California</option>
+                      <option value="TX">Texas</option>
+                      <option value="NY">New York</option>
+                      <option value="FL">Florida</option>
+                      <option value="IL">Illinois</option>
+                      <option value="PA">Pennsylvania</option>
+                      <option value="OH">Ohio</option>
+                      <option value="GA">Georgia</option>
+                      <option value="NC">North Carolina</option>
+                      <option value="MI">Michigan</option>
+                      <option value="WA">Washington</option>
+                      <option value="OR">Oregon</option>
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple states</p>
+                  </div>
+
+                  <div>
+                    <label htmlFor="expertise" className="block text-sm font-medium text-gray-700 mb-2">
+                      Areas of Expertise
+                    </label>
+                    <select
+                      id="expertise"
+                      name="expertise"
+                      multiple
+                      className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      size={6}
+                    >
+                      <option value="early-intervention">Early Intervention</option>
+                      <option value="articulation">Articulation & Phonology</option>
+                      <option value="language-dev">Language Development</option>
+                      <option value="fluency">Fluency/Stuttering</option>
+                      <option value="voice">Voice Therapy</option>
+                      <option value="feeding">Feeding & Swallowing</option>
+                      <option value="aac">AAC (Augmentative Communication)</option>
+                      <option value="cognitive">Cognitive-Communication</option>
+                      <option value="neurogenic">Adult Neurogenic Disorders</option>
+                      <option value="accent">Accent Modification</option>
+                      <option value="gender-voice">Gender-Affirming Voice</option>
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple areas</p>
+                  </div>
+                </>
               )}
 
               <div>
