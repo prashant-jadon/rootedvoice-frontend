@@ -258,6 +258,9 @@ export default function DashboardPage() {
                       }`}>
                         {session.status}
                       </span>
+                      <Link href="/video-call" className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" title="Start Video Call">
+                        <Video className="w-4 h-4" />
+                      </Link>
                       <button className="p-1 text-gray-400 hover:text-gray-600">
                         <MoreVertical className="w-4 h-4" />
                       </button>
