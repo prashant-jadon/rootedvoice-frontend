@@ -77,7 +77,9 @@ Rooted Voices is a comprehensive telehealth and practice management platform for
   - Specific services listed per category
   - Direct link to find specialized therapists
 
-### 3. Pricing Tiers
+### 3. Pricing & Billing Models
+
+#### Direct Pay Tiers
 
 #### 🌱 Rooted Tier - $50/30min
 - **Billing**: Every 4 weeks
@@ -111,6 +113,23 @@ Rooted Voices is a comprehensive telehealth and practice management platform for
   - Focus on skill maintenance
   - No long-term commitment
   - Month-to-month flexibility
+
+#### Insurance & Financial Assistance
+
+#### 🏥 Insurance Integration (Coming Soon)
+- **Status**: Credentialing applications in progress
+- **Processing Time**: 60-90 days for approval
+- **Coverage**: Major insurance providers
+- **Benefits**:
+  - No out-of-pocket costs for patients
+  - Automatic billing submission
+  - Pre-authorization management
+  - Claims processing and tracking
+- **Supported Plans**:
+  - Private health insurance
+  - Medicaid/Medicare (where applicable)
+  - Employer-sponsored plans
+  - Health savings accounts (HSA)
 
 ### 4. Therapist Features
 
@@ -172,6 +191,30 @@ Rooted Voices is a comprehensive telehealth and practice management platform for
   - Registration tracking
 
 ### 5. Client Features
+
+#### Document Upload & Review History
+- **Supported Documents**:
+  - IEPs (Individualized Education Programs)
+  - IFSPs (Individualized Family Service Plans)
+  - Hospital discharge summaries
+  - Previous SLP evaluations
+  - Medical reports and referrals
+  - School assessments and reports
+  - Therapy session notes from previous providers
+- **Features**:
+  - Secure document upload with HIPAA compliance
+  - OCR (Optical Character Recognition) for scanned documents
+  - AI-powered document analysis and key point extraction
+  - Therapist notification when documents are uploaded
+  - Organized timeline view of client's therapy history
+  - Searchable document library for therapists
+  - Privacy controls and permission settings
+- **Benefits**:
+  - Therapist gains complete client history before starting
+  - Reduces redundant assessments
+  - Improves continuity of care
+  - Faster treatment plan development
+  - Better understanding of progress made
 
 #### Homework & Practice Assignments
 - **Location**: Client Profile → Goals & Progress tab
@@ -278,18 +321,32 @@ Rooted Voices is a comprehensive telehealth and practice management platform for
 
 #### Multilingual Support
 - **Languages**: English, Spanish, Mandarin, French
+- **AI-Powered Translation**:
+  - Real-time conversation translation during sessions
+  - AI-assisted interpretation for non-English speaking clients
+  - Intelligent language detection and switching
+  - Voice-to-text translation in multiple languages
 - **Features**:
-  - Language selector in header
-  - Auto-translation of interface
-  - Bilingual therapist matching
-  - Multilingual resources
+  - Language selector in header with AI detection
+  - Auto-translation of interface using AI
+  - Bilingual therapist matching with AI filtering
+  - Multilingual resources with AI-powered search
+  - Session transcripts in client's preferred language
 
 #### Accessibility
 - **Screen Reader**: Full ARIA labels
-- **Keyboard Navigation**: Complete keyboard support
-- **High Contrast**: Color contrast ratios meet WCAG
-- **Closed Captions**: For video content
-- **Text Resizing**: Responsive font scaling
+- **AI-Enhanced Accessibility**:
+  - AI-generated alt text for images and videos
+  - Intelligent content simplification for cognitive accessibility
+  - AI-powered speech recognition for voice navigation
+  - Automated caption generation with accuracy correction
+- **Universal Features**:
+  - Keyboard Navigation: Complete keyboard support
+  - High Contrast: Color contrast ratios meet WCAG AAA
+  - Closed Captions: AI-generated with manual review option
+  - Text Resizing: Responsive font scaling with AI optimization
+  - Voice Commands: "Hey Rooted Voices" voice navigation
+  - Focus Management: AI-enhanced focus indicators
 
 ---
 
@@ -536,11 +593,16 @@ Rooted Voices is a comprehensive telehealth and practice management platform for
 
 ### Phase 3: Future Enhancements (Roadmap)
 - 🔄 Mobile apps (iOS/Android)
-- 🔄 Insurance integration
+- 🔄 Insurance integration (credentialing in progress - 60-90 days)
 - 🔄 EHR integration
 - 🔄 Group therapy sessions
 - 🔄 Parent portal
 - 🔄 Continuing education credits
+
+### Phase 3: Client-Requested Features (Recently Added)
+- 🔄 **Document Upload System**: IEPs, IFSPs, hospital docs with AI analysis
+- 🔄 **Enhanced AI Multilingual**: Real-time translation and interpretation
+- 🔄 **AI-Powered Accessibility**: Voice navigation and intelligent content adaptation
 
 ---
 

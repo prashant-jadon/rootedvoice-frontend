@@ -35,6 +35,17 @@ export default function LandingPage() {
               </Link>
             </div>
             
+            {/* AI Language Selector */}
+            <div className="hidden md:flex items-center mx-4">
+              <select className="text-sm border border-gray-200 rounded-lg px-3 py-1 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="en">🇺🇸 English</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="fr">🇫🇷 Français</option>
+              </select>
+              <span className="text-xs text-gray-500 ml-2">AI</span>
+            </div>
+            
             {/* Action Buttons */}
             <div className="flex items-center space-x-3">
               <Link href="/login" className="hidden sm:block text-sm font-medium text-gray-600 hover:text-black transition-colors px-4 py-2">
@@ -220,6 +231,14 @@ export default function LandingPage() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Choose the plan that works best for your practice.
             </p>
+            
+            {/* Insurance Banner */}
+            <div className="mt-8 inline-flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-full px-6 py-2">
+              <span className="text-blue-600 font-medium text-sm">
+                🏥 Insurance billing coming soon! 
+                <span className="text-blue-500 ml-1">(60-90 day credentialing timeline)</span>
+              </span>
+            </div>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">

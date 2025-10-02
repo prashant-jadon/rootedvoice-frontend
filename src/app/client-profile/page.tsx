@@ -21,7 +21,9 @@ import {
   Shield, 
   Heart,
   CheckCircle,
-  X
+  X,
+  FileText,
+  Upload
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -232,6 +234,7 @@ export default function ClientProfilePage() {
                 {[
                   { id: 'personal', label: 'Personal Info', icon: <User className="w-5 h-5" /> },
                   { id: 'goals', label: 'Goals & Progress', icon: <Target className="w-5 h-5" /> },
+                  { id: 'documents', label: 'Documents', icon: <FileText className="w-5 h-5" /> },
                   { id: 'preferences', label: 'Preferences', icon: <Settings className="w-5 h-5" /> }
                 ].map((tab) => (
                   <button
@@ -440,6 +443,171 @@ export default function ClientProfilePage() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'documents' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="space-y-6"
+              >
+                {/* Document Upload Section */}
+                <div className="bg-white rounded-2xl premium-shadow p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-black">📄 Therapy Documents</h2>
+                    <button className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 flex items-center space-x-2">
+                      <Upload className="w-4 h-4" />
+                      <span>Upload Document</span>
+                    </button>
+                  </div>
+                  <p className="text-gray-600 mb-6">
+                    Upload previous therapy records including IEPs, IFSPs, hospital summaries, 
+                    and evaluations to help your therapist understand your complete therapy history.
+                  </p>
+                  
+                  {/* Supported Document Types */}
+                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-gray-900 mb-3">📋 Supported Documents:</h3>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />IEPs (Education Program)</li>
+                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />IFSPs (Family Service Plan)</li>
+                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Hospital discharge summaries</li>
+                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Previous SLP evaluations</li>
+                      </ul>
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Medical reports & referrals</li>
+                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />School assessments</li>
+                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Therapy session notes</li>
+                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Progress reports</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Upload Area */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-2">Drag & drop files here or click to upload</p>
+                    <p className="text-xs text-gray-500">PDF, DOC, DOCX files up to 10MB each</p>
+                  </div>
+                </div>
+
+                {/* Existing Documents */}
+                <div className="bg-white rounded-2xl premium-shadow p-6">
+                  <h3 className="text-lg font-bold text-black mb-4">📚 Uploaded Documents</h3>
+                  
+                  <div className="space-y-3">
+                    {[
+                      {
+                        name: 'Elementary School IEP - 2023',
+                        type: 'Educational Program',
+                        uploadDate: '2 weeks ago',
+                        status: 'processed',
+                        description: 'Speech therapy goals and accommodations'
+                      },
+                      {
+                        name: 'Speech Evaluation - Dr. Smith',
+                        type: 'SLP Assessment',
+                        uploadDate: '1 month ago',
+                        status: 'processed',
+                        description: 'Comprehensive speech-language evaluation'
+                      },
+                      {
+                        name: 'Hospital Speech Therapy Notes',
+                        type: 'Medical Records',
+                        uploadDate: '2 months ago',
+                        status: 'processing',
+                        description: 'Post-stroke rehabilitation notes'
+                      }
+                    ].map((doc, index) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-3">
+                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-gray-900">{doc.name}</h4>
+                              <p className="text-sm text-gray-600">{doc.description}</p>
+                              <div className="flex items-center space-x-4 mt-1">
+                                <span className="text-xs text-gray-500">{doc.type}</span>
+                                <span className="text-xs text-gray-500">•</span>
+                                <span className="text-xs text-gray-500">{doc.uploadDate}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              doc.status === 'processed' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {doc.status === 'processed' ? 'Ready' : 'Processing'}
+                            </span>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {[
+                      {
+                        name: 'Elementary School IEP - 2023',
+                        type: 'Educational Program',
+                        uploadDate: '2 weeks ago',
+                        status: 'processed',
+                        description: 'Speech therapy goals and accommodations'
+                      },
+                      {
+                        name: 'Speech Evaluation - Dr. Smith',
+                        type: 'SLP Assessment',
+                        uploadDate: '1 month ago',
+                        status: 'processed',
+                        description: 'Comprehensive speech-language evaluation'
+                      },
+                      {
+                        name: 'Hospital Speech Therapy Notes',
+                        type: 'Medical Records',
+                        uploadDate: '2 months ago',
+                        status: 'processing',
+                        description: 'Post-stroke rehabilitation notes'
+                      }
+                    ].length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No documents uploaded yet</p>
+                      <p className="text-sm">Upload your therapy history to get started</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* AI Analysis Benefits */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">🤖 AI Document Analysis</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">For You:</h4>
+                      <ul className="space-y-1 text-sm text-gray-600">
+                        <li>• OCR conversion for scanned documents</li>
+                        <li>• Automatic key point extraction</li>
+                        <li>• Privacy-compliant secure storage</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">For Your Therapist:</h4>
+                      <ul className="space-y-1 text-sm text-gray-600">
+                        <li>• Complete therapy history summary</li>
+                        <li>• Faster treatment plan development</li>
+                        <li>• Continuity of care understanding</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </motion.div>

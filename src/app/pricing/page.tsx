@@ -152,6 +152,51 @@ export default function PricingPage() {
           </p>
         </motion.div>
 
+        {/* Insurance Option */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 premium-shadow p-8 mb-16"
+        >
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">🏥 Insurance & Financial Assistance</h3>
+            <p className="text-lg text-blue-600 font-medium mb-4">Coming Soon - Credentialing in Progress</p>
+            <div className="max-w-2xl mx-auto">
+              <p className="text-gray-600 mb-6">
+                We're currently pursuing credentialing with major insurance providers. 
+                Processing typically takes <span className="font-semibold text-blue-700">60-90 days</span>.
+              </p>
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="text-left">
+                  <h4 className="font-semibold text-gray-900 mb-3">Supported Insurance Plans:</h4>
+                  <ul className="space-y-2 text-gray-600">
+                    <li className="flex items-center"><CheckCircle className="w-4 h-4 text-blue-500 mr-2" />Private Health Insurance</li>
+                    <li className="flex items-center"><CheckCircle className="w-4 h-4 text-blue-500 mr-2" />Medicaid/Medicare</li>
+                    <li className="flex items-center"><CheckCircle className="w-4 h-4 text-blue-500 mr-2" />Employer-Sponsored Plans</li>
+                    <li className="flex items-center"><CheckCircle className="w-4 h-4 text-blue-500 mr-2" />Health Savings Accounts (HSA)</li>
+                  </ul>
+                </div>
+                <div className="text-left">
+                  <h4 className="font-semibold text-gray-900 mb-3">Benefits:</h4>
+                  <ul className="space-y-2 text-gray-600">
+                    <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />No out-of-pocket costs</li>
+                    <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Automatic billing submission</li>
+                    <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Pre-authorization management</li>
+                    <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Claims processing & tracking</li>
+                  </ul>
+                </div>
+              </div>
+              <button className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-8 py-3 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 font-medium">
+                Get Notified When Available
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Pricing Tiers */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {pricingTiers.map((tier, index) => (
