@@ -113,7 +113,14 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="text-2xl font-bold text-black">Rooted Voices</Link>
+              <Link href="/" className="flex items-center">
+                <img 
+                  src="/logorooted 1.png" 
+                  alt="Rooted Voices Speech & Language Therapy" 
+                   className="w-18 h-20 mr-2"
+                />
+                <span className="text-2xl font-bold text-black">Rooted Voices</span>
+              </Link>
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">Pricing</h1>
             </div>

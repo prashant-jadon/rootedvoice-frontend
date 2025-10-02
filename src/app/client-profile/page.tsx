@@ -123,7 +123,14 @@ export default function ClientProfilePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/client-dashboard" className="text-2xl font-bold text-black">Rooted Voices</Link>
+              <Link href="/client-dashboard" className="flex items-center">
+                <img 
+                  src="/logorooted 1.png" 
+                  alt="Rooted Voices Speech & Language Therapy" 
+                   className="w-18 h-20 mr-2"
+                />
+                <span className="text-2xl font-bold text-black">Rooted Voices</span>
+              </Link>
             </div>
             
             <div className="flex items-center space-x-4">

@@ -13,6 +13,11 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center">
+              <img 
+                src="/logorooted 1.png" 
+                alt="Rooted Voices Speech & Language Therapy" 
+                 className="w-18 h-20 mr-2"
+              />
               <h1 className="text-2xl font-bold text-black">Rooted Voices</h1>
             </Link>
             
