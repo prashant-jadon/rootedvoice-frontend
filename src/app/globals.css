@@ -13,12 +13,12 @@
 
   /* Color Palette 1 - Fresh & Natural */
   :root[data-palette="1"] {
-    --primary: #6CA38C;
-    --primary-dark: #1A5B55;
-    --accent: #FBEFD7;
-    --secondary: #E1966C;
-    --light: #A6CFC1;
-    --background: #A1CABC;
+    --primary: #203936;
+    --primary-dark: #132D22;
+    --accent: #F7EBD3;
+    --secondary: #B97B40;
+    --light: #F7EBD3;
+    --background: #F7EBD3;
   }
 
   /* Color Palette 2 - Earthy & Warm */
@@ -31,14 +31,24 @@
     --background: #97A49A;
   }
 
+  /* Color Palette 3 - Warm & Professional */
+  :root[data-palette="3"] {
+    --primary: #4D7D7D;
+    --primary-dark: #172838;
+    --accent: #F5EDE0;
+    --secondary: #202D3E;
+    --light: #F5EDE0;
+    --background: #F5EDE0;
+  }
+
   /* Default to Palette 1 */
   :root {
-    --primary: #6CA38C;
-    --primary-dark: #1A5B55;
-    --accent: #FBEFD7;
-    --secondary: #E1966C;
-    --light: #A6CFC1;
-    --background: #A1CABC;
+    --primary: #203936;
+    --primary-dark: #132D22;
+    --accent: #F7EBD3;
+    --secondary: #B97B40;
+    --light: #F7EBD3;
+    --background: #F7EBD3;
   }
 }
 
