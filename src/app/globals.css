@@ -10,6 +10,36 @@
   body {
     @apply bg-white text-black font-sans;
   }
+
+  /* Color Palette 1 - Fresh & Natural */
+  :root[data-palette="1"] {
+    --primary: #6CA38C;
+    --primary-dark: #1A5B55;
+    --accent: #FBEFD7;
+    --secondary: #E1966C;
+    --light: #A6CFC1;
+    --background: #A1CABC;
+  }
+
+  /* Color Palette 2 - Earthy & Warm */
+  :root[data-palette="2"] {
+    --primary: #2B493D;
+    --primary-dark: #1B3431;
+    --accent: #B77538;
+    --secondary: #889790;
+    --light: #F7EBD3;
+    --background: #97A49A;
+  }
+
+  /* Default to Palette 1 */
+  :root {
+    --primary: #6CA38C;
+    --primary-dark: #1A5B55;
+    --accent: #FBEFD7;
+    --secondary: #E1966C;
+    --light: #A6CFC1;
+    --background: #A1CABC;
+  }
 }
 
 @layer components {
@@ -23,6 +53,67 @@
   
   .premium-shadow {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Color Palette Utility Classes */
+  .palette-primary {
+    background-color: var(--primary);
+  }
+  
+  .palette-primary-dark {
+    background-color: var(--primary-dark);
+  }
+  
+  .palette-accent {
+    background-color: var(--accent);
+  }
+  
+  .palette-secondary {
+    background-color: var(--secondary);
+  }
+  
+  .palette-light {
+    background-color: var(--light);
+  }
+  
+  .palette-background {
+    background-color: var(--background);
+  }
+  
+  .text-palette-primary {
+    color: var(--primary);
+  }
+  
+  .text-palette-primary-dark {
+    color: var(--primary-dark);
+  }
+  
+  .text-palette-accent {
+    color: var(--accent);
+  }
+  
+  .text-palette-secondary {
+    color: var(--secondary);
+  }
+  
+  .text-palette-light {
+    color: var(--light);
+  }
+  
+  .border-palette-primary {
+    border-color: var(--primary);
+  }
+  
+  .border-palette-accent {
+    border-color: var(--accent);
+  }
+  
+  .gradient-palette {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  }
+  
+  .gradient-palette-accent {
+    background: linear-gradient(135deg, var(--accent), var(--secondary));
   }
   
   .parallax-container {

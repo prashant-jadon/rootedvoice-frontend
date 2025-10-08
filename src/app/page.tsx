@@ -1,12 +1,23 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, Play, Users, Calendar, Shield, Star, CheckCircle, Video, FileText, CreditCard } from 'lucide-react'
+import { ArrowRight, Play, Users, Calendar, Shield, Star, CheckCircle, Video, FileText, CreditCard, Palette } from 'lucide-react'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 export default function LandingPage() {
+  const [currentPalette, setCurrentPalette] = useState('1')
+
+  useEffect(() => {
+    // Set the data attribute on the html element to control CSS variables
+    document.documentElement.setAttribute('data-palette', currentPalette)
+  }, [currentPalette])
+
+  const switchPalette = (palette: string) => {
+    setCurrentPalette(palette)
+  }
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen palette-background">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,7 +29,7 @@ export default function LandingPage() {
                 alt="Rooted Voices Speech & Language Therapy" 
                  className="w-18 h-20 mr-2"
               />
-              <h1 className="text-2xl font-bold text-black">Rooted Voices</h1>
+             
             </Link>
             
             {/* Main Navigation Links */}
@@ -40,6 +51,31 @@ export default function LandingPage() {
               </Link>
             </div>
             
+            {/* Color Palette Switcher */}
+            <div className="hidden md:flex items-center mx-4 space-x-2">
+              <Palette className="w-4 h-4 text-gray-500" />
+              <button
+                onClick={() => switchPalette('1')}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-300 ${
+                  currentPalette === '1' 
+                    ? 'palette-primary text-white' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                ColorPalette1
+              </button>
+              <button
+                onClick={() => switchPalette('2')}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-300 ${
+                  currentPalette === '2' 
+                    ? 'palette-primary text-white' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                ColorPalette2
+              </button>
+            </div>
+
             {/* AI Language Selector */}
             <div className="hidden md:flex items-center mx-4">
               <select className="text-sm border border-gray-200 rounded-lg px-3 py-1 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -90,7 +126,7 @@ export default function LandingPage() {
             >
               Make speech & language therapy
               <br />
-              <span className="gradient-text">accessible, private, and effective</span>
+              <span className="text-palette-primary">accessible, private, and effective</span>
             </motion.h1>
             
             <motion.p 
@@ -109,7 +145,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link href="/signup" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">
+              <Link href="/signup" className="gradient-palette text-white px-8 py-4 rounded-full text-lg font-semibold hover:opacity-90 transition-all duration-300 flex items-center group">
                 Start Free Trial
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -124,7 +160,7 @@ export default function LandingPage() {
 
       {/* Parallax Hero Image */}
       <section className="relative h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-white to-gray-50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-palette-background to-palette-light"></div>
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
@@ -138,13 +174,13 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <section id="features" className="py-32 px-4 sm:px-6 lg:px-8 palette-light">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
               Everything you need for
               <br />
-              <span className="gradient-text">effective therapy</span>
+              <span className="text-palette-primary">effective therapy</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               From secure video sessions to automated billing, we've got you covered.
@@ -189,9 +225,9 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white p-8 rounded-2xl premium-shadow hover:shadow-2xl transition-all duration-300"
+                className="bg-white p-8 rounded-2xl premium-shadow hover:shadow-2xl transition-all duration-300 border border-palette-accent"
               >
-                <div className="text-black mb-4">{feature.icon}</div>
+                <div className="text-palette-primary mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-semibold text-black mb-3">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </motion.div>
@@ -225,23 +261,23 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <section id="pricing" className="py-32 px-4 sm:px-6 lg:px-8 palette-accent">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
               Simple, transparent
               <br />
-              <span className="gradient-text">pricing</span>
+              <span className="text-palette-primary">pricing</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Choose the plan that works best for your practice.
             </p>
             
             {/* Insurance Banner */}
-            <div className="mt-8 inline-flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-full px-6 py-2">
-              <span className="text-blue-600 font-medium text-sm">
+            <div className="mt-8 inline-flex items-center palette-light border border-palette-primary rounded-full px-6 py-2">
+              <span className="text-palette-primary-dark font-medium text-sm">
                 🏥 Insurance billing coming soon! 
-                <span className="text-blue-500 ml-1">(60-90 day credentialing timeline)</span>
+                <span className="text-palette-primary ml-1">(60-90 day credentialing timeline)</span>
               </span>
             </div>
           </div>
@@ -307,13 +343,13 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`bg-white p-8 rounded-2xl premium-shadow relative ${
-                  plan.popular ? 'ring-2 ring-black' : ''
+                className={`bg-white p-8 rounded-2xl premium-shadow relative border ${
+                  plan.popular ? 'ring-2 ring-palette-primary border-palette-primary' : 'border-palette-accent'
                 }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-semibold">
+                    <span className="gradient-palette text-white px-4 py-1 rounded-full text-sm font-semibold">
                       Most Popular
                     </span>
                   </div>
@@ -361,7 +397,7 @@ export default function LandingPage() {
           >
             Ready to transform your
             <br />
-            <span className="gradient-text">therapy practice?</span>
+            <span className="text-palette-primary">therapy practice?</span>
           </motion.h2>
           
           <motion.p 
@@ -379,7 +415,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Link href="/signup" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">
+            <Link href="/signup" className="gradient-palette text-white px-8 py-4 rounded-full text-lg font-semibold hover:opacity-90 transition-all duration-300 flex items-center group">
               Start Your Free Trial
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -391,7 +427,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-16 px-4 sm:px-6 lg:px-8">
+      <footer className="palette-primary-dark text-white py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
