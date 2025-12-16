@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Calendar, Clock, DollarSign, ArrowLeft, CheckCircle, User } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { subscriptionAPI, sessionAPI, therapistAPI, clientAPI } from '@/lib/api'
 import CalendarSync from '@/components/CalendarSync'
 
-export default function BookSessionPage() {
+function BookSessionContent() {
   const [therapist, setTherapist] = useState<any>(null)
   const [subscription, setSubscription] = useState<any>(null)
   const [selectedDate, setSelectedDate] = useState('')
@@ -531,6 +531,14 @@ export default function BookSessionPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function BookSessionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <BookSessionContent />
+    </Suspense>
   )
 }
 

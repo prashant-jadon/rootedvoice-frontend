@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Video, Mic, MicOff, VideoOff, PhoneOff, Users, Settings, MessageCircle, Languages } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-export default function VideoCallPage() {
+function VideoCallContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const sessionId = searchParams.get('sessionId')
@@ -291,5 +291,13 @@ export default function VideoCallPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function VideoCallPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <VideoCallContent />
+    </Suspense>
   )
 }

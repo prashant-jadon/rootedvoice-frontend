@@ -70,7 +70,7 @@ export default function LiveChatWidget() {
         })
 
         socket.on('user-typing', (data: any) => {
-          if (data.userId !== user?._id) {
+          if (data.userId !== user?.id) {
             setIsTyping(data.isTyping)
           }
         })
@@ -322,8 +322,8 @@ export default function LiveChatWidget() {
                   ) : (
                     <div className="space-y-2">
                       {messages.map((msg, index) => {
-                        const isUser = msg.senderId?._id === user?._id || 
-                                      (typeof msg.senderId === 'string' && msg.senderId === user?._id) ||
+                        const isUser = msg.senderId?._id === user?.id || 
+                                      (typeof msg.senderId === 'string' && msg.senderId === user?.id) ||
                                       msg.sender === 'user'
                         const isFromCurrentUser = isUser
                         

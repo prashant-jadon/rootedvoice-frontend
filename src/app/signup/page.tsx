@@ -18,6 +18,7 @@ export default function SignupPage() {
     password: '',
     confirmPassword: '',
     dateOfBirth: '',
+    location: '',
     licenseNumber: '',
     licensedStates: [] as string[],
     specializations: [] as string[],

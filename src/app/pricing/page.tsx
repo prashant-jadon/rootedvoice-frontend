@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { 
   CheckCircle, 
   Star, 
@@ -23,7 +23,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { subscriptionAPI, stripeAPI } from '@/lib/api'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function PricingPage() {
+function PricingContent() {
   const [selectedPlan, setSelectedPlan] = useState('flourish')
   const [currentSubscription, setCurrentSubscription] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -717,5 +717,13 @@ export default function PricingPage() {
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <PricingContent />
+    </Suspense>
   )
 }

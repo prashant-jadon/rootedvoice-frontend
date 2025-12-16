@@ -25,6 +25,8 @@ interface Document {
   notes?: string
   ocrProcessed: boolean
   extractedText?: string
+  ocrConfidence?: number
+  ocrError?: string
   aiAnalysis?: {
     keyPoints: string[]
     summary: string

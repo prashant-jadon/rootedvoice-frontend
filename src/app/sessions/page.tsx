@@ -150,7 +150,7 @@ export default function SessionsPage() {
 
   const handleCompleteSession = async (sessionId: string) => {
     try {
-      await sessionAPI.complete(sessionId, { notes: 'Session completed' })
+      await sessionAPI.complete(sessionId, 'Session completed')
       alert('Session completed! Payment processing required.')
       fetchSessions()
     } catch (error: any) {

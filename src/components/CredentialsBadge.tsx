@@ -47,10 +47,9 @@ export default function CredentialsBadge({
       )}
       {credentials}
       {isSLPA && (
-        <AlertCircle 
-          className={iconSizes[size]} 
-          title="SLPA has restricted access to certain resources"
-        />
+        <span title="SLPA has restricted access to certain resources">
+          <AlertCircle className={iconSizes[size]} />
+        </span>
       )}
     </span>
   )

@@ -496,7 +496,7 @@ export default function ResourcesPage() {
                     )}
                     
                     <div className="flex flex-wrap gap-1 mb-4">
-                      {resource.tags.slice(0, 3).map((tag) => (
+                      {resource.tags.slice(0, 3).map((tag: string) => (
                         <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
                           {tag}
                         </span>
@@ -584,7 +584,7 @@ export default function ResourcesPage() {
                         
                         <div className="flex items-center justify-between mt-4">
                           <div className="flex flex-wrap gap-1">
-                            {resource.tags.map((tag) => (
+                            {resource.tags.map((tag: string) => (
                               <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
                                 {tag}
                               </span>
