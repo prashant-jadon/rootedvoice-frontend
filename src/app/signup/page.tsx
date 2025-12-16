@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, Phone, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -15,15 +17,69 @@ export default function SignupPage() {
     phone: '',
     password: '',
     confirmPassword: '',
-    location: '',
-    states: [] as string[],
-    expertise: [] as string[]
+    dateOfBirth: '',
+    licenseNumber: '',
+    licensedStates: [] as string[],
+    specializations: [] as string[],
+    hourlyRate: 85
   })
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const { register } = useAuth()
+  const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle signup logic here
-    console.log('Signup attempt:', { userType, ...formData })
+    setError('')
+    setIsLoading(true)
+
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      setIsLoading(false)
+      return
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const registrationData: any = {
+        email: formData.email,
+        password: formData.password,
+        role: userType,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+      }
+
+      // Add role-specific data
+      if (userType === 'therapist') {
+        registrationData.licenseNumber = formData.licenseNumber || 'TEMP-' + Date.now()
+        registrationData.licensedStates = formData.licensedStates.length > 0 ? formData.licensedStates : ['California']
+        registrationData.specializations = formData.specializations.length > 0 ? formData.specializations : ['Language Development']
+        registrationData.hourlyRate = formData.hourlyRate || 85
+        registrationData.credentials = 'SLP'
+      } else {
+        registrationData.dateOfBirth = formData.dateOfBirth || new Date('2000-01-01')
+      }
+
+      await register(registrationData)
+      
+      // Redirect based on role
+      if (userType === 'therapist') {
+        router.push('/dashboard')
+      } else {
+        router.push('/client-dashboard')
+      }
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -45,6 +101,11 @@ export default function SignupPage() {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-black mb-2">Create your account</h1>
               <p className="text-gray-600">Join Rooted Voices and start your journey</p>
+              {error && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
             </div>
 
             {/* User Type Selection */}
@@ -316,9 +377,10 @@ export default function SignupPage() {
 
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all duration-300"
+                disabled={isLoading}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create account
+                {isLoading ? 'Creating Account...' : 'Create account'}
               </button>
             </form>
 

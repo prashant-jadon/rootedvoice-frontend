@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -11,11 +13,32 @@ export default function LoginPage() {
     email: '',
     password: ''
   })
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const { login } = useAuth()
+  const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle login logic here
-    console.log('Login attempt:', formData)
+    setError('')
+    setIsLoading(true)
+    
+    try {
+      await login(formData.email, formData.password)
+      // Redirect based on user role
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      if (user.role === 'therapist') {
+        router.push('/dashboard')
+      } else if (user.role === 'client') {
+        router.push('/client-dashboard')
+      } else {
+        router.push('/')
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please check your credentials.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -37,6 +60,11 @@ export default function LoginPage() {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-black mb-2">Welcome back</h1>
               <p className="text-gray-600">Sign in to your Rooted Voices account</p>
+              {error && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -117,9 +145,10 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all duration-300"
+                disabled={isLoading}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign in
+                {isLoading ? 'Signing in...' : 'Sign in'}
               </button>
             </form>
 

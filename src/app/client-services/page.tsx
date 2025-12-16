@@ -16,9 +16,9 @@ import {
 import Link from 'next/link'
 
 export default function ClientServicesPage() {
-  const [selectedType, setSelectedType] = useState<'child' | 'adult' | null>(null)
+  const [selectedType, setSelectedType] = useState<'pediatric' | 'adult' | null>(null)
 
-  const childServices = [
+  const pediatricServices = [
     {
       category: 'Infants & Toddlers (0-3 years)',
       services: [
@@ -125,21 +125,21 @@ export default function ClientServicesPage() {
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-8">
-              {/* Child Services */}
+              {/* Pediatric Services */}
               <motion.button
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                onClick={() => setSelectedType('child')}
+                onClick={() => setSelectedType('pediatric')}
                 className="bg-white p-12 rounded-2xl premium-shadow hover:shadow-xl transition-all duration-300 group text-left"
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Baby className="w-12 h-12 text-blue-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-black mb-3">Child Services</h2>
+                  <h2 className="text-2xl font-bold text-black mb-3">Pediatric Services</h2>
                   <p className="text-gray-600 mb-6">
-                    For infants, toddlers, children, and adolescents (0-18 years)
+                    For infants, toddlers, and adolescents (0-18 years)
                   </p>
                   <div className="text-sm text-gray-500 space-y-1">
                     <p>• Early intervention</p>
@@ -246,25 +246,25 @@ export default function ClientServicesPage() {
               className="text-center mb-12"
             >
               <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                {selectedType === 'child' ? (
+                {selectedType === 'pediatric' ? (
                   <Baby className="w-10 h-10 text-blue-600" />
                 ) : (
                   <User className="w-10 h-10 text-purple-600" />
                 )}
               </div>
               <h1 className="text-4xl font-bold text-black mb-4">
-                {selectedType === 'child' ? 'Child & Adolescent' : 'Adult'} Services
+                {selectedType === 'pediatric' ? 'Pediatric' : 'Adult'} Services
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {selectedType === 'child' 
-                  ? 'Comprehensive speech and language therapy services for children at every developmental stage'
+                {selectedType === 'pediatric' 
+                  ? 'Comprehensive speech and language therapy services for pediatric patients at every developmental stage'
                   : 'Specialized therapy services for adults addressing communication, voice, and swallowing needs'
                 }
               </p>
             </motion.div>
 
             <div className="space-y-8">
-              {(selectedType === 'child' ? childServices : adultServices).map((category, index) => (
+              {(selectedType === 'pediatric' ? pediatricServices : adultServices).map((category, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 30 }}
@@ -294,7 +294,7 @@ export default function ClientServicesPage() {
             >
               <h2 className="text-2xl font-bold text-black mb-4">Ready to Get Started?</h2>
               <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                Find a therapist specializing in {selectedType === 'child' ? 'pediatric' : 'adult'} services 
+                Find a therapist specializing in {selectedType === 'pediatric' ? 'pediatric' : 'adult'} services 
                 and schedule your free consultation today.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

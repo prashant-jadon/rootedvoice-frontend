@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Star, 
   MapPin, 
@@ -22,11 +22,76 @@ import {
   Shield
 } from 'lucide-react'
 import Link from 'next/link'
+import { therapistAPI, translationAPI } from '@/lib/api'
 
 export default function MeetOurTherapistsPage() {
   const [selectedSpecialty, setSelectedSpecialty] = useState('all')
   const [selectedState, setSelectedState] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedLanguage, setSelectedLanguage] = useState('all')
+  const [bilingualOnly, setBilingualOnly] = useState(false)
+  const [therapists, setTherapists] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    fetchTherapists()
+  }, [selectedSpecialty, selectedState, selectedLanguage, bilingualOnly])
+
+  const fetchTherapists = async () => {
+    try {
+      setIsLoading(true)
+      const params: any = {}
+      
+      if (selectedSpecialty !== 'all') {
+        params.specialization = selectedSpecialty
+      }
+      
+      if (selectedState !== 'all') {
+        params.state = selectedState
+      }
+
+      if (selectedLanguage !== 'all') {
+        // Use bilingual therapist API for language filtering
+        try {
+          const bilingualResponse = await translationAPI.getBilingualTherapists(selectedLanguage)
+          const bilingualTherapists = bilingualResponse.data.data || []
+          
+          // Filter by other criteria
+          let filtered = bilingualTherapists
+          if (selectedSpecialty !== 'all') {
+            filtered = filtered.filter((t: any) => 
+              t.specializations?.includes(selectedSpecialty)
+            )
+          }
+          if (selectedState !== 'all') {
+            filtered = filtered.filter((t: any) => 
+              t.licensedStates?.includes(selectedState)
+            )
+          }
+          
+          setTherapists(filtered)
+          return
+        } catch (error) {
+          console.error('Failed to fetch bilingual therapists:', error)
+        }
+      }
+
+      if (bilingualOnly) {
+        params.bilingual = 'true'
+      }
+
+      const response = await therapistAPI.getAll(params)
+      setTherapists(response.data.data.therapists || [])
+    } catch (error) {
+      console.error('Failed to fetch therapists:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName[0]}${lastName[0]}`.toUpperCase()
+  }
 
   const specialties = [
     'All Specialties',
@@ -57,131 +122,28 @@ export default function MeetOurTherapistsPage() {
     'Michigan'
   ]
 
-  const therapists = [
-    {
-      id: 1,
-      name: 'Dr. Sarah Chen',
-      title: 'Speech-Language Pathologist',
-      credentials: 'CCC-SLP, PhD',
-      image: '/api/placeholder/300/300',
-      rating: 4.9,
-      reviewCount: 127,
-      specialties: ['Early Intervention', 'Language Development', 'AAC'],
-      states: ['California', 'Texas', 'New York'],
-      experience: '8 years',
-      languages: ['English', 'Mandarin', 'Spanish'],
-      availability: 'Mon-Fri, Evenings',
-      bio: 'Dr. Chen specializes in early intervention and bilingual language development. She has extensive experience working with children with autism spectrum disorder and developmental delays.',
-      education: 'PhD in Communication Sciences, Stanford University',
-      certifications: ['ASHA CCC-SLP', 'Early Intervention Specialist', 'AAC Specialist'],
-      hourlyRate: '$85-95',
-      consultationFee: 'Free 15-min consultation'
-    },
-    {
-      id: 2,
-      name: 'Michael Rodriguez',
-      title: 'Speech-Language Pathologist',
-      credentials: 'CCC-SLP, MS',
-      image: '/api/placeholder/300/300',
-      rating: 4.8,
-      reviewCount: 89,
-      specialties: ['Articulation & Phonology', 'Fluency/Stuttering', 'Voice Therapy'],
-      states: ['Florida', 'Georgia', 'Texas'],
-      experience: '6 years',
-      languages: ['English', 'Spanish'],
-      availability: 'Mon-Sat, Flexible',
-      bio: 'Michael focuses on articulation disorders and fluency therapy. He has a passion for working with school-age children and adolescents.',
-      education: 'MS in Speech-Language Pathology, University of Florida',
-      certifications: ['ASHA CCC-SLP', 'Fluency Specialist', 'Voice Therapy Certified'],
-      hourlyRate: '$75-85',
-      consultationFee: 'Free 15-min consultation'
-    },
-    {
-      id: 3,
-      name: 'Dr. Jennifer Kim',
-      title: 'Speech-Language Pathologist',
-      credentials: 'CCC-SLP, PhD',
-      image: '/api/placeholder/300/300',
-      rating: 4.9,
-      reviewCount: 156,
-      specialties: ['Adult Neurogenic Disorders', 'Cognitive-Communication', 'Feeding & Swallowing'],
-      states: ['California', 'New York', 'Illinois'],
-      experience: '12 years',
-      languages: ['English', 'Korean'],
-      availability: 'Mon-Fri, Some Weekends',
-      bio: 'Dr. Kim is an expert in adult neurogenic communication disorders, particularly aphasia and cognitive-communication impairments following stroke and brain injury.',
-      education: 'PhD in Speech-Language Pathology, Northwestern University',
-      certifications: ['ASHA CCC-SLP', 'Board Certified Specialist in Adult Neurogenic Disorders', 'Dysphagia Specialist'],
-      hourlyRate: '$95-105',
-      consultationFee: 'Free 15-min consultation'
-    },
-    {
-      id: 4,
-      name: 'Emily Thompson',
-      title: 'Speech-Language Pathologist',
-      credentials: 'CCC-SLP, MS',
-      image: '/api/placeholder/300/300',
-      rating: 4.7,
-      reviewCount: 73,
-      specialties: ['Voice Therapy', 'Gender-Affirming Voice', 'Accent Modification'],
-      states: ['New York', 'Pennsylvania', 'Ohio'],
-      experience: '5 years',
-      languages: ['English', 'French'],
-      availability: 'Mon-Fri, Evenings',
-      bio: 'Emily specializes in voice therapy and gender-affirming voice services. She has extensive training in working with transgender and non-binary individuals.',
-      education: 'MS in Speech-Language Pathology, Columbia University',
-      certifications: ['ASHA CCC-SLP', 'Gender-Affirming Voice Specialist', 'Accent Modification Certified'],
-      hourlyRate: '$80-90',
-      consultationFee: 'Free 15-min consultation'
-    },
-    {
-      id: 5,
-      name: 'Dr. Marcus Johnson',
-      title: 'Speech-Language Pathologist',
-      credentials: 'CCC-SLP, PhD',
-      image: '/api/placeholder/300/300',
-      rating: 4.8,
-      reviewCount: 94,
-      specialties: ['Feeding & Swallowing', 'Early Intervention', 'AAC'],
-      states: ['Texas', 'Florida', 'Georgia'],
-      experience: '10 years',
-      languages: ['English', 'Portuguese'],
-      availability: 'Mon-Fri, Flexible',
-      bio: 'Dr. Johnson is a feeding and swallowing specialist with expertise in pediatric dysphagia and complex feeding disorders.',
-      education: 'PhD in Communication Sciences, University of Texas',
-      certifications: ['ASHA CCC-SLP', 'Pediatric Feeding Specialist', 'AAC Specialist'],
-      hourlyRate: '$85-95',
-      consultationFee: 'Free 15-min consultation'
-    },
-    {
-      id: 6,
-      name: 'Lisa Wang',
-      title: 'Speech-Language Pathologist',
-      credentials: 'CCC-SLP, MS',
-      image: '/api/placeholder/300/300',
-      rating: 4.9,
-      reviewCount: 112,
-      specialties: ['Language Development', 'Cognitive-Communication', 'Early Intervention'],
-      states: ['California', 'Washington', 'Oregon'],
-      experience: '7 years',
-      languages: ['English', 'Mandarin', 'Cantonese'],
-      availability: 'Mon-Sat, Flexible',
-      bio: 'Lisa specializes in language development and cognitive-communication therapy for children and adults with developmental disabilities.',
-      education: 'MS in Speech-Language Pathology, University of California, Berkeley',
-      certifications: ['ASHA CCC-SLP', 'Early Intervention Specialist', 'Cognitive-Communication Specialist'],
-      hourlyRate: '$75-85',
-      consultationFee: 'Free 15-min consultation'
-    }
+  const languages = [
+    { value: 'all', label: 'All Languages' },
+    { value: 'en', label: 'English' },
+    { value: 'es', label: 'Spanish' },
+    { value: 'fr', label: 'French' },
+    { value: 'de', label: 'German' },
+    { value: 'zh', label: 'Chinese' },
+    { value: 'ja', label: 'Japanese' },
+    { value: 'ko', label: 'Korean' },
+    { value: 'ar', label: 'Arabic' },
+    { value: 'pt', label: 'Portuguese' },
+    { value: 'hi', label: 'Hindi' },
+    { value: 'asl', label: 'American Sign Language' },
   ]
 
-  const filteredTherapists = therapists.filter(therapist => {
-    const matchesSpecialty = selectedSpecialty === 'all' || therapist.specialties.includes(selectedSpecialty)
-    const matchesState = selectedState === 'all' || therapist.states.includes(selectedState)
+  const filteredTherapists = therapists.filter((therapist: any) => {
+    const fullName = `${therapist.userId?.firstName || ''} ${therapist.userId?.lastName || ''}`.toLowerCase()
     const matchesSearch = searchTerm === '' || 
-      therapist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      therapist.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
+      fullName.includes(searchTerm.toLowerCase()) ||
+      therapist.specializations?.some((s: string) => s.toLowerCase().includes(searchTerm.toLowerCase()))
     
-    return matchesSpecialty && matchesState && matchesSearch
+    return matchesSearch
   })
 
   return (
@@ -234,7 +196,7 @@ export default function MeetOurTherapistsPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="bg-white rounded-2xl premium-shadow p-6 mb-8"
         >
-          <div className="grid md:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-5 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -273,126 +235,183 @@ export default function MeetOurTherapistsPage() {
               ))}
             </select>
 
-            {/* Results Count */}
-            <div className="flex items-center justify-center text-gray-600">
-              <span className="text-sm">
-                {filteredTherapists.length} therapist{filteredTherapists.length !== 1 ? 's' : ''} found
+            {/* Language Filter */}
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+            >
+              {languages.map(lang => (
+                <option key={lang.value} value={lang.value}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+
+            {/* Bilingual Toggle & Results Count */}
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={bilingualOnly}
+                  onChange={(e) => setBilingualOnly(e.target.checked)}
+                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                />
+                <span className="text-sm text-gray-700">Bilingual Only</span>
+              </label>
+              <span className="text-xs text-gray-600">
+                {filteredTherapists.length} found
               </span>
             </div>
           </div>
         </motion.div>
 
         {/* Therapists Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredTherapists.map((therapist, index) => (
-            <motion.div
-              key={therapist.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="bg-white rounded-2xl premium-shadow overflow-hidden hover:shadow-xl transition-shadow duration-300"
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading therapists...</p>
+          </div>
+        ) : filteredTherapists.length === 0 ? (
+          <div className="text-center py-12">
+            <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <p className="text-xl text-gray-600">No therapists found matching your criteria</p>
+            <button 
+              onClick={() => {
+                setSelectedSpecialty('all')
+                setSelectedState('all')
+                setSelectedLanguage('all')
+                setBilingualOnly(false)
+                setSearchTerm('')
+              }}
+              className="mt-4 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
             >
-              {/* Therapist Image */}
-              <div className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-                  <Users className="w-12 h-12 text-gray-500" />
-                </div>
-              </div>
-
-              <div className="p-6">
-                {/* Basic Info */}
-                <div className="mb-4">
-                  <h3 className="text-xl font-bold text-black mb-1">{therapist.name}</h3>
-                  <p className="text-gray-600 mb-2">{therapist.title}</p>
-                  <p className="text-sm text-gray-500 mb-3">{therapist.credentials}</p>
-                  
-                  {/* Rating */}
-                  <div className="flex items-center space-x-2 mb-3">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(therapist.rating)
-                              ? 'text-yellow-400 fill-current'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600">
-                      {therapist.rating} ({therapist.reviewCount} reviews)
+              Clear Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredTherapists.map((therapist, index) => (
+              <motion.div
+                key={therapist._id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="bg-white rounded-2xl premium-shadow overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
+                {/* Therapist Image */}
+                <div className="h-64 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
+                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-3xl font-bold text-gray-700">
+                      {therapist.userId ? getInitials(therapist.userId.firstName, therapist.userId.lastName) : 'NA'}
                     </span>
                   </div>
                 </div>
 
-                {/* Specialties */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-black mb-2">Specialties:</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {therapist.specialties.slice(0, 3).map((specialty, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                      >
-                        {specialty}
+                <div className="p-6">
+                  {/* Basic Info */}
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-black mb-1">
+                      {therapist.userId ? `${therapist.userId.firstName} ${therapist.userId.lastName}` : 'Unknown Therapist'}
+                    </h3>
+                    <p className="text-gray-600 mb-2">Speech-Language Pathologist</p>
+                    <p className="text-sm text-gray-500 mb-3">{therapist.credentials || 'CCC-SLP'}</p>
+                    
+                    {/* Rating */}
+                    <div className="flex items-center space-x-2 mb-3">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${
+                              i < Math.floor(therapist.rating || 0)
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600">
+                        {(therapist.rating || 0).toFixed(1)} ({therapist.totalReviews || 0} reviews)
                       </span>
-                    ))}
-                    {therapist.specialties.length > 3 && (
-                      <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                        +{therapist.specialties.length - 3} more
-                      </span>
+                    </div>
+                    
+                    {/* Verified Badge */}
+                    {therapist.isVerified && (
+                      <div className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 text-xs rounded-full">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Verified
+                      </div>
                     )}
                   </div>
-                </div>
 
-                {/* States */}
-                <div className="mb-4">
-                  <div className="flex items-center space-x-1 text-sm text-gray-600">
-                    <MapPin className="w-4 h-4" />
-                    <span>{therapist.states.join(', ')}</span>
+                  {/* Specialties */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-black mb-2">Specialties:</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {(therapist.specializations || []).slice(0, 3).map((specialty: string, idx: number) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                        >
+                          {specialty}
+                        </span>
+                      ))}
+                      {(therapist.specializations?.length || 0) > 3 && (
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                          +{therapist.specializations.length - 3} more
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* Experience & Languages */}
-                <div className="mb-4 space-y-2">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Clock className="w-4 h-4" />
-                    <span>{therapist.experience} experience</span>
+                  {/* States */}
+                  <div className="mb-4">
+                    <div className="flex items-center space-x-1 text-sm text-gray-600">
+                      <MapPin className="w-4 h-4" />
+                      <span>{(therapist.licensedStates || []).join(', ') || 'Multiple states'}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Globe className="w-4 h-4" />
-                    <span>{therapist.languages.join(', ')}</span>
-                  </div>
-                </div>
 
-                {/* Bio Preview */}
-                <p className="text-sm text-gray-600 mb-6 line-clamp-3">
-                  {therapist.bio}
-                </p>
-
-                {/* Pricing */}
-                <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Hourly Rate:</span>
-                    <span className="font-semibold text-black">{therapist.hourlyRate}</span>
+                  {/* Experience */}
+                  <div className="mb-4 space-y-2">
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <Clock className="w-4 h-4" />
+                      <span>{therapist.experience || 0} years experience</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <Users className="w-4 h-4" />
+                      <span>{therapist.totalSessions || 0} sessions completed</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center mt-1">
-                    <span className="text-sm text-gray-600">Consultation:</span>
-                    <span className="text-sm text-green-600 font-medium">{therapist.consultationFee}</span>
-                  </div>
-                </div>
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <Link
-                    href={`/therapist-profile/${therapist.id}`}
-                    className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center group"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    View Profile
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  {/* Bio Preview */}
+                  <p className="text-sm text-gray-600 mb-6 line-clamp-3">
+                    {therapist.bio || 'Experienced speech-language pathologist dedicated to helping clients achieve their communication goals.'}
+                  </p>
+
+                  {/* Pricing */}
+                  <div className="mb-6 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Hourly Rate:</span>
+                      <span className="font-semibold text-black">${therapist.hourlyRate || 85}/hr</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-1">
+                      <span className="text-sm text-gray-600">Consultation:</span>
+                      <span className="text-sm text-green-600 font-medium">Free 15-min</span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                    <Link
+                      href={`/therapist-profile/${therapist._id}`}
+                      className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center group"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      View Profile
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                   
                   <Link
                     href="/pricing"
@@ -406,32 +425,6 @@ export default function MeetOurTherapistsPage() {
             </motion.div>
           ))}
         </div>
-
-        {/* No Results */}
-        {filteredTherapists.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-black mb-2">No therapists found</h3>
-            <p className="text-gray-600 mb-6">
-              Try adjusting your filters or search terms to find the right therapist for you.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedSpecialty('all')
-                setSelectedState('all')
-                setSearchTerm('')
-              }}
-              className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-            >
-              Clear Filters
-            </button>
-          </motion.div>
         )}
 
         {/* Why Choose Us */}

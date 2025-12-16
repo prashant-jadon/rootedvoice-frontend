@@ -41,7 +41,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/client-services" className="hover:text-white transition-colors">
-                  Child Services
+                  Pediatric Services
                 </Link>
               </li>
               <li>

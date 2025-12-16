@@ -4,9 +4,14 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Play, Users, Calendar, Shield, Star, CheckCircle, Video, FileText, CreditCard, Palette } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import DemoModal from '../components/DemoModal'
+import LanguageSwitcher from '../components/LanguageSwitcher'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function LandingPage() {
   const [currentPalette, setCurrentPalette] = useState('1')
+  const [showDemoModal, setShowDemoModal] = useState(false)
+  const t = useTranslation()
 
   useEffect(() => {
     // Set the data attribute on the html element to control CSS variables
@@ -41,7 +46,7 @@ export default function LandingPage() {
                   color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
                 }}
               >
-                Services
+                {t('nav.services')}
                 <span 
                   className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                   style={{
@@ -56,7 +61,7 @@ export default function LandingPage() {
                   color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
                 }}
               >
-                Therapists
+                {t('nav.therapists')}
                 <span 
                   className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                   style={{
@@ -71,7 +76,7 @@ export default function LandingPage() {
                   color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
                 }}
               >
-                Pricing
+                {t('nav.pricing')}
                 <span 
                   className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                   style={{
@@ -86,7 +91,7 @@ export default function LandingPage() {
                   color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
                 }}
               >
-                Community
+                {t('nav.community')}
                 <span 
                   className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                   style={{
@@ -101,7 +106,7 @@ export default function LandingPage() {
                   color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
                 }}
               >
-                About
+                {t('nav.about')}
                 <span 
                   className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                   style={{
@@ -166,15 +171,9 @@ export default function LandingPage() {
               </button>
             </div>
 
-            {/* AI Language Selector */}
+            {/* Language Switcher */}
             <div className="hidden md:flex items-center mx-4">
-              <select className="text-sm border border-gray-200 rounded-lg px-3 py-1 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="en">🇺🇸 English</option>
-                <option value="es">🇪🇸 Español</option>
-                <option value="zh">🇨🇳 中文</option>
-                <option value="fr">🇫🇷 Français</option>
-              </select>
-              <span className="text-xs text-gray-500 ml-2">AI</span>
+              <LanguageSwitcher variant="compact" />
             </div>
             
             {/* Action Buttons */}
@@ -187,7 +186,7 @@ export default function LandingPage() {
                   backgroundColor: currentPalette === '3' ? 'transparent' : 'transparent'
                 }}
               >
-                Sign In
+                {t('nav.signIn')}
               </Link>
               <Link 
                 href="/signup" 
@@ -198,13 +197,13 @@ export default function LandingPage() {
                   borderColor: currentPalette === '3' ? '#4D7D7D' : currentPalette === '1' ? '#203936' : 'rgba(255,255,255,0.2)'
                 }}
               >
-                Get Started
+                {t('nav.getStarted')}
               </Link>
             </div>
           </div>
           
           {/* Demo Access Bar - Below main nav */}
-          <div className="hidden md:flex items-center justify-center space-x-4 pb-3 pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-center space-x-4 pb-3 pt-2 border-t border-gray-100">
             <span className="text-xs text-gray-500">Quick Demo Access:</span>
             <Link href="/dashboard" className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors">
               Therapist Dashboard →
@@ -898,17 +897,18 @@ export default function LandingPage() {
               Start Your Free Trial
               <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <button 
-              className="flex items-center transition-all duration-300 hover:scale-105 backdrop-blur-sm px-8 py-4 rounded-full border"
-              style={{
-                color: currentPalette === '3' ? '#202D3E' : 'rgba(255,255,255,0.9)',
-                backgroundColor: currentPalette === '3' ? 'rgba(77, 125, 125, 0.1)' : currentPalette === '1' ? 'rgba(145, 158, 148, 0.1)' : 'rgba(255,255,255,0.1)',
-                borderColor: currentPalette === '3' ? '#4D7D7D' : 'rgba(255,255,255,0.2)'
-              }}
-            >
-              <Calendar className="mr-3 w-6 h-6" />
-              <span className="font-semibold">Schedule a Demo</span>
-            </button>
+              <button 
+                onClick={() => setShowDemoModal(true)}
+                className="flex items-center transition-all duration-300 hover:scale-105 backdrop-blur-sm px-8 py-4 rounded-full border"
+                style={{
+                  color: currentPalette === '3' ? '#202D3E' : 'rgba(255,255,255,0.9)',
+                  backgroundColor: currentPalette === '3' ? 'rgba(77, 125, 125, 0.1)' : currentPalette === '1' ? 'rgba(145, 158, 148, 0.1)' : 'rgba(255,255,255,0.1)',
+                  borderColor: currentPalette === '3' ? '#4D7D7D' : 'rgba(255,255,255,0.2)'
+                }}
+              >
+                <Calendar className="mr-3 w-6 h-6" />
+                <span className="font-semibold">Schedule a Demo</span>
+              </button>
           </motion.div>
         </div>
       </section>
@@ -953,6 +953,9 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Demo Modal */}
+      <DemoModal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} />
     </div>
   )
 }

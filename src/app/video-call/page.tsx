@@ -1,454 +1,294 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { 
-  Video, 
-  VideoOff, 
-  Mic, 
-  MicOff, 
-  Phone, 
-  PhoneOff, 
-  MessageCircle, 
-  Share, 
-  Settings, 
-  Users, 
-  Clock, 
-  MoreVertical,
-  Send,
-  Paperclip,
-  Smile,
-  Monitor,
-  Volume2,
-  VolumeX,
-  Maximize,
-  Minimize,
-  RotateCcw,
-  Download,
-  Camera,
-  CameraOff,
-  CheckCircle,
-  FileText,
-  Calendar,
-  Lightbulb
-} from 'lucide-react'
-import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { Video, Mic, MicOff, VideoOff, PhoneOff, Users, Settings, MessageCircle, Languages } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+import { sessionAPI, translationAPI } from '@/lib/api'
+import LanguageSelector from '@/components/LanguageSelector'
+import TranslationOverlay from '@/components/TranslationOverlay'
+
+declare global {
+  interface Window {
+    JitsiMeetExternalAPI: any;
+  }
+}
 
 export default function VideoCallPage() {
-  const [isVideoOn, setIsVideoOn] = useState(true)
-  const [isMicOn, setIsMicOn] = useState(true)
-  const [isScreenSharing, setIsScreenSharing] = useState(false)
-  const [isRecording, setIsRecording] = useState(false)
-  const [showChat, setShowChat] = useState(false)
-  const [showParticipants, setShowParticipants] = useState(false)
-  const [callDuration, setCallDuration] = useState(0)
-  const [chatMessage, setChatMessage] = useState('')
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const sessionId = searchParams.get('sessionId')
+  const jitsiContainerRef = useRef<HTMLDivElement>(null)
+  const [jitsiApi, setJitsiApi] = useState<any>(null)
+  const [session, setSession] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const { user } = useAuth()
+  const [preferredLanguage, setPreferredLanguage] = useState('en')
+  const [targetLanguage, setTargetLanguage] = useState('en')
+  const [translationEnabled, setTranslationEnabled] = useState(false)
+  const [languagePreferences, setLanguagePreferences] = useState<any>(null)
 
-  // Dummy data
-  const sessionInfo = {
-    client: 'Sarah Johnson',
-    type: 'Speech Therapy',
-    duration: 45,
-    startTime: '10:00 AM',
-    notes: 'Working on articulation exercises for /r/ sounds'
-  }
-
-  const participants = [
-    { id: 1, name: 'Dr. Rebecca Smith', role: 'Therapist', isVideoOn: true, isMicOn: true },
-    { id: 2, name: 'Sarah Johnson', role: 'Client', isVideoOn: true, isMicOn: true }
-  ]
-
-  const chatMessages = [
-    { id: 1, sender: 'Dr. Rebecca Smith', message: 'Welcome Sarah! How are you feeling today?', time: '10:00 AM', isTherapist: true },
-    { id: 2, sender: 'Sarah Johnson', message: 'Hi Dr. Smith! I\'m doing well, thank you. Ready to work on my exercises.', time: '10:01 AM', isTherapist: false },
-    { id: 3, sender: 'Dr. Rebecca Smith', message: 'Great! Let\'s start with the warm-up exercises we practiced last week.', time: '10:02 AM', isTherapist: true }
-  ]
-
-  // Timer effect
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCallDuration(prev => prev + 1)
-    }, 1000)
+    if (!user) {
+      router.push('/login')
+      return
+    }
 
-    return () => clearInterval(timer)
-  }, [])
+    fetchLanguagePreferences()
+    
+    if (sessionId) {
+      fetchSession()
+    }
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-  }
+    // Load Jitsi Meet External API script
+    const script = document.createElement('script')
+    script.src = 'https://meet.jit.si/external_api.js'
+    script.async = true
+    script.onload = () => {
+      initializeJitsi()
+    }
+    document.body.appendChild(script)
 
-  const handleEndCall = () => {
-    // Handle end call logic
-    console.log('Ending call...')
-  }
+    return () => {
+      if (jitsiApi) {
+        jitsiApi.dispose()
+      }
+      if (document.body.contains(script)) {
+        document.body.removeChild(script)
+      }
+    }
+  }, [sessionId, user])
 
-  const handleSendMessage = () => {
-    if (chatMessage.trim()) {
-      // Handle send message logic
-      console.log('Sending message:', chatMessage)
-      setChatMessage('')
+  const fetchLanguagePreferences = async () => {
+    try {
+      const response = await translationAPI.getPreferences()
+      const prefs = response.data.data
+      setLanguagePreferences(prefs)
+      setPreferredLanguage(prefs.preferredLanguage || 'en')
+      setTargetLanguage(prefs.preferredLanguage || 'en')
+      setTranslationEnabled(prefs.clientPreferences?.enableTranslation || false)
+    } catch (error) {
+      console.error('Failed to fetch language preferences:', error)
     }
   }
 
+  const fetchSession = async () => {
+    try {
+      if (!sessionId) return
+      const response = await sessionAPI.getById(sessionId)
+      setSession(response.data.data)
+    } catch (error) {
+      console.error('Failed to fetch session:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const initializeJitsi = async () => {
+    // Get session data to retrieve proper room name
+    let roomName = `RootedVoices${sessionId || Date.now()}`
+    
+    if (session && session.jitsiRoomName) {
+      roomName = session.jitsiRoomName
+    } else if (sessionId) {
+      // Fetch session to get room name
+      try {
+        const sessionRes = await sessionAPI.getById(sessionId)
+        if (sessionRes.data.data.jitsiRoomName) {
+          roomName = sessionRes.data.data.jitsiRoomName
+        }
+      } catch (error) {
+        console.error('Failed to fetch session for room name:', error)
+      }
+    }
+    
+    const displayName = user ? `${user.firstName} ${user.lastName}` : 'Guest'
+    const isModerator = user?.role === 'therapist'
+    
+    // Build Jitsi URL with improved configuration
+    const configParams = [
+      `userInfo.displayName="${encodeURIComponent(displayName)}"`,
+      'config.prejoinPageEnabled=false',
+      'config.startWithAudioMuted=false',
+      'config.startWithVideoMuted=false',
+      `config.defaultLanguage=${preferredLanguage}`,
+      'config.enableLayerSuspension=true',
+      'config.enableNoAudioDetection=true',
+      'config.enableNoisyMicDetection=true',
+      'config.enableTalkWhileMuted=false',
+      'config.enableClosePage=true',
+      'config.enableWelcomePage=false',
+      'config.enableDisplayNameInStats=false',
+      'config.enableEmailInStats=false',
+      'config.resolution=720',
+      'config.p2p.enabled=true',
+      'config.p2p.useStunTurn=true',
+      'config.analytics.disabled=true',
+      'config.disableDeepLinking=true',
+      'config.disableRemoteMute=true',
+      'config.disableThirdPartyRequests=true',
+      'config.enableLobbyChat=true',
+      'config.enableChat=true',
+      'config.enableFileUploads=false',
+      'config.enableRecording=false',
+    ]
+
+    // Enable translation if available
+    if (translationEnabled && targetLanguage !== preferredLanguage) {
+      configParams.push('config.transcriptionEnabled=true')
+      configParams.push(`config.translationLanguages=["${targetLanguage}"]`)
+    }
+
+    const jitsiUrl = `https://meet.jit.si/${roomName}#${configParams.join('&')}`
+    
+    if (jitsiContainerRef.current) {
+      const iframe = document.createElement('iframe')
+      iframe.src = jitsiUrl
+      iframe.allow = 'camera; microphone; fullscreen; display-capture'
+      iframe.style.width = '100%'
+      iframe.style.height = '100%'
+      iframe.style.border = 'none'
+      
+      jitsiContainerRef.current.innerHTML = ''
+      jitsiContainerRef.current.appendChild(iframe)
+    }
+    
+    /* ORIGINAL EXTERNAL API CODE (DISABLED DUE TO AUTH ISSUES)
+    if (!jitsiContainerRef.current || !window.JitsiMeetExternalAPI) return
+
+    const options = {
+      roomName: roomName,
+      width: '100%',
+      height: '100%',
+      parentNode: jitsiContainerRef.current,
+      configOverwrite: {
+        prejoinPageEnabled: false,
+        disableDeepLinking: true,
+        startWithAudioMuted: false,
+        startWithVideoMuted: false,
+      },
+      userInfo: {
+        displayName: displayName,
+        email: user?.email || '',
+      },
+    }
+
+    const api = new window.JitsiMeetExternalAPI('meet.jit.si', options)
+
+    
+    // Mark session as in-progress
+    if (sessionId) {
+      sessionAPI.start(sessionId).catch(console.error)
+    }
+    */
+  }
+
+  const handleLanguageChange = async (language: string) => {
+    setTargetLanguage(language)
+    try {
+      await translationAPI.updatePreferences({
+        preferredLanguage: language,
+        interfaceLanguage: language,
+      })
+      // Reinitialize Jitsi with new language
+      if (jitsiContainerRef.current) {
+        initializeJitsi()
+      }
+    } catch (error) {
+      console.error('Failed to update language preferences:', error)
+    }
+  }
+
+  const handleTranslationToggle = async (enabled: boolean) => {
+    setTranslationEnabled(enabled)
+    try {
+      await translationAPI.updatePreferences({
+        enableTranslation: enabled,
+      })
+      // Reinitialize Jitsi with translation enabled/disabled
+      if (jitsiContainerRef.current) {
+        initializeJitsi()
+      }
+    } catch (error) {
+      console.error('Failed to update translation settings:', error)
+    }
+  }
+
+  const endCall = () => {
+    // Since we're using iframe approach, just navigate away
+    router.push(user?.role === 'therapist' ? '/dashboard' : '/client-dashboard')
+  }
+
+  if (isLoading && sessionId) {
   return (
-    <div className={`min-h-screen bg-black ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-black bg-opacity-50 backdrop-blur-sm">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-4">
-            <Link href="/dashboard" className="text-white hover:text-gray-300 transition-colors">
-              <span className="text-lg font-semibold">Rooted Voices</span>
-            </Link>
-            <span className="text-gray-400">/</span>
-            <div className="text-white">
-              <h1 className="text-lg font-semibold">{sessionInfo.client}</h1>
-              <p className="text-sm text-gray-300">{sessionInfo.type}</p>
-            </div>
-            <div className="flex items-center space-x-2 text-white">
-              <Clock className="w-4 h-4" />
-              <span className="text-sm">{formatTime(callDuration)}</span>
-            </div>
+      <div className="h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Loading session...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="h-screen flex flex-col bg-gray-900">
+      {/* Header with session info */}
+      <div className="bg-gray-800 text-white px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Video className="w-6 h-6 text-green-400" />
+          <div>
+            <h1 className="font-semibold">Therapy Session</h1>
+            {session && (
+              <p className="text-sm text-gray-400">
+                {session.clientId?.userId ? 
+                  `${session.clientId.userId.firstName} ${session.clientId.userId.lastName}` : 
+                  'Loading...'}
+              </p>
+            )}
           </div>
-          
+        </div>
+        <div className="flex items-center space-x-4">
+          {/* Language Selector */}
           <div className="flex items-center space-x-2">
-            <button 
-              onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
-            >
-              {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-            </button>
-            <button 
-              onClick={() => setShowParticipants(!showParticipants)}
-              className="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
-            >
-              <Users className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={() => setShowChat(!showChat)}
-              className="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
-            >
-              <MessageCircle className="w-5 h-5" />
-            </button>
-            <button className="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors">
-              <Settings className="w-5 h-5" />
-            </button>
+            <Languages className="w-5 h-5 text-gray-300" />
+            <LanguageSelector
+              currentLanguage={targetLanguage}
+              onLanguageChange={handleLanguageChange}
+              showTranslationToggle={user?.role === 'client'}
+              onTranslationToggle={handleTranslationToggle}
+              translationEnabled={translationEnabled}
+            />
           </div>
-        </div>
-      </div>
-
-      {/* Main Video Area */}
-      <div className="flex h-screen">
-        {/* Primary Video */}
-        <div className="flex-1 relative">
-          <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-            {isVideoOn ? (
-              <div className="w-full h-full bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <div className="w-32 h-32 bg-white bg-opacity-20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-4xl font-bold">SJ</span>
-                  </div>
-                  <h2 className="text-2xl font-semibold">{sessionInfo.client}</h2>
-                  <p className="text-gray-300">Client View</p>
-                </div>
-              </div>
-            ) : (
-              <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <VideoOff className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                  <p className="text-lg">Camera is off</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Recording Indicator */}
-          {isRecording && (
-            <div className="absolute top-20 left-4 bg-red-600 text-white px-3 py-1 rounded-full flex items-center space-x-2">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium">Recording</span>
-            </div>
-          )}
-
-          {/* Session Notes Overlay */}
-          <div className="absolute bottom-20 left-4 bg-black bg-opacity-70 text-white p-4 rounded-lg max-w-sm">
-            <h3 className="font-semibold mb-2">Session Notes</h3>
-            <p className="text-sm text-gray-300">{sessionInfo.notes}</p>
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        {(showChat || showParticipants) && (
-          <motion.div
-            initial={{ opacity: 0, x: 300 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            className="w-80 bg-white border-l border-gray-200 flex flex-col"
+          <button 
+            onClick={endCall}
+            className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors"
           >
-            {showChat && (
-              <>
-                {/* Chat Header */}
-                <div className="p-4 border-b border-gray-200">
-                  <h3 className="font-semibold text-black">Chat</h3>
-                </div>
-
-                {/* Chat Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {chatMessages.map((message) => (
-                    <div key={message.id} className={`flex ${message.isTherapist ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs p-3 rounded-lg ${
-                        message.isTherapist 
-                          ? 'bg-black text-white' 
-                          : 'bg-gray-100 text-black'
-                      }`}>
-                        <p className="text-sm">{message.message}</p>
-                        <p className="text-xs mt-1 opacity-70">{message.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Chat Input */}
-                <div className="p-4 border-t border-gray-200">
-                  <div className="flex items-center space-x-2">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                      <Paperclip className="w-4 h-4" />
-                    </button>
-                    <input
-                      type="text"
-                      value={chatMessage}
-                      onChange={(e) => setChatMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                      placeholder="Type a message..."
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                    />
-                    <button 
-                      onClick={handleSendMessage}
-                      className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <Send className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {showParticipants && (
-              <>
-                {/* Participants Header */}
-                <div className="p-4 border-b border-gray-200">
-                  <h3 className="font-semibold text-black">Participants</h3>
-                </div>
-
-                {/* Participants List */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {participants.map((participant) => (
-                    <div key={participant.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-semibold text-gray-600">
-                          {participant.name.split(' ').map(n => n[0]).join('')}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-black">{participant.name}</p>
-                        <p className="text-sm text-gray-600">{participant.role}</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {participant.isVideoOn ? (
-                          <Video className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <VideoOff className="w-4 h-4 text-gray-400" />
-                        )}
-                        {participant.isMicOn ? (
-                          <Mic className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <MicOff className="w-4 h-4 text-gray-400" />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </motion.div>
-        )}
-      </div>
-
-      {/* Controls */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 bg-black bg-opacity-50 backdrop-blur-sm">
-        <div className="flex items-center justify-center p-6">
-          <div className="flex items-center space-x-4">
-            {/* Mic Toggle */}
-            <button
-              onClick={() => setIsMicOn(!isMicOn)}
-              className={`p-4 rounded-full transition-colors ${
-                isMicOn 
-                  ? 'bg-white text-black hover:bg-gray-200' 
-                  : 'bg-red-600 text-white hover:bg-red-700'
-              }`}
-            >
-              {isMicOn ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
-            </button>
-
-            {/* Video Toggle */}
-            <button
-              onClick={() => setIsVideoOn(!isVideoOn)}
-              className={`p-4 rounded-full transition-colors ${
-                isVideoOn 
-                  ? 'bg-white text-black hover:bg-gray-200' 
-                  : 'bg-red-600 text-white hover:bg-red-700'
-              }`}
-            >
-              {isVideoOn ? <Video className="w-6 h-6" /> : <VideoOff className="w-6 h-6" />}
-            </button>
-
-            {/* Screen Share */}
-            <button
-              onClick={() => setIsScreenSharing(!isScreenSharing)}
-              className={`p-4 rounded-full transition-colors ${
-                isScreenSharing 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                  : 'bg-white text-black hover:bg-gray-200'
-              }`}
-            >
-              <Monitor className="w-6 h-6" />
-            </button>
-
-            {/* Recording */}
-            <button
-              onClick={() => setIsRecording(!isRecording)}
-              className={`p-4 rounded-full transition-colors ${
-                isRecording 
-                  ? 'bg-red-600 text-white hover:bg-red-700' 
-                  : 'bg-white text-black hover:bg-gray-200'
-              }`}
-            >
-              <div className="w-6 h-6 border-2 border-current rounded-full" />
-            </button>
-
-            {/* End Call */}
-            <button
-              onClick={handleEndCall}
-              className="p-4 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
-            >
-              <PhoneOff className="w-6 h-6" />
-            </button>
-          </div>
+            <PhoneOff className="w-4 h-4" />
+            <span>End Call</span>
+          </button>
         </div>
       </div>
 
-      {/* AI-Generated SOAP Notes Modal */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl p-6 w-full max-w-3xl mx-4 my-8"
-        >
-          <div className="text-center mb-6">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-black mb-2">Session Complete</h3>
-            <p className="text-gray-600">Session with {sessionInfo.client} has ended</p>
-            <div className="mt-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium inline-block">
-              ✨ AI-Generated Notes Ready
-            </div>
-          </div>
-          
-          <div className="bg-gray-50 rounded-lg p-6 mb-6">
-            <h4 className="font-semibold text-black mb-4 flex items-center">
-              <FileText className="w-4 h-4 mr-2" />
-              AI-Generated SOAP Note
-            </h4>
-            
-            <div className="space-y-4 text-sm">
-              <div>
-                <h5 className="font-semibold text-black mb-2">Subjective (S):</h5>
-                <p className="text-gray-700">
-                  Client reported feeling confident with /r/ sound production practice at home. 
-                  Parent noted improvement in clarity during daily conversations.
-                </p>
-              </div>
-              
-              <div>
-                <h5 className="font-semibold text-black mb-2">Objective (O):</h5>
-                <p className="text-gray-700">
-                  Client achieved 85% accuracy on /r/ sound in initial position during structured practice. 
-                  Demonstrated improved tongue placement and self-monitoring skills. Session duration: {formatTime(callDuration)}.
-                </p>
-              </div>
-              
-              <div>
-                <h5 className="font-semibold text-black mb-2">Assessment (A):</h5>
-                <p className="text-gray-700">
-                  Client is making excellent progress toward speech clarity goals. Ready to advance 
-                  to conversational-level practice with /r/ sounds.
-                </p>
-              </div>
-              
-              <div>
-                <h5 className="font-semibold text-black mb-2">Plan (P):</h5>
-                <p className="text-gray-700">
-                  Continue /r/ sound practice in conversational contexts. Assign home practice activities. 
-                  Next session: Focus on generalization to spontaneous speech.
-                </p>
-              </div>
-            </div>
-            
-            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <h5 className="font-semibold text-black mb-2 flex items-center">
-                <Lightbulb className="w-4 h-4 mr-2 text-blue-600" />
-                Recommended Activities for Next Session:
-              </h5>
-              <ul className="space-y-1 text-sm text-gray-700">
-                <li>• Practice /r/ sounds in short conversational exchanges</li>
-                <li>• Introduce self-monitoring strategies during speaking tasks</li>
-                <li>• Review home practice recordings together</li>
-                <li>• Set new goals for carryover to daily communication</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="space-y-4 mb-6">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Duration:</span>
-              <span className="font-semibold">{formatTime(callDuration)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Type:</span>
-              <span className="font-semibold">{sessionInfo.type}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Status:</span>
-              <span className="font-semibold text-green-600">Completed</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Recording:</span>
-              <span className="font-semibold text-blue-600">Available for download</span>
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            <button className="w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center">
-              <Download className="w-4 h-4 mr-2" />
-              Save AI-Generated SOAP Note
-            </button>
-            <button className="w-full py-3 border border-gray-300 text-black rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
-              <Calendar className="w-4 h-4 mr-2" />
-              Schedule Follow-up Session
-            </button>
-            <button className="w-full py-3 border border-gray-300 text-black rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
-              <Download className="w-4 h-4 mr-2" />
-              Download Session Recording
-            </button>
-            <button className="w-full py-3 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-              Edit Notes Manually
-            </button>
-          </div>
-        </motion.div>
+      {/* Jitsi Meet Container */}
+      <div ref={jitsiContainerRef} className="flex-1" />
+
+      {/* Real-time Translation Overlay */}
+      {translationEnabled && (
+        <TranslationOverlay
+          enabled={translationEnabled}
+          sourceLanguage={preferredLanguage}
+          targetLanguage={targetLanguage}
+        />
+      )}
+
+      {/* Footer info */}
+      <div className="bg-gray-800 text-white px-6 py-2 text-center text-sm">
+        <p className="text-gray-400">
+          This is a secure, HIPAA-compliant video session. All data is encrypted end-to-end.
+          {translationEnabled && preferredLanguage !== targetLanguage && (
+            <span className="ml-2 text-indigo-400">• Real-time translation active</span>
+          )}
+        </p>
       </div>
     </div>
   )

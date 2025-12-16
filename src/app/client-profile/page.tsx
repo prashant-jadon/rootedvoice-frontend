@@ -23,98 +23,152 @@ import {
   CheckCircle,
   X,
   FileText,
-  Upload
+  Upload,
+  UserX
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+import { clientAPI, therapistAPI, sessionAPI, assignmentAPI, calendarAPI, familyCoachingAPI, subscriptionAPI } from '@/lib/api'
+import CalendarSync from '@/components/CalendarSync'
+import DocumentUpload from '@/components/DocumentUpload'
+import DocumentsTab from '@/components/DocumentsTab'
+import TherapyTimeline from '@/components/TherapyTimeline'
+import AssignmentTracking from '@/components/AssignmentTracking'
+import ReminderPreferences from '@/components/ReminderPreferences'
+import FamilyCoachingScheduler from '@/components/FamilyCoachingScheduler'
+import FamilyCoachingList from '@/components/FamilyCoachingList'
 
 export default function ClientProfilePage() {
+  const { user, isAuthenticated } = useAuth()
+  const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('personal')
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // Real data from API
+  const [clientProfile, setClientProfile] = useState<any>(null)
+  const [therapist, setTherapist] = useState<any>(null)
+  const [sessions, setSessions] = useState<any[]>([])
+  const [assignments, setAssignments] = useState<any[]>([])
+  const [documents, setDocuments] = useState<any[]>([])
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [timelineEvents, setTimelineEvents] = useState<any[]>([])
+  const [subscription, setSubscription] = useState<any>(null)
+  const [showCoachingScheduler, setShowCoachingScheduler] = useState(false)
 
-  // Dummy data
-  const profile = {
-    name: 'Sarah Johnson',
-    email: 'sarah.johnson@email.com',
-    phone: '+1 (555) 123-4567',
-    location: 'San Francisco, CA',
-    dateOfBirth: '1990-05-15',
-    joinDate: '2023-08-20',
-    avatar: 'SJ',
-    bio: 'I\'m working on improving my speech clarity and confidence. I love reading, hiking, and spending time with my family.',
-    goals: [
-      'Improve articulation of /r/ sounds',
-      'Build confidence in public speaking',
-      'Enhance vocabulary and language skills'
-    ],
-    preferences: {
-      sessionTime: 'Morning (9 AM - 12 PM)',
-      sessionLength: '45 minutes',
-      communicationStyle: 'Encouraging and supportive',
-      reminderFrequency: '24 hours before session'
+  useEffect(() => {
+    if (!isAuthenticated || user?.role !== 'client') {
+      router.push('/login')
+      return
+    }
+    
+    fetchClientData()
+  }, [isAuthenticated, user])
+
+  const fetchClientData = async () => {
+    try {
+      setIsLoading(true)
+
+      // Get client profile
+      const clientRes = await clientAPI.getMyProfile()
+      setClientProfile(clientRes.data.data)
+
+      // Get assigned therapist if exists
+      if (clientRes.data.data.assignedTherapist) {
+        const therapistId = typeof clientRes.data.data.assignedTherapist === 'string' 
+          ? clientRes.data.data.assignedTherapist 
+          : clientRes.data.data.assignedTherapist._id
+
+        if (therapistId) {
+          try {
+            const therapistRes = await therapistAPI.getById(therapistId)
+            setTherapist(therapistRes.data.data.therapist)
+          } catch (error) {
+            console.log('Could not fetch therapist details')
+          }
+        }
+      }
+
+      // Get sessions for stats
+      const sessionsRes = await sessionAPI.getAll()
+      setSessions(sessionsRes.data.data.sessions || [])
+
+      // Get assignments
+      try {
+        const assignmentsRes = await assignmentAPI.getAll()
+        setAssignments(assignmentsRes.data.data || [])
+      } catch (error) {
+        console.log('Could not fetch assignments')
+      }
+
+      // Get documents
+      try {
+        const documentsRes = await clientAPI.getDocuments(clientRes.data.data._id)
+        setDocuments(documentsRes.data.data || [])
+      } catch (error) {
+        console.log('Could not fetch documents')
+      }
+
+      // Get therapy timeline
+      try {
+        const timelineRes = await clientAPI.getTherapyTimeline(clientRes.data.data._id)
+        setTimelineEvents(timelineRes.data.data.timeline || [])
+      } catch (error) {
+        console.log('Could not fetch timeline')
+      }
+
+      // Get subscription to check for Flourish tier
+      try {
+        const subscriptionRes = await subscriptionAPI.getCurrent()
+        setSubscription(subscriptionRes.data.data)
+      } catch (error) {
+        console.log('Could not fetch subscription')
+      }
+
+    } catch (error) {
+      console.error('Failed to fetch client data:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const stats = [
-    { label: 'Sessions Completed', value: '12', icon: <CheckCircle className="w-5 h-5" /> },
-    { label: 'Current Streak', value: '5 days', icon: <TrendingUp className="w-5 h-5" /> },
-    { label: 'Progress Score', value: '85%', icon: <Target className="w-5 h-5" /> },
-    { label: 'Days Active', value: '45', icon: <Calendar className="w-5 h-5" /> }
-  ]
-
-  const achievements = [
-    {
-      id: 1,
-      title: 'First Session Complete',
-      description: 'Completed your first therapy session',
-      date: '2023-08-25',
-      icon: <Award className="w-6 h-6" />,
-      color: 'bg-yellow-100 text-yellow-800'
-    },
-    {
-      id: 2,
-      title: '5 Session Streak',
-      description: 'Completed 5 sessions in a row',
-      date: '2023-12-15',
-      icon: <TrendingUp className="w-6 h-6" />,
-      color: 'bg-green-100 text-green-800'
-    },
-    {
-      id: 3,
-      title: 'Progress Master',
-      description: 'Reached 85% progress score',
-      date: '2024-01-10',
-      icon: <Target className="w-6 h-6" />,
-      color: 'bg-blue-100 text-blue-800'
+  const handleUnassignTherapist = async () => {
+    if (!confirm('Are you sure you want to change your therapist? This will remove your current therapist assignment.')) {
+      return
     }
-  ]
 
-  const recentActivity = [
-    {
-      id: 1,
-      action: 'Completed session with Dr. Smith',
-      time: '2 hours ago',
-      type: 'session'
-    },
-    {
-      id: 2,
-      action: 'Downloaded new practice materials',
-      time: '1 day ago',
-      type: 'resource'
-    },
-    {
-      id: 3,
-      action: 'Updated progress goals',
-      time: '3 days ago',
-      type: 'goal'
-    },
-    {
-      id: 4,
-      action: 'Rated last session 5 stars',
-      time: '1 week ago',
-      type: 'rating'
+    try {
+      // Call API to unassign therapist
+      await clientAPI.createOrUpdate({
+        ...clientProfile,
+        assignedTherapist: null
+      })
+      
+      setTherapist(null)
+      alert('Therapist unassigned successfully. You can now browse and select a new therapist.')
+      router.push('/meet-our-therapists')
+    } catch (error: any) {
+      alert('Failed to unassign therapist: ' + (error.response?.data?.message || 'Unknown error'))
     }
-  ]
+  }
+
+  if (isLoading || !clientProfile) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const completedSessions = sessions.filter(s => s.status === 'completed').length
+  const upcomingSessions = sessions.filter(s => s.status === 'scheduled' || s.status === 'confirmed').length
+  const userFullName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim()
+  const userInitials = `${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`.toUpperCase()
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -141,10 +195,10 @@ export default function ClientProfilePage() {
               
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">{profile.avatar}</span>
+                  <span className="text-white text-sm font-semibold">{userInitials}</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-black">{profile.name}</p>
+                  <p className="text-sm font-medium text-black">{userFullName}</p>
                   <p className="text-xs text-gray-600">Client</p>
                 </div>
               </div>
@@ -173,7 +227,7 @@ export default function ClientProfilePage() {
             {/* Avatar */}
             <div className="relative">
               <div className="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-bold text-white">{profile.avatar}</span>
+                <span className="text-2xl font-bold text-white">{userInitials}</span>
               </div>
               {isEditing && (
                 <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors">
@@ -186,46 +240,82 @@ export default function ClientProfilePage() {
             <div className="flex-1">
               <div className="flex items-start justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-black mb-2">{profile.name}</h1>
+                  <h1 className="text-3xl font-bold text-black mb-2">{userFullName}</h1>
                   <p className="text-lg text-gray-600 mb-4">Speech Therapy Client</p>
                   
                   <div className="flex items-center space-x-6 text-sm text-gray-600 mb-4">
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4" />
-                      <span>{profile.email}</span>
+                      <span>{user?.email || 'N/A'}</span>
                     </div>
+                    {clientProfile.userId?.phone && (
+                      <div className="flex items-center space-x-2">
+                        <Phone className="w-4 h-4" />
+                        <span>{clientProfile.userId.phone}</span>
+                      </div>
+                    )}
                     <div className="flex items-center space-x-2">
-                      <Phone className="w-4 h-4" />
-                      <span>{profile.phone}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="w-4 h-4" />
-                      <span>{profile.location}</span>
+                      <Calendar className="w-4 h-4" />
+                      <span>Joined {new Date(clientProfile.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
 
-                  <p className="text-gray-700 mb-4">{profile.bio}</p>
+                  {/* Assigned Therapist Section */}
+                  {therapist ? (
+                    <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-green-800 mb-1">Your Therapist</p>
+                          <p className="font-semibold text-green-900">
+                            Dr. {therapist.userId?.firstName} {therapist.userId?.lastName}
+                          </p>
+                          <p className="text-xs text-green-700">{therapist.userId?.email}</p>
+                        </div>
+                        <button
+                          onClick={handleUnassignTherapist}
+                          className="text-green-700 hover:text-green-900 flex items-center space-x-1 text-sm"
+                        >
+                          <UserX className="w-4 h-4" />
+                          <span>Change Therapist</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-sm text-yellow-800 mb-2">No therapist assigned</p>
+                      <Link 
+                        href="/meet-our-therapists"
+                        className="text-yellow-900 font-semibold underline hover:text-yellow-700"
+                      >
+                        Browse and select a therapist
+                      </Link>
+                    </div>
+                  )}
 
                   {/* Stats */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {stats.map((stat, index) => (
-                      <div key={index} className="text-center">
-                        <div className="flex items-center justify-center space-x-2 mb-1">
-                          {stat.icon}
-                          <span className="text-2xl font-bold text-black">{stat.value}</span>
-                        </div>
-                        <p className="text-sm text-gray-600">{stat.label}</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-1">
+                        <CheckCircle className="w-5 h-5" />
+                        <span className="text-2xl font-bold text-black">{completedSessions}</span>
                       </div>
-                    ))}
+                      <p className="text-sm text-gray-600">Completed Sessions</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-1">
+                        <Calendar className="w-5 h-5" />
+                        <span className="text-2xl font-bold text-black">{upcomingSessions}</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Upcoming Sessions</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-1">
+                        <Target className="w-5 h-5" />
+                        <span className="text-2xl font-bold text-black">{sessions.length}</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Total Sessions</p>
+                    </div>
                   </div>
-                </div>
-
-                <div className="text-right">
-                  <div className="flex items-center space-x-1 mb-2">
-                    <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                    <span className="text-lg font-semibold">4.9</span>
-                  </div>
-                  <p className="text-sm text-gray-600">Member since {profile.joinDate}</p>
                 </div>
               </div>
             </div>
@@ -240,8 +330,10 @@ export default function ClientProfilePage() {
               <nav className="flex space-x-8">
                 {[
                   { id: 'personal', label: 'Personal Info', icon: <User className="w-5 h-5" /> },
-                  { id: 'goals', label: 'Goals & Progress', icon: <Target className="w-5 h-5" /> },
+                  { id: 'sessions', label: 'My Sessions', icon: <Calendar className="w-5 h-5" /> },
                   { id: 'documents', label: 'Documents', icon: <FileText className="w-5 h-5" /> },
+                  { id: 'assignments', label: 'Assignments', icon: <FileText className="w-5 h-5" /> },
+                  ...(subscription?.tier === 'flourish' ? [{ id: 'family-coaching', label: 'Family Coaching', icon: <Heart className="w-5 h-5" /> }] : []),
                   { id: 'preferences', label: 'Preferences', icon: <Settings className="w-5 h-5" /> }
                 ].map((tab) => (
                   <button
@@ -272,10 +364,20 @@ export default function ClientProfilePage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                     <input 
                       type="text" 
-                      defaultValue={profile.name}
+                      defaultValue={user?.firstName || ''}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                    <input 
+                      type="text" 
+                      defaultValue={user?.lastName || ''}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
@@ -285,7 +387,7 @@ export default function ClientProfilePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                     <input 
                       type="email" 
-                      defaultValue={profile.email}
+                      defaultValue={user?.email || ''}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
@@ -295,17 +397,7 @@ export default function ClientProfilePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                     <input 
                       type="tel" 
-                      defaultValue={profile.phone}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                    <input 
-                      type="text" 
-                      defaultValue={profile.location}
+                      defaultValue={clientProfile.userId?.phone || ''}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
@@ -315,308 +407,284 @@ export default function ClientProfilePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
                     <input 
                       type="date" 
-                      defaultValue={profile.dateOfBirth}
+                      defaultValue={clientProfile.dateOfBirth ? new Date(clientProfile.dateOfBirth).toISOString().split('T')[0] : ''}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Name</label>
+                    <input 
+                      type="text" 
+                      defaultValue={clientProfile.guardianName || 'N/A'}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
                 </div>
-                
-                <div className="mt-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
-                  <textarea 
-                    rows={4}
-                    defaultValue={profile.bio}
-                    disabled={!isEditing}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
-                  />
-                </div>
               </motion.div>
             )}
 
-            {activeTab === 'goals' && (
+            {activeTab === 'sessions' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="space-y-6"
+                className="bg-white rounded-2xl premium-shadow p-6"
               >
-                {/* Current Goals */}
-                <div className="bg-white rounded-2xl premium-shadow p-6">
-                  <h2 className="text-xl font-bold text-black mb-4">Current Goals</h2>
-                  <div className="space-y-4">
-                    {profile.goals.map((goal, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg">
-                        <Target className="w-5 h-5 text-blue-600" />
-                        <span className="text-black">{goal}</span>
-                        {isEditing && (
-                          <button className="ml-auto p-1 text-gray-400 hover:text-red-600 transition-colors">
-                            <X className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    {isEditing && (
-                      <button className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:text-black hover:border-black transition-colors">
-                        + Add New Goal
-                      </button>
-                    )}
+                <h2 className="text-xl font-bold text-black mb-6">My Sessions</h2>
+                
+                {sessions.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No sessions found</p>
+                    <Link href="/meet-our-therapists" className="text-blue-600 hover:underline mt-2 block">
+                      Book your first session
+                    </Link>
                   </div>
-                </div>
-
-                {/* Homework & Practice Assignments */}
-                <div className="bg-white rounded-2xl premium-shadow p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-black">Homework & Practice</h2>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                      3 active assignments
-                    </span>
-                  </div>
+                ) : (
                   <div className="space-y-4">
-                    {[
-                      {
-                        title: '/r/ Sound Practice - Initial Position',
-                        description: 'Practice /r/ sounds at the beginning of words. Complete 10 minutes daily.',
-                        dueDate: 'Due: Tomorrow',
-                        completed: false,
-                        type: 'Daily Practice'
-                      },
-                      {
-                        title: 'Breathing Exercises Video',
-                        description: 'Watch and practice the breathing techniques demonstrated in the video.',
-                        dueDate: 'Due: In 2 days',
-                        completed: false,
-                        type: 'Video Exercise'
-                      },
-                      {
-                        title: 'Communication Journal',
-                        description: 'Record situations where you successfully used your new techniques.',
-                        dueDate: 'Due: End of week',
-                        completed: true,
-                        type: 'Reflection'
-                      }
-                    ].map((assignment, index) => (
-                      <div key={index} className={`p-4 border rounded-lg ${
-                        assignment.completed ? 'bg-green-50 border-green-200' : 'border-gray-200'
-                      }`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-start space-x-3 flex-1">
-                            <input
-                              type="checkbox"
-                              checked={assignment.completed}
-                              className="mt-1 h-5 w-5 text-green-600 focus:ring-black border-gray-300 rounded"
-                              readOnly
-                            />
-                            <div className="flex-1">
-                              <h4 className={`font-semibold mb-1 ${
-                                assignment.completed ? 'text-green-800 line-through' : 'text-black'
-                              }`}>
-                                {assignment.title}
-                              </h4>
-                              <p className="text-sm text-gray-600 mb-2">{assignment.description}</p>
-                              <div className="flex items-center space-x-3 text-xs">
-                                <span className={`px-2 py-1 rounded-full ${
-                                  assignment.completed 
-                                    ? 'bg-green-100 text-green-700' 
-                                    : 'bg-gray-100 text-gray-600'
-                                }`}>
-                                  {assignment.type}
-                                </span>
-                                <span className={assignment.completed ? 'text-green-600' : 'text-orange-600'}>
-                                  {assignment.dueDate}
-                                </span>
-                              </div>
-                            </div>
+                    {sessions.map((session) => (
+                      <div key={session._id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-semibold text-black capitalize">{session.sessionType} Session</h4>
+                            <p className="text-sm text-gray-600">
+                              {new Date(session.scheduledDate).toLocaleDateString()} at {session.scheduledTime}
+                            </p>
+                            <p className="text-sm text-gray-600">Duration: {session.duration} minutes</p>
+                          </div>
+                          <div className="text-right">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              session.status === 'completed' ? 'bg-green-100 text-green-800' :
+                              session.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                              session.status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {session.status}
+                            </span>
+                            {(session.status === 'confirmed' || session.status === 'scheduled') && (
+                              <Link 
+                                href={`/video-call?session=${session._id}`}
+                                className="mt-2 block text-blue-600 hover:underline text-sm"
+                              >
+                                Join Session
+                              </Link>
+                            )}
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* Achievements */}
-                <div className="bg-white rounded-2xl premium-shadow p-6">
-                  <h2 className="text-xl font-bold text-black mb-4">Achievements</h2>
-                  <div className="space-y-4">
-                    {achievements.map((achievement) => (
-                      <div key={achievement.id} className="flex items-start space-x-4 p-4 border border-gray-200 rounded-lg">
-                        <div className={`p-2 rounded-full ${achievement.color}`}>
-                          {achievement.icon}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-black">{achievement.title}</h3>
-                          <p className="text-sm text-gray-600">{achievement.description}</p>
-                          <p className="text-xs text-gray-500 mt-1">Earned on {achievement.date}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                )}
               </motion.div>
             )}
 
             {activeTab === 'documents' && (
+              <DocumentsTab
+                clientProfile={clientProfile}
+                documents={documents}
+                timelineEvents={timelineEvents}
+                onUploadClick={() => setShowUploadModal(true)}
+                onRefresh={fetchClientData}
+              />
+            )}
+
+            {activeTab === 'assignments' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 className="space-y-6"
               >
-                {/* Document Upload Section */}
                 <div className="bg-white rounded-2xl premium-shadow p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-black">📄 Therapy Documents</h2>
-                    <button className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 flex items-center space-x-2">
-                      <Upload className="w-4 h-4" />
-                      <span>Upload Document</span>
-                    </button>
-                  </div>
-                  <p className="text-gray-600 mb-6">
-                    Upload previous therapy records including IEPs, IFSPs, hospital summaries, 
-                    and evaluations to help your therapist understand your complete therapy history.
-                  </p>
+                  <h2 className="text-xl font-bold text-black mb-6">My Assignments</h2>
                   
-                  {/* Supported Document Types */}
-                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-3">📋 Supported Documents:</h3>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      <ul className="space-y-2 text-sm text-gray-600">
-                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />IEPs (Education Program)</li>
-                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />IFSPs (Family Service Plan)</li>
-                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Hospital discharge summaries</li>
-                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Previous SLP evaluations</li>
-                      </ul>
-                      <ul className="space-y-2 text-sm text-gray-600">
-                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Medical reports & referrals</li>
-                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />School assessments</li>
-                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Therapy session notes</li>
-                        <li className="flex items-center"><CheckCircle className="w-4 h-4 text-green-500 mr-2" />Progress reports</li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Upload Area */}
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">Drag & drop files here or click to upload</p>
-                    <p className="text-xs text-gray-500">PDF, DOC, DOCX files up to 10MB each</p>
-                  </div>
-                </div>
-
-                {/* Existing Documents */}
-                <div className="bg-white rounded-2xl premium-shadow p-6">
-                  <h3 className="text-lg font-bold text-black mb-4">📚 Uploaded Documents</h3>
-                  
-                  <div className="space-y-3">
-                    {[
-                      {
-                        name: 'Elementary School IEP - 2023',
-                        type: 'Educational Program',
-                        uploadDate: '2 weeks ago',
-                        status: 'processed',
-                        description: 'Speech therapy goals and accommodations'
-                      },
-                      {
-                        name: 'Speech Evaluation - Dr. Smith',
-                        type: 'SLP Assessment',
-                        uploadDate: '1 month ago',
-                        status: 'processed',
-                        description: 'Comprehensive speech-language evaluation'
-                      },
-                      {
-                        name: 'Hospital Speech Therapy Notes',
-                        type: 'Medical Records',
-                        uploadDate: '2 months ago',
-                        status: 'processing',
-                        description: 'Post-stroke rehabilitation notes'
-                      }
-                    ].map((doc, index) => (
-                      <div key={index} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start space-x-3">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <FileText className="w-5 h-5 text-blue-600" />
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-gray-900">{doc.name}</h4>
-                              <p className="text-sm text-gray-600">{doc.description}</p>
-                              <div className="flex items-center space-x-4 mt-1">
-                                <span className="text-xs text-gray-500">{doc.type}</span>
-                                <span className="text-xs text-gray-500">•</span>
-                                <span className="text-xs text-gray-500">{doc.uploadDate}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              doc.status === 'processed' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {doc.status === 'processed' ? 'Ready' : 'Processing'}
-                            </span>
-                            <button className="text-gray-400 hover:text-gray-600">
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {[
-                      {
-                        name: 'Elementary School IEP - 2023',
-                        type: 'Educational Program',
-                        uploadDate: '2 weeks ago',
-                        status: 'processed',
-                        description: 'Speech therapy goals and accommodations'
-                      },
-                      {
-                        name: 'Speech Evaluation - Dr. Smith',
-                        type: 'SLP Assessment',
-                        uploadDate: '1 month ago',
-                        status: 'processed',
-                        description: 'Comprehensive speech-language evaluation'
-                      },
-                      {
-                        name: 'Hospital Speech Therapy Notes',
-                        type: 'Medical Records',
-                        uploadDate: '2 months ago',
-                        status: 'processing',
-                        description: 'Post-stroke rehabilitation notes'
-                      }
-                    ].length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
+                  {assignments.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500">
                       <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>No documents uploaded yet</p>
-                      <p className="text-sm">Upload your therapy history to get started</p>
+                      <p>No assignments yet</p>
+                      <p className="text-sm mt-2">Your therapist will assign homework here</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {assignments.map((assignment) => {
+                        const isOverdue = !assignment.completed && new Date(assignment.dueDate) < new Date();
+                        const dueDate = new Date(assignment.dueDate);
+                        
+                        return (
+                          <div
+                            key={assignment._id}
+                            className={`border rounded-lg p-4 ${
+                              assignment.completed
+                                ? 'border-green-200 bg-green-50'
+                                : isOverdue
+                                ? 'border-red-200 bg-red-50'
+                                : 'border-gray-200 bg-white'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-2">
+                                  {assignment.completed ? (
+                                    <CheckCircle className="w-5 h-5 text-green-600" />
+                                  ) : (
+                                    <Clock className={`w-5 h-5 ${isOverdue ? 'text-red-600' : 'text-gray-400'}`} />
+                                  )}
+                                  <h4 className="font-semibold text-black">{assignment.title}</h4>
+                                  {assignment.type && (
+                                    <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs capitalize">
+                                      {assignment.type.replace('-', ' ')}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">{assignment.description}</p>
+                                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
+                                  <span>Due: {dueDate.toLocaleDateString()} {dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                  {assignment.completed && assignment.completedAt && (
+                                    <span className="text-green-600">
+                                      Completed: {new Date(assignment.completedAt).toLocaleDateString()}
+                                    </span>
+                                  )}
+                                  {isOverdue && (
+                                    <span className="text-red-600 font-medium">Overdue</span>
+                                  )}
+                                </div>
+                                {assignment.instructions && (
+                                  <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700 mb-2">
+                                    <strong>Instructions:</strong> {assignment.instructions}
+                                  </div>
+                                )}
+                                {assignment.attachments && assignment.attachments.length > 0 && (
+                                  <div className="mb-2">
+                                    <p className="text-sm font-medium text-gray-700 mb-1">Attachments:</p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {assignment.attachments.map((attachment: any, index: number) => (
+                                        <a
+                                          key={index}
+                                          href={attachment.fileUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center space-x-1 px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs hover:bg-blue-100 transition-colors"
+                                        >
+                                          <FileText className="w-3 h-3" />
+                                          <span>{attachment.fileName}</span>
+                                        </a>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {assignment.feedback && (
+                                  <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                                    <strong className="text-blue-900">Therapist Feedback:</strong>
+                                    <p className="text-blue-800 mt-1">{assignment.feedback}</p>
+                                    {assignment.rating && (
+                                      <div className="mt-1 flex items-center space-x-1">
+                                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                                        <span className="text-blue-900">{assignment.rating}/5</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                              {!assignment.completed && (
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await assignmentAPI.update(assignment._id, { completed: true });
+                                      await fetchClientData();
+                                    } catch (error: any) {
+                                      alert('Failed to mark as complete: ' + (error.response?.data?.message || 'Unknown error'));
+                                    }
+                                  }}
+                                  className="ml-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                                >
+                                  Mark Complete
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
 
-                {/* AI Analysis Benefits */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">🤖 AI Document Analysis</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">For You:</h4>
-                      <ul className="space-y-1 text-sm text-gray-600">
-                        <li>• OCR conversion for scanned documents</li>
-                        <li>• Automatic key point extraction</li>
-                        <li>• Privacy-compliant secure storage</li>
-                      </ul>
+                {/* Assignment Tracking Visualization */}
+                <AssignmentTracking clientId={clientProfile._id} />
+              </motion.div>
+            )}
+
+            {activeTab === 'family-coaching' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="space-y-6"
+              >
+                {subscription?.tier === 'flourish' ? (
+                  <>
+                    <div className="bg-white rounded-2xl premium-shadow p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h2 className="text-xl font-bold text-black">Family Coaching Sessions</h2>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Schedule and manage family coaching sessions (Flourish Tier Feature)
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setShowCoachingScheduler(true)}
+                          className="flex items-center space-x-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                        >
+                          <Calendar className="w-4 h-4" />
+                          <span>Schedule Session</span>
+                        </button>
+                      </div>
+                      
+                      <FamilyCoachingList clientId={clientProfile._id} />
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">For Your Therapist:</h4>
-                      <ul className="space-y-1 text-sm text-gray-600">
-                        <li>• Complete therapy history summary</li>
-                        <li>• Faster treatment plan development</li>
-                        <li>• Continuity of care understanding</li>
-                      </ul>
+
+                    {showCoachingScheduler && (
+                      <div className="bg-white rounded-2xl premium-shadow p-6 mt-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <h3 className="text-lg font-bold text-black">Schedule New Family Coaching Session</h3>
+                          <button
+                            onClick={() => setShowCoachingScheduler(false)}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                        <FamilyCoachingScheduler
+                          clientId={clientProfile._id}
+                          onCancel={() => setShowCoachingScheduler(false)}
+                          onSuccess={() => {
+                            setShowCoachingScheduler(false)
+                            fetchClientData()
+                          }}
+                        />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="bg-white rounded-2xl premium-shadow p-6">
+                    <div className="text-center py-12">
+                      <Heart className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+                      <h2 className="text-2xl font-bold text-black mb-2">Family Coaching</h2>
+                      <p className="text-gray-600 mb-6">
+                        Family coaching sessions are available with the <strong>Flourish Tier</strong> subscription.
+                      </p>
+                      <Link
+                        href="/pricing"
+                        className="inline-flex items-center space-x-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                      >
+                        <Award className="w-5 h-5" />
+                        <span>Upgrade to Flourish Tier</span>
+                      </Link>
                     </div>
                   </div>
-                </div>
+                )}
               </motion.div>
             )}
 
@@ -625,61 +693,43 @@ export default function ClientProfilePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="bg-white rounded-2xl premium-shadow p-6"
+                className="space-y-6"
               >
-                <h2 className="text-xl font-bold text-black mb-6">Session Preferences</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Session Time</label>
-                    <select 
-                      defaultValue={profile.preferences.sessionTime}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
-                    >
-                      <option>Morning (9 AM - 12 PM)</option>
-                      <option>Afternoon (12 PM - 5 PM)</option>
-                      <option>Evening (5 PM - 8 PM)</option>
-                    </select>
-                  </div>
+                {/* Reminder Preferences */}
+                <ReminderPreferences
+                  clientId={clientProfile._id}
+                  currentPreferences={clientProfile.preferences?.sessionReminders}
+                  onUpdate={fetchClientData}
+                />
+
+                {/* Session Preferences */}
+                <div className="bg-white rounded-2xl premium-shadow p-6">
+                  <h2 className="text-xl font-bold text-black mb-6">Session Preferences</h2>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Session Length</label>
-                    <select 
-                      defaultValue={profile.preferences.sessionLength}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
-                    >
-                      <option>30 minutes</option>
-                      <option>45 minutes</option>
-                      <option>60 minutes</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Communication Style</label>
-                    <select 
-                      defaultValue={profile.preferences.communicationStyle}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
-                    >
-                      <option>Encouraging and supportive</option>
-                      <option>Direct and focused</option>
-                      <option>Gentle and patient</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Reminder Frequency</label>
-                    <select 
-                      defaultValue={profile.preferences.reminderFrequency}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
-                    >
-                      <option>24 hours before session</option>
-                      <option>2 hours before session</option>
-                      <option>30 minutes before session</option>
-                    </select>
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Session Time</label>
+                      <select 
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
+                      >
+                        <option>Morning (9 AM - 12 PM)</option>
+                        <option>Afternoon (12 PM - 5 PM)</option>
+                        <option>Evening (5 PM - 8 PM)</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Session Length</label>
+                      <select 
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
+                      >
+                        <option>30 minutes</option>
+                        <option>45 minutes</option>
+                        <option>60 minutes</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -688,27 +738,6 @@ export default function ClientProfilePage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Recent Activity */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-white rounded-2xl premium-shadow p-6"
-            >
-              <h3 className="text-lg font-bold text-black mb-4">Recent Activity</h3>
-              <div className="space-y-3">
-                {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="text-sm text-black">{activity.action}</p>
-                      <p className="text-xs text-gray-500">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
             {/* Quick Actions */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -724,29 +753,37 @@ export default function ClientProfilePage() {
                   </div>
                   <span className="text-sm font-medium text-black">Dashboard</span>
                 </Link>
-                <Link href="/sessions" className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <Link href="/meet-our-therapists" className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                     <Calendar className="w-4 h-4 text-green-600" />
                   </div>
                   <span className="text-sm font-medium text-black">Book Session</span>
                 </Link>
-                <Link href="/resources" className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <Link href="/pricing" className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                     <Award className="w-4 h-4 text-purple-600" />
                   </div>
-                  <span className="text-sm font-medium text-black">View Resources</span>
+                  <span className="text-sm font-medium text-black">View Pricing</span>
                 </Link>
-                <button className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                    <MessageCircle className="w-4 h-4 text-orange-600" />
-                  </div>
-                  <span className="text-sm font-medium text-black">Contact Support</span>
-                </button>
               </div>
             </motion.div>
           </div>
         </div>
       </div>
+
+      {/* Document Upload Modal */}
+      {showUploadModal && clientProfile && (
+        <DocumentUpload
+          clientId={clientProfile._id}
+          onUploadSuccess={() => {
+            // Refresh documents
+            clientAPI.getDocuments(clientProfile._id)
+              .then((res) => setDocuments(res.data.data || []))
+              .catch(console.error)
+          }}
+          onClose={() => setShowUploadModal(false)}
+        />
+      )}
     </div>
   )
 }

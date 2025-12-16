@@ -1,7 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+import { forumAPI } from '@/lib/api'
 import { 
   Users, 
   MessageCircle, 
@@ -23,71 +26,91 @@ import {
 import Link from 'next/link'
 
 export default function CommunityPage() {
+  const { user, isAuthenticated } = useAuth()
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('discussions')
+  const [posts, setPosts] = useState<any[]>([])
+  const [selectedPost, setSelectedPost] = useState<any>(null)
+  const [replies, setReplies] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [newPost, setNewPost] = useState({ title: '', content: '', category: 'general', tags: [] })
 
   const categories = [
-    { id: 'all', name: 'All Discussions', count: 234 },
-    { id: 'early-intervention', name: 'Early Intervention', count: 45 },
-    { id: 'school-age', name: 'School-Age Therapy', count: 78 },
-    { id: 'adult-neuro', name: 'Adult Neurogenic', count: 32 },
-    { id: 'resources', name: 'Resource Sharing', count: 56 },
-    { id: 'billing', name: 'Practice Management', count: 23 }
+    { id: 'all', name: 'All Discussions' },
+    { id: 'general', name: 'General' },
+    { id: 'case-studies', name: 'Case Studies' },
+    { id: 'resources', name: 'Resource Sharing' },
+    { id: 'questions', name: 'Questions' },
+    { id: 'tips', name: 'Tips & Tricks' },
+    { id: 'announcements', name: 'Announcements' },
+    { id: 'other', name: 'Other' }
   ]
 
-  const discussions = [
-    {
-      id: 1,
-      title: 'Best strategies for /r/ sound generalization in conversational speech?',
-      author: 'Dr. Sarah Chen',
-      authorRole: 'SLP - 8 years experience',
-      category: 'School-Age Therapy',
-      replies: 24,
-      views: 342,
-      likes: 45,
-      isPinned: true,
-      lastActivity: '2 hours ago',
-      excerpt: 'I\'ve been working with a 7-year-old who has mastered /r/ in structured activities but struggles in conversation...'
-    },
-    {
-      id: 2,
-      title: 'AAC assessment tools for minimally verbal children - recommendations?',
-      author: 'Michael Rodriguez',
-      authorRole: 'SLP - 6 years experience',
-      category: 'Early Intervention',
-      replies: 18,
-      views: 256,
-      likes: 32,
-      isPinned: false,
-      lastActivity: '4 hours ago',
-      excerpt: 'Looking for evidence-based AAC assessment tools suitable for children ages 3-5...'
-    },
-    {
-      id: 3,
-      title: 'Teletherapy engagement strategies for reluctant clients',
-      author: 'Emily Thompson',
-      authorRole: 'SLP - 5 years experience',
-      category: 'Resource Sharing',
-      replies: 31,
-      views: 478,
-      likes: 67,
-      isPinned: false,
-      lastActivity: '1 day ago',
-      excerpt: 'What are your go-to activities and techniques for keeping clients engaged during teletherapy sessions?'
-    },
-    {
-      id: 4,
-      title: 'Insurance reimbursement for AAC evaluations - tips?',
-      author: 'Dr. Jennifer Kim',
-      authorRole: 'SLP - 12 years experience',
-      category: 'Practice Management',
-      replies: 42,
-      views: 589,
-      likes: 78,
-      isPinned: true,
-      lastActivity: '2 days ago',
-      excerpt: 'Looking for advice on documentation and coding for AAC evaluations to ensure insurance approval...'
+  useEffect(() => {
+    fetchPosts()
+  }, [selectedCategory, searchQuery])
+
+  const fetchPosts = async () => {
+    try {
+      setIsLoading(true)
+      const params: any = {}
+      if (selectedCategory !== 'all') params.category = selectedCategory
+      if (searchQuery) params.search = searchQuery
+      
+      const response = await forumAPI.getPosts(params)
+      setPosts(response.data.data || [])
+    } catch (error) {
+      console.error('Failed to fetch posts:', error)
+    } finally {
+      setIsLoading(false)
     }
-  ]
+  }
+
+  const handlePostClick = async (post: any) => {
+    try {
+      const response = await forumAPI.getPost(post._id)
+      setSelectedPost(response.data.data.post)
+      setReplies(response.data.data.replies || [])
+    } catch (error) {
+      console.error('Failed to fetch post:', error)
+    }
+  }
+
+  const handleCreatePost = async () => {
+    if (!isAuthenticated) {
+      router.push('/login')
+      return
+    }
+
+    try {
+      await forumAPI.createPost(newPost)
+      setShowCreateModal(false)
+      setNewPost({ title: '', content: '', category: 'general', tags: [] })
+      fetchPosts()
+    } catch (error: any) {
+      alert('Failed to create post: ' + (error.response?.data?.message || 'Unknown error'))
+    }
+  }
+
+  const handleLikePost = async (postId: string) => {
+    if (!isAuthenticated) {
+      router.push('/login')
+      return
+    }
+
+    try {
+      await forumAPI.likePost(postId)
+      fetchPosts()
+      if (selectedPost && selectedPost._id === postId) {
+        handlePostClick(selectedPost)
+      }
+    } catch (error) {
+      console.error('Failed to like post:', error)
+    }
+  }
 
   const resources = [
     {
@@ -153,10 +176,23 @@ export default function CommunityPage() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2">
-                <Plus className="w-4 h-4" />
-                <span>New Discussion</span>
-              </button>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>New Discussion</span>
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Login to Post</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -198,6 +234,8 @@ export default function CommunityPage() {
                   <input
                     type="text"
                     placeholder="Search discussions..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
@@ -210,12 +248,14 @@ export default function CommunityPage() {
                   {categories.map((category) => (
                     <button
                       key={category.id}
-                      className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+                        selectedCategory === category.id
+                          ? 'bg-black text-white'
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
                     >
                       <span className="text-sm">{category.name}</span>
-                      <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
-                        {category.count}
-                      </span>
                     </button>
                   ))}
                 </div>
@@ -227,62 +267,104 @@ export default function CommunityPage() {
           <div className="lg:col-span-3">
             {activeTab === 'discussions' && (
               <div className="space-y-4">
-                {discussions.map((discussion, index) => (
-                  <motion.div
-                    key={discussion.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="bg-white rounded-2xl premium-shadow p-6 hover:shadow-xl transition-shadow"
-                  >
-                    <div className="flex items-start space-x-4">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Users className="w-5 h-5 text-blue-600" />
-                      </div>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
+                {isLoading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto"></div>
+                    <p className="text-gray-600 mt-4">Loading discussions...</p>
+                  </div>
+                ) : posts.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No discussions found</p>
+                    {isAuthenticated && (
+                      <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="mt-4 text-blue-600 hover:underline"
+                      >
+                        Start a discussion
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  posts.map((post, index) => {
+                    const authorName = post.authorId?.firstName && post.authorId?.lastName
+                      ? `${post.authorId.firstName} ${post.authorId.lastName}`
+                      : 'Anonymous'
+                    const timeAgo = post.lastActivityAt
+                      ? new Date(post.lastActivityAt) > new Date(Date.now() - 86400000)
+                        ? `${Math.floor((Date.now() - new Date(post.lastActivityAt).getTime()) / 3600000)} hours ago`
+                        : new Date(post.lastActivityAt).toLocaleDateString()
+                      : 'Recently'
+
+                    return (
+                      <motion.div
+                        key={post._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                        className="bg-white rounded-2xl premium-shadow p-6 hover:shadow-xl transition-shadow cursor-pointer"
+                        onClick={() => handlePostClick(post)}
+                      >
+                        <div className="flex items-start space-x-4">
+                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Users className="w-5 h-5 text-blue-600" />
+                          </div>
+                          
                           <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-2">
-                              {discussion.isPinned && (
-                                <Pin className="w-4 h-4 text-orange-500" />
-                              )}
-                              <h3 className="text-lg font-semibold text-black hover:text-gray-600 cursor-pointer">
-                                {discussion.title}
-                              </h3>
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-2">
+                                  {post.isPinned && (
+                                    <Pin className="w-4 h-4 text-orange-500" />
+                                  )}
+                                  <h3 className="text-lg font-semibold text-black hover:text-gray-600">
+                                    {post.title}
+                                  </h3>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                  {post.content.substring(0, 150)}...
+                                </p>
+                                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                  <span className="font-medium text-black">{authorName}</span>
+                                  <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs capitalize">
+                                    {post.category}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                            <p className="text-sm text-gray-600 mb-3">{discussion.excerpt}</p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-500">
-                              <span className="font-medium text-black">{discussion.author}</span>
-                              <span>{discussion.authorRole}</span>
-                              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
-                                {discussion.category}
-                              </span>
+                            
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                              <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleLikePost(post._id)
+                                  }}
+                                  className="flex items-center space-x-1 hover:text-red-600 transition-colors"
+                                >
+                                  <Heart className={`w-4 h-4 ${post.likes?.some((likeId: any) => {
+                                    const userId = (user as any)?._id || (user as any)?.id;
+                                    return likeId?.toString() === userId?.toString();
+                                  }) ? 'fill-current text-red-600' : ''}`} />
+                                  <span>{post.likes?.length || 0} likes</span>
+                                </button>
+                                <div className="flex items-center space-x-1">
+                                  <Reply className="w-4 h-4" />
+                                  <span>{post.replyCount || 0} replies</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <Eye className="w-4 h-4" />
+                                  <span>{post.viewCount || 0} views</span>
+                                </div>
+                              </div>
+                              <span className="text-sm text-gray-500">{timeAgo}</span>
                             </div>
                           </div>
                         </div>
-                        
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <div className="flex items-center space-x-1">
-                              <Reply className="w-4 h-4" />
-                              <span>{discussion.replies} replies</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Eye className="w-4 h-4" />
-                              <span>{discussion.views} views</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Heart className="w-4 h-4" />
-                              <span>{discussion.likes} likes</span>
-                            </div>
-                          </div>
-                          <span className="text-sm text-gray-500">{discussion.lastActivity}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+                      </motion.div>
+                    )
+                  })
+                )}
               </div>
             )}
 
@@ -359,6 +441,71 @@ export default function CommunityPage() {
           </div>
         </div>
       </div>
+
+      {/* Create Post Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            <h2 className="text-2xl font-bold text-black mb-4">Create New Discussion</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input
+                  type="text"
+                  value={newPost.title}
+                  onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  placeholder="Enter discussion title..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <select
+                  value={newPost.category}
+                  onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                >
+                  {categories.filter(c => c.id !== 'all').map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                <textarea
+                  value={newPost.content}
+                  onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                  rows={6}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  placeholder="Write your discussion content..."
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false)
+                    setNewPost({ title: '', content: '', category: 'general', tags: [] })
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreatePost}
+                  disabled={!newPost.title || !newPost.content}
+                  className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Create Post
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }

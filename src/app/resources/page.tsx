@@ -28,13 +28,30 @@ import {
   Bookmark
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { resourceAPI, translationAPI, therapistAPI } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
+import CredentialsBadge from '@/components/CredentialsBadge'
+import AccessLevelBadge from '@/components/AccessLevelBadge'
+import SLPAWarning from '@/components/SLPAWarning'
 
 export default function ResourcesPage() {
+  const { user, isAuthenticated } = useAuth()
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showUploadModal, setShowUploadModal] = useState(false)
+  const [resources, setResources] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [isAISearch, setIsAISearch] = useState(false)
+  const [therapistCredentials, setTherapistCredentials] = useState<'SLP' | 'SLPA' | null>(null)
+  const [uploadFormData, setUploadFormData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    accessLevel: 'public',
+    tags: '',
+  })
 
   // Dummy data
   const categories = [
@@ -46,7 +63,105 @@ export default function ResourcesPage() {
     { id: 'audio', name: 'Audio Files', count: 3 }
   ]
 
-  const resources = [
+  // Fetch therapist credentials if user is a therapist
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'therapist') {
+      fetchTherapistCredentials()
+    }
+  }, [isAuthenticated, user])
+
+  // Fetch resources when search query changes
+  useEffect(() => {
+    fetchResources()
+  }, [selectedCategory])
+
+  const fetchTherapistCredentials = async () => {
+    try {
+      const response = await therapistAPI.getMyProfile()
+      setTherapistCredentials(response.data.data?.credentials || null)
+    } catch (error) {
+      console.error('Failed to fetch therapist credentials:', error)
+    }
+  }
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim().length > 2) {
+        handleAISearch()
+      } else if (searchQuery.trim().length === 0) {
+        fetchResources()
+      }
+    }, 500) // Debounce search
+
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery])
+
+  const fetchResources = async () => {
+    try {
+      setIsLoading(true)
+      const params: any = {}
+      if (selectedCategory !== 'all') {
+        params.category = selectedCategory
+      }
+      const response = await resourceAPI.getAll(params)
+      setResources(response.data.data || [])
+      setIsAISearch(false)
+    } catch (error) {
+      console.error('Failed to fetch resources:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleAISearch = async () => {
+    if (searchQuery.trim().length === 0) {
+      fetchResources()
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      setIsAISearch(true)
+      
+      // Detect language of search query for multilingual support
+      let detectedLanguage = 'en'
+      try {
+        const langResponse = await translationAPI.detectLanguage(searchQuery)
+        detectedLanguage = langResponse.data.data.language
+      } catch (error) {
+        console.error('Language detection failed:', error)
+      }
+
+      // Translate search query to English if needed for backend processing
+      let searchQueryToUse = searchQuery
+      if (detectedLanguage !== 'en') {
+        try {
+          const translateResponse = await translationAPI.translateText(
+            searchQuery,
+            detectedLanguage,
+            'en'
+          )
+          searchQueryToUse = translateResponse.data.data.translated
+        } catch (error) {
+          console.error('Translation failed, using original query:', error)
+        }
+      }
+
+      const response = await resourceAPI.aiSearch(searchQueryToUse, {
+        page: 1,
+        limit: 50,
+      })
+      setResources(response.data.data || [])
+    } catch (error) {
+      console.error('AI search failed:', error)
+      // Fallback to regular search
+      fetchResources()
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const dummyResources = [
     {
       id: 1,
       title: 'Articulation Exercises for /r/ Sounds',
@@ -166,11 +281,19 @@ export default function ResourcesPage() {
     }
   }
 
-  const filteredResources = resources.filter(resource => {
-    const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         resource.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         resource.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    const matchesCategory = selectedCategory === 'all' || resource.type === selectedCategory
+  // Use API resources if available, otherwise use dummy data
+  const displayResources = resources.length > 0 ? resources : dummyResources
+  
+  const filteredResources = displayResources.filter((resource: any) => {
+    if (isAISearch) {
+      // AI search already filtered, just filter by category
+      return selectedCategory === 'all' || resource.category === selectedCategory
+    }
+    const matchesSearch = searchQuery === '' || 
+      resource.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      resource.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      resource.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory || resource.type === selectedCategory
     return matchesSearch && matchesCategory
   })
 
@@ -188,13 +311,18 @@ export default function ResourcesPage() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <button 
-                onClick={() => setShowUploadModal(true)}
-                className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
-              >
-                <Upload className="w-4 h-4" />
-                <span>Upload</span>
-              </button>
+              {isAuthenticated && user?.role === 'therapist' && therapistCredentials && (
+                <CredentialsBadge credentials={therapistCredentials} />
+              )}
+              {isAuthenticated && user?.role === 'therapist' && (
+                <button 
+                  onClick={() => setShowUploadModal(true)}
+                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Upload</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -218,6 +346,11 @@ export default function ResourcesPage() {
                     placeholder="Try: /r/ sounds for 5-year-old"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAISearch()
+                      }
+                    }}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
@@ -346,8 +479,21 @@ export default function ResourcesPage() {
                       </div>
                     </div>
                     
-                    <h3 className="font-semibold text-black mb-2 line-clamp-2">{resource.title}</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-black line-clamp-2 flex-1">{resource.title}</h3>
+                      {resource.accessLevel && (
+                        <AccessLevelBadge accessLevel={resource.accessLevel} />
+                      )}
+                    </div>
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">{resource.description}</p>
+                    
+                    {/* Show warning if SLPA tries to access SLP-only resource */}
+                    {therapistCredentials === 'SLPA' && resource.accessLevel === 'SLP' && (
+                      <SLPAWarning 
+                        message="This resource is restricted to SLP credentials only" 
+                        type="error"
+                      />
+                    )}
                     
                     <div className="flex flex-wrap gap-1 mb-4">
                       {resource.tags.slice(0, 3).map((tag) => (
@@ -400,8 +546,23 @@ export default function ResourcesPage() {
                       <div className="flex-1">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h3 className="font-semibold text-black mb-1">{resource.title}</h3>
+                            <div className="flex items-center justify-between mb-1">
+                              <h3 className="font-semibold text-black flex-1">{resource.title}</h3>
+                              {resource.accessLevel && (
+                                <AccessLevelBadge accessLevel={resource.accessLevel} />
+                              )}
+                            </div>
                             <p className="text-sm text-gray-600 mb-2">{resource.description}</p>
+                            
+                            {/* Show warning if SLPA tries to access SLP-only resource */}
+                            {therapistCredentials === 'SLPA' && resource.accessLevel === 'SLP' && (
+                              <div className="mb-2">
+                                <SLPAWarning 
+                                  message="This resource is restricted to SLP credentials only" 
+                                  type="error"
+                                />
+                              </div>
+                            )}
                             <div className="flex items-center space-x-4 text-xs text-gray-500">
                               <span>{resource.size}</span>
                               <span>{resource.downloads} downloads</span>
@@ -477,7 +638,47 @@ export default function ResourcesPage() {
               </button>
             </div>
             
-            <form className="space-y-4">
+            <form 
+              className="space-y-4"
+              onSubmit={async (e) => {
+                e.preventDefault()
+                try {
+                  // Check SLPA restrictions
+                  if (therapistCredentials === 'SLPA') {
+                    if (uploadFormData.accessLevel === 'SLP') {
+                      alert('SLPA credentials cannot create SLP-only resources')
+                      return
+                    }
+                    if (uploadFormData.category === 'assessment') {
+                      alert('SLPA credentials cannot upload assessment resources')
+                      return
+                    }
+                  }
+                  
+                  await resourceAPI.create(uploadFormData)
+                  alert('Resource uploaded successfully! Pending admin approval.')
+                  setShowUploadModal(false)
+                  setUploadFormData({
+                    title: '',
+                    description: '',
+                    category: '',
+                    accessLevel: 'public',
+                    tags: '',
+                  })
+                  fetchResources()
+                } catch (error: any) {
+                  alert(error.response?.data?.message || 'Failed to upload resource')
+                }
+              }}
+            >
+              {/* SLPA Warning */}
+              {therapistCredentials === 'SLPA' && (
+                <SLPAWarning 
+                  message="As an SLPA, you cannot upload assessment resources or create SLP-only resources. You can upload public or SLPA-accessible resources."
+                  type="warning"
+                />
+              )}
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">File</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
@@ -491,8 +692,11 @@ export default function ResourcesPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
                 <input 
                   type="text" 
+                  value={uploadFormData.title}
+                  onChange={(e) => setUploadFormData({ ...uploadFormData, title: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                   placeholder="Enter resource title"
+                  required
                 />
               </div>
               
@@ -500,27 +704,57 @@ export default function ResourcesPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea 
                   rows={3}
+                  value={uploadFormData.description}
+                  onChange={(e) => setUploadFormData({ ...uploadFormData, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                   placeholder="Enter resource description"
+                  required
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-                  <option>Select category</option>
-                  <option>Worksheet</option>
-                  <option>Assessment</option>
-                  <option>Video</option>
-                  <option>Audio</option>
-                  <option>Exercises</option>
+                <select 
+                  value={uploadFormData.category}
+                  onChange={(e) => setUploadFormData({ ...uploadFormData, category: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  required
+                >
+                  <option value="">Select category</option>
+                  <option value="worksheet">Worksheet</option>
+                  <option value="assessment" disabled={therapistCredentials === 'SLPA'}>Assessment {therapistCredentials === 'SLPA' && '(Restricted)'}</option>
+                  <option value="video">Video</option>
+                  <option value="audio">Audio</option>
+                  <option value="exercises">Exercises</option>
                 </select>
+                {therapistCredentials === 'SLPA' && uploadFormData.category === 'assessment' && (
+                  <p className="text-xs text-red-600 mt-1">SLPA cannot upload assessment resources</p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Access Level</label>
+                <select 
+                  value={uploadFormData.accessLevel}
+                  onChange={(e) => setUploadFormData({ ...uploadFormData, accessLevel: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  required
+                >
+                  <option value="public">Public (Everyone)</option>
+                  <option value="SLPA">SLPA+ (SLPA and SLP)</option>
+                  <option value="SLP" disabled={therapistCredentials === 'SLPA'}>SLP Only {therapistCredentials === 'SLPA' && '(Restricted)'}</option>
+                </select>
+                {therapistCredentials === 'SLPA' && uploadFormData.accessLevel === 'SLP' && (
+                  <p className="text-xs text-red-600 mt-1">SLPA cannot create SLP-only resources</p>
+                )}
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
                 <input 
                   type="text" 
+                  value={uploadFormData.tags}
+                  onChange={(e) => setUploadFormData({ ...uploadFormData, tags: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                   placeholder="Enter tags separated by commas"
                 />
@@ -529,7 +763,16 @@ export default function ResourcesPage() {
               <div className="flex space-x-3 pt-4">
                 <button 
                   type="button"
-                  onClick={() => setShowUploadModal(false)}
+                  onClick={() => {
+                    setShowUploadModal(false)
+                    setUploadFormData({
+                      title: '',
+                      description: '',
+                      category: '',
+                      accessLevel: 'public',
+                      tags: '',
+                    })
+                  }}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Cancel

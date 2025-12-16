@@ -3,6 +3,9 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import LiveChatWidget from '../components/LiveChatWidget'
 import Footer from '../components/Footer'
+import AccessibilityFeatures from '../components/AccessibilityFeatures'
+import { AuthProvider } from '../contexts/AuthContext'
+import { LanguageProvider } from '../contexts/LanguageContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,9 +22,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
-        <Footer />
-        <LiveChatWidget />
+        <LanguageProvider>
+        <AuthProvider>
+          {children}
+          <Footer />
+          <LiveChatWidget />
+          <AccessibilityFeatures />
+        </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   CheckCircle, 
   Star, 
@@ -19,73 +19,264 @@ import {
   HelpCircle
 } from 'lucide-react'
 import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
+import { subscriptionAPI, stripeAPI } from '@/lib/api'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState('flourish')
+  const [currentSubscription, setCurrentSubscription] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [pricingTiers, setPricingTiers] = useState<any[]>([])
+  const [loadingPricing, setLoadingPricing] = useState(true)
+  const { user, isAuthenticated } = useAuth()
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
-  const pricingTiers = [
-    {
-      id: 'rooted',
-      name: 'Rooted',
-      icon: '🌱',
-      price: '$50',
-      period: '/30min',
-      billing: 'billed every 4 weeks',
-      description: 'Build a strong foundation where growth begins',
-      tagline: 'For clients starting their therapy journey, establishing essential skills and confidence.',
-      features: [
-        'Weekly therapy sessions (2–4 per month)',
-        'Personalized treatment plan with clear goals',
-        'Progress updates every 8–10 weeks',
-        'Caregiver tips for at-home reinforcement',
-        'Secure, HIPAA-compliant teletherapy platform',
-        'Email support for brief follow-up questions'
-      ],
-      popular: false,
-      color: 'border-gray-200'
-    },
-    {
-      id: 'flourish',
-      name: 'Flourish',
-      icon: '🌿',
-      price: '$85',
-      period: '/hour',
-      billing: 'billed every 4 weeks',
-      description: 'Grow, thrive, and expand your voice with care',
-      tagline: 'For clients ready to dive deeper, strengthen abilities, and see meaningful progress.',
-      features: [
-        'Weekly or bi-weekly therapy sessions',
-        'Advanced treatment strategies tailored to client needs',
-        'Detailed progress reports with measurable outcomes',
-        'Monthly caregiver/family coaching sessions',
-        'Priority scheduling and flexible rescheduling options',
-        'Collaboration with schools, physicians, or other providers',
-        'Direct messaging access for timely support between sessions'
-      ],
-      popular: true,
-      color: 'border-black ring-2 ring-black'
-    },
-    {
-      id: 'bloom',
-      name: 'Bloom',
-      icon: '🌸',
-      price: '$90',
-      period: '/hour',
-      billing: 'pay-as-you-go',
-      description: 'Sustain your growth and keep your voice in full bloom',
-      tagline: 'For clients maintaining progress through flexible, pay-as-you-go sessions.',
-      features: [
-        'Pay-as-you-go pricing',
-        'A few sessions per month (flexible scheduling, 2-3 sessions monthly)',
-        'Focus on maintaining skills and building confidence',
-        'Ongoing professional support without long-term commitment',
-        'Perfect for maintenance check-ins rather than intensive therapy',
-        'Month-to-month flexibility'
-      ],
-      popular: false,
-      color: 'border-gray-200'
+  useEffect(() => {
+    fetchPricing()
+    if (isAuthenticated) {
+      fetchCurrentSubscription()
     }
-  ]
+
+    // Check if returning from Stripe checkout
+    const success = searchParams.get('success')
+    const canceled = searchParams.get('canceled')
+    
+    if (success === 'true') {
+      setSuccessMessage('Payment successful! Your subscription is being activated...')
+      
+      // Poll for subscription status (webhook might take a moment)
+      let attempts = 0
+      const maxAttempts = 20
+      const pollInterval = setInterval(async () => {
+        attempts++
+        try {
+          const subscription = await fetchCurrentSubscription()
+          console.log('Polling attempt', attempts, 'Subscription:', subscription)
+          
+          // If subscription found and active, stop polling
+          if (subscription && subscription.status === 'active') {
+            clearInterval(pollInterval)
+            setSuccessMessage(`Payment successful! Your ${subscription.tierName} subscription is now active.`)
+            // Clear URL params
+            setTimeout(() => {
+              router.replace('/pricing', { scroll: false })
+            }, 3000)
+            return
+          }
+        } catch (error) {
+          console.error('Error polling subscription:', error)
+        }
+        
+        if (attempts >= maxAttempts) {
+          clearInterval(pollInterval)
+          setSuccessMessage('Payment successful! If your subscription doesn\'t appear, please click "Refresh Status" below.')
+        }
+      }, 1000) // Check every second
+      
+      // Also check immediately and after delays
+      fetchCurrentSubscription()
+      setTimeout(() => fetchCurrentSubscription(), 2000)
+      setTimeout(() => fetchCurrentSubscription(), 5000)
+      
+      // Cleanup on unmount
+      return () => clearInterval(pollInterval)
+    } else if (canceled === 'true') {
+      setSuccessMessage('Payment was canceled. You can try again anytime.')
+      // Remove canceled parameter from URL after showing message
+      setTimeout(() => {
+        router.replace('/pricing', { scroll: false })
+      }, 3000)
+    }
+  }, [isAuthenticated, searchParams])
+
+  const fetchPricing = async () => {
+    try {
+      setLoadingPricing(true)
+      const response = await subscriptionAPI.getPricing()
+      const backendPricing = response.data.data
+
+      // Map backend pricing structure to frontend format
+      const iconMap: Record<string, string> = {
+        rooted: '🌱',
+        flourish: '🌿',
+        bloom: '🌸'
+      }
+
+      const descriptionMap: Record<string, string> = {
+        rooted: 'Build a strong foundation where growth begins',
+        flourish: 'Grow, thrive, and expand your voice with care',
+        bloom: 'Sustain your growth and keep your voice in full bloom'
+      }
+
+      const taglineMap: Record<string, string> = {
+        rooted: 'For clients starting their therapy journey, establishing essential skills and confidence.',
+        flourish: 'For clients ready to dive deeper, strengthen abilities, and see meaningful progress.',
+        bloom: 'For clients maintaining progress through flexible, pay-as-you-go sessions.'
+      }
+
+      const billingCycleMap: Record<string, string> = {
+        'every-4-weeks': 'billed every 4 weeks',
+        'monthly': 'billed monthly',
+        'pay-as-you-go': 'pay-as-you-go'
+      }
+
+      const transformedPricing = Object.entries(backendPricing).map(([tierId, tierData]: [string, any]) => {
+        const tierName = tierData.name.replace(' Tier', '').replace(' tier', '')
+        const durationText = tierData.duration === 30 ? '/30min' : '/hour'
+        const billingText = billingCycleMap[tierData.billingCycle] || tierData.billingCycle
+
+        return {
+          id: tierId,
+          name: tierName,
+          icon: iconMap[tierId] || '💎',
+          price: `$${tierData.price}`,
+          period: durationText,
+          billing: billingText,
+          description: descriptionMap[tierId] || tierData.description || '',
+          tagline: taglineMap[tierId] || '',
+          features: tierData.features || [],
+          popular: tierData.popular || false,
+          color: tierData.popular ? 'border-black ring-2 ring-black' : 'border-gray-200'
+        }
+      })
+
+      setPricingTiers(transformedPricing)
+    } catch (error) {
+      console.error('Failed to fetch pricing:', error)
+      // Fallback to default pricing if fetch fails
+      setPricingTiers([
+        {
+          id: 'rooted',
+          name: 'Rooted',
+          icon: '🌱',
+          price: '$50',
+          period: '/30min',
+          billing: 'billed every 4 weeks',
+          description: 'Build a strong foundation where growth begins',
+          tagline: 'For clients starting their therapy journey, establishing essential skills and confidence.',
+          features: [
+            '2-4 sessions per month',
+            'Personalized treatment plan',
+            'Progress updates every 8-10 weeks',
+            'Caregiver tips',
+            'HIPAA-compliant platform',
+            'Email support'
+          ],
+          popular: false,
+          color: 'border-gray-200'
+        },
+        {
+          id: 'flourish',
+          name: 'Flourish',
+          icon: '🌿',
+          price: '$85',
+          period: '/hour',
+          billing: 'billed every 4 weeks',
+          description: 'Grow, thrive, and expand your voice with care',
+          tagline: 'For clients ready to dive deeper, strengthen abilities, and see meaningful progress.',
+          features: [
+            'Weekly or bi-weekly sessions',
+            'Advanced treatment strategies',
+            'Detailed monthly progress reports',
+            'Monthly family coaching',
+            'Priority scheduling',
+            'Provider collaboration',
+            'Direct messaging'
+          ],
+          popular: true,
+          color: 'border-black ring-2 ring-black'
+        },
+        {
+          id: 'bloom',
+          name: 'Bloom',
+          icon: '🌸',
+          price: '$90',
+          period: '/hour',
+          billing: 'pay-as-you-go',
+          description: 'Sustain your growth and keep your voice in full bloom',
+          tagline: 'For clients maintaining progress through flexible, pay-as-you-go sessions.',
+          features: [
+            '2-3 sessions monthly',
+            'Flexible scheduling',
+            'Focus on skill maintenance',
+            'No long-term commitment',
+            'Month-to-month flexibility'
+          ],
+          popular: false,
+          color: 'border-gray-200'
+        }
+      ])
+    } finally {
+      setLoadingPricing(false)
+    }
+  }
+
+  const fetchCurrentSubscription = async () => {
+    try {
+      const response = await subscriptionAPI.getCurrent()
+      const subscription = response.data.data
+      
+      // Only update if subscription exists and is active
+      if (subscription && subscription.status === 'active') {
+        setCurrentSubscription(subscription)
+        console.log('Subscription found:', subscription)
+        return subscription
+      } else {
+        setCurrentSubscription(null)
+        return null
+      }
+    } catch (error: any) {
+      // 404 means no subscription, which is fine
+      if (error.response?.status !== 404) {
+        console.error('Failed to fetch subscription:', error)
+      }
+      setCurrentSubscription(null)
+      return null
+    }
+  }
+
+  const handleSelectPlan = async (tierId: string) => {
+    if (!isAuthenticated) {
+      // Redirect to signup with selected plan
+      router.push(`/signup?plan=${tierId}`)
+      return
+    }
+
+    setIsLoading(true)
+    setSuccessMessage('')
+
+    try {
+      // Create Stripe checkout session
+      const stripeResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/stripe/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ tier: tierId }),
+      })
+
+      const stripeData = await stripeResponse.json()
+
+      if (stripeData.success && stripeData.data.url) {
+        // Store session ID for later verification
+        if (stripeData.data.sessionId) {
+          localStorage.setItem('lastCheckoutSessionId', stripeData.data.sessionId)
+        }
+        // Redirect to Stripe checkout
+        window.location.href = stripeData.data.url
+      } else {
+        throw new Error(stripeData.message || 'Failed to create checkout session')
+      }
+    } catch (error: any) {
+      alert(error.message || 'Failed to start payment process')
+      setIsLoading(false)
+    }
+  }
+
 
   const faqItems = [
     {
@@ -141,6 +332,99 @@ export default function PricingPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Success Message */}
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg text-center"
+          >
+            <CheckCircle className="w-6 h-6 text-green-600 inline-block mr-2" />
+            <span className="text-green-800 font-medium">{successMessage}</span>
+            <p className="text-sm text-green-600 mt-1">Redirecting to your dashboard...</p>
+          </motion.div>
+        )}
+
+        {/* Current Subscription Alert */}
+        {/* Success Message with Refresh Button */}
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-6 bg-green-50 border border-green-200 rounded-lg text-center"
+          >
+            <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-green-800 mb-2">Payment Successful!</h2>
+            <p className="text-green-600 mb-4">{successMessage}</p>
+            {!currentSubscription && (
+              <div className="space-y-2">
+                <button
+                  onClick={async () => {
+                    // Try to get session ID from URL or localStorage
+                    const sessionId = localStorage.getItem('lastCheckoutSessionId')
+                    if (sessionId) {
+                      try {
+                        // Verify checkout session manually
+                        const verifyResponse = await stripeAPI.verifyCheckoutSession(sessionId)
+                        if (verifyResponse.data.success) {
+                          // Refresh subscription
+                          await fetchCurrentSubscription()
+                          setSuccessMessage(`Payment successful! Your subscription is now active.`)
+                          setTimeout(() => {
+                            router.replace('/pricing', { scroll: false })
+                          }, 3000)
+                        } else {
+                          alert(verifyResponse.data.message || 'Failed to verify payment')
+                        }
+                      } catch (error: any) {
+                        console.error('Verify error:', error)
+                        // Fallback to regular refresh
+                        const subscription = await fetchCurrentSubscription()
+                        if (subscription && subscription.status === 'active') {
+                          setSuccessMessage(`Payment successful! Your ${subscription.tierName} subscription is now active.`)
+                          setTimeout(() => {
+                            router.replace('/pricing', { scroll: false })
+                          }, 3000)
+                        } else {
+                          alert('Subscription not found yet. The webhook may still be processing. Please wait a moment and try again, or contact support.')
+                        }
+                      }
+                    } else {
+                      // No session ID, just refresh
+                      const subscription = await fetchCurrentSubscription()
+                      if (subscription && subscription.status === 'active') {
+                        setSuccessMessage(`Payment successful! Your ${subscription.tierName} subscription is now active.`)
+                        setTimeout(() => {
+                          router.replace('/pricing', { scroll: false })
+                        }, 3000)
+                      } else {
+                        alert('Subscription not found yet. The webhook may still be processing. Please wait a moment and try again, or contact support.')
+                      }
+                    }
+                  }}
+                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                >
+                  Verify Payment & Refresh
+                </button>
+                <p className="text-xs text-gray-500">Click to manually verify your payment if the webhook hasn't processed yet</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {currentSubscription && !successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center"
+          >
+            <span className="text-blue-800 font-medium">
+              You're currently on the <strong>{currentSubscription.tierName}</strong>
+            </span>
+            <p className="text-sm text-blue-600 mt-1">Select a different plan below to switch</p>
+          </motion.div>
+        )}
+
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -157,9 +441,19 @@ export default function PricingPage() {
             Choose the plan that best fits your needs and budget. All plans include 
             access to our licensed therapists and secure teletherapy platform.
           </p>
+          {!isAuthenticated && (
+            <p className="text-sm text-gray-500">
+              Please <Link href="/login" className="text-black font-semibold hover:underline">login</Link> or <Link href="/signup" className="text-black font-semibold hover:underline">create an account</Link> to select a plan
+            </p>
+          )}
         </motion.div>
 
         {/* Pricing Tiers */}
+        {loadingPricing ? (
+          <div className="flex items-center justify-center h-64 mb-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+          </div>
+        ) : (
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {pricingTiers.map((tier, index) => (
             <motion.div
@@ -192,7 +486,7 @@ export default function PricingPage() {
               </div>
               
               <ul className="space-y-4 mb-8">
-                {tier.features.map((feature, featureIndex) => (
+                {tier.features.map((feature: string, featureIndex: number) => (
                   <li key={featureIndex} className="flex items-start">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                     <span className="text-gray-600 text-sm">{feature}</span>
@@ -200,19 +494,27 @@ export default function PricingPage() {
                 ))}
               </ul>
               
-              <button 
-                onClick={() => setSelectedPlan(tier.id)}
-                className={`w-full py-3 rounded-full font-semibold transition-all duration-300 ${
-                  tier.popular 
-                    ? 'bg-black text-white hover:bg-gray-800' 
-                    : 'border border-gray-300 text-black hover:bg-gray-50'
-                }`}
-              >
-                {selectedPlan === tier.id ? 'Selected' : 'Select Plan'}
-              </button>
+              {currentSubscription?.tier === tier.id ? (
+                <div className="w-full py-3 rounded-full font-semibold bg-green-500 text-white text-center">
+                  ✓ Current Plan
+                </div>
+              ) : (
+                <button 
+                  onClick={() => handleSelectPlan(tier.id)}
+                  disabled={isLoading}
+                  className={`w-full py-3 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    tier.popular 
+                      ? 'bg-black text-white hover:bg-gray-800' 
+                      : 'border-2 border-black text-black hover:bg-black hover:text-white'
+                  }`}
+                >
+                  {isLoading ? 'Processing...' : isAuthenticated ? 'Select Plan' : 'Get Started'}
+                </button>
+              )}
             </motion.div>
           ))}
         </div>
+        )}
 
         {/* Plan Comparison */}
         <motion.div
@@ -227,28 +529,60 @@ export default function PricingPage() {
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-4 px-4 font-semibold text-black">Features</th>
-                  <th className="text-center py-4 px-4 font-semibold text-black">Rooted</th>
-                  <th className="text-center py-4 px-4 font-semibold text-black">Flourish</th>
-                  <th className="text-center py-4 px-4 font-semibold text-black">Bloom</th>
+                  {pricingTiers.map((tier) => (
+                    <th key={tier.id} className="text-center py-4 px-4 font-semibold text-black">
+                      {tier.name}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {[
-                  { feature: 'Session Length', rooted: '30 minutes', flourish: '60 minutes', bloom: '60 minutes' },
-                  { feature: 'Sessions per Month', rooted: '2-4 sessions', flourish: '4-8 sessions', bloom: '2-3 sessions' },
-                  { feature: 'Progress Reports', rooted: 'Every 8-10 weeks', flourish: 'Detailed monthly', bloom: 'As needed' },
-                  { feature: 'Family Coaching', rooted: 'Tips provided', flourish: 'Monthly sessions', bloom: 'Available' },
-                  { feature: 'Priority Scheduling', rooted: 'Standard', flourish: 'Priority', bloom: 'Flexible' },
-                  { feature: 'Direct Messaging', rooted: 'Email support', flourish: 'Direct access', bloom: 'Available' },
-                  { feature: 'Billing', rooted: 'Every 4 weeks', flourish: 'Every 4 weeks', bloom: 'Pay-as-you-go' }
-                ].map((row, index) => (
-                  <tr key={index} className="border-b border-gray-100">
-                    <td className="py-4 px-4 font-medium text-black">{row.feature}</td>
-                    <td className="py-4 px-4 text-center text-gray-600">{row.rooted}</td>
-                    <td className="py-4 px-4 text-center text-gray-600">{row.flourish}</td>
-                    <td className="py-4 px-4 text-center text-gray-600">{row.bloom}</td>
+                {loadingPricing ? (
+                  <tr>
+                    <td colSpan={4} className="py-8 text-center">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+                      </div>
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  <>
+                    {pricingTiers.length > 0 ? (
+                      <>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-4 px-4 font-medium text-black">Price</td>
+                          {pricingTiers.map((tier) => (
+                            <td key={tier.id} className="py-4 px-4 text-center text-gray-600">
+                              {tier.price}{tier.period}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-4 px-4 font-medium text-black">Billing Cycle</td>
+                          {pricingTiers.map((tier) => (
+                            <td key={tier.id} className="py-4 px-4 text-center text-gray-600">
+                              {tier.billing}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-4 px-4 font-medium text-black">Session Duration</td>
+                          {pricingTiers.map((tier) => (
+                            <td key={tier.id} className="py-4 px-4 text-center text-gray-600">
+                              {tier.period.replace('/', '')}
+                            </td>
+                          ))}
+                        </tr>
+                      </>
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="py-8 text-center text-gray-500">
+                          No pricing tiers available
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                )}
               </tbody>
             </table>
           </div>
