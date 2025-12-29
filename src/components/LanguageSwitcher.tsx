@@ -9,7 +9,7 @@ export default function LanguageSwitcher({ variant = 'default' }: { variant?: 'd
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -126,7 +126,7 @@ export default function LanguageSwitcher({ variant = 'default' }: { variant?: 'd
     )
   }
 
-  // Default variant
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -176,3 +176,78 @@ export default function LanguageSwitcher({ variant = 'default' }: { variant?: 'd
     </div>
   )
 }
+
+// 'use client'
+
+// import { useState, useEffect, useRef } from 'react'
+// import { Globe, Check, ChevronDown } from 'lucide-react'
+// import { usePathname, useRouter } from 'next/navigation'
+
+// const LANGUAGES = [
+//   { code: 'en', name: 'English' },
+//   { code: 'es', name: 'Spanish' },
+//   { code: 'fr', name: 'French' }
+// ]
+
+// export default function LanguageSwitcher({ variant = 'default' }) {
+//   const router = useRouter()
+//   const pathname = usePathname()
+//   const dropdownRef = useRef<HTMLDivElement>(null)
+//   const [isOpen, setIsOpen] = useState(false)
+
+//   // Detect current locale from URL
+//   const currentLocale = pathname.split('/')[1] || 'en'
+
+//   // Close dropdown on outside click
+//   useEffect(() => {
+//     const handler = (e: MouseEvent) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+//         setIsOpen(false)
+//       }
+//     }
+//     document.addEventListener('mousedown', handler)
+//     return () => document.removeEventListener('mousedown', handler)
+//   }, [])
+
+//   const handleLanguageChange = (locale: string) => {
+//     const segments = pathname.split('/')
+//     segments[1] = locale
+//     router.push(segments.join('/'))
+//     setIsOpen(false)
+//   }
+
+//   const currentLanguageName =
+//     LANGUAGES.find(l => l.code === currentLocale)?.name || 'English'
+
+//   return (
+//     <div className="relative" ref={dropdownRef}>
+//       <button
+//         onClick={() => setIsOpen(!isOpen)}
+//         className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg"
+//       >
+//         <Globe className="w-4 h-4" />
+//         <span className="text-sm">{currentLanguageName}</span>
+//         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+//       </button>
+
+//       {isOpen && (
+//         <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50">
+//           {LANGUAGES.map(lang => (
+//             <button
+//               key={lang.code}
+//               onClick={() => handleLanguageChange(lang.code)}
+//               className={`w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 ${
+//                 currentLocale === lang.code ? 'bg-indigo-50' : ''
+//               }`}
+//             >
+//               <span>{lang.name}</span>
+//               {currentLocale === lang.code && (
+//                 <Check className="w-4 h-4 text-indigo-600" />
+//               )}
+//             </button>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   )
+// }

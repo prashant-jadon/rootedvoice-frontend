@@ -5,10 +5,10 @@ export const translations = {
     // Navigation
     nav: {
       services: 'Services',
-      therapists: 'Therapists',
+      therapists: 'For Therapists',
       pricing: 'Pricing',
       community: 'Community',
-      about: 'About',
+      about: 'Who We Are',
       dashboard: 'Dashboard',
       sessions: 'Sessions',
       clients: 'Clients',

@@ -471,6 +471,60 @@ export default function MeetOurTherapistsPage() {
           </div>
         </motion.div>
 
+ <main className="bg-stone-50">
+      {/* Hero */}
+      <section className="py-20 px-4 text-center max-w-4xl mx-auto">
+      <h1
+  className="text-4xl md:text-5xl font-semibold"
+  style={{ color: '#4D7D7D' }}
+>
+  Join Rooted Voices as a Clinician
+</h1>
+        <p className="mt-6 text-lg text-stone-600">
+          A therapist-centered platform built to support sustainable,
+          values-aligned care.
+        </p>
+      </section>
+
+      {/* Info Grid */}
+      <section className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-3 gap-8">
+        <Card
+          title="Compensation Transparency"
+          text="Competitive pay ranges with clarity around session rates, scheduling flexibility, and payment timelines."
+        />
+        <Card
+          title="Clinician-Centered Support"
+          text="We prioritize manageable caseloads, peer support, and ethical growth over productivity pressure."
+        />
+        <Card
+          title="Values-Aligned Community"
+          text="Rooted Voices serves diverse, underserved communities and clinicians who value relational, grounded care."
+        />
+      </section>
+
+      {/* CTA */}
+      <section className="bg-emerald-700 py-16 text-center px-4">
+        <h2 className="text-3xl font-semibold text-white">
+          Curious if Rooted Voices is the right fit?
+        </h2>
+        <p className="mt-4 text-emerald-100 max-w-xl mx-auto">
+          Learn more about our mission, compensation, and onboarding process.
+        </p>
+
+        <button className="mt-8 px-8 py-3 rounded-full bg-white text-emerald-700 font-medium hover:bg-stone-100 transition">
+          Apply as a Clinician
+        </button>
+      </section>
+    </main>
+
+
+
+
+
+
+
+
+
         {/* CTA Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -497,3 +551,67 @@ export default function MeetOurTherapistsPage() {
     </div>
   )
 }
+
+
+
+
+
+
+// export default function MeetOurTherapistsPage() {
+//   return (
+//     <main className="bg-stone-50">
+//       {/* Hero */}
+//       <section className="py-20 px-4 text-center max-w-4xl mx-auto">
+//         <h1 className="text-4xl md:text-5xl font-semibold text-emerald-800">
+//           Join Rooted Voices as a Clinician
+//         </h1>
+//         <p className="mt-6 text-lg text-stone-600">
+//           A therapist-centered platform built to support sustainable,
+//           values-aligned care.
+//         </p>
+//       </section>
+
+//       {/* Info Grid */}
+//       <section className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-3 gap-8">
+//         <Card
+//           title="Compensation Transparency"
+//           text="Competitive pay ranges with clarity around session rates, scheduling flexibility, and payment timelines."
+//         />
+//         <Card
+//           title="Clinician-Centered Support"
+//           text="We prioritize manageable caseloads, peer support, and ethical growth over productivity pressure."
+//         />
+//         <Card
+//           title="Values-Aligned Community"
+//           text="Rooted Voices serves diverse, underserved communities and clinicians who value relational, grounded care."
+//         />
+//       </section>
+
+//       {/* CTA */}
+//       <section className="bg-emerald-700 py-16 text-center px-4">
+//         <h2 className="text-3xl font-semibold text-white">
+//           Curious if Rooted Voices is the right fit?
+//         </h2>
+//         <p className="mt-4 text-emerald-100 max-w-xl mx-auto">
+//           Learn more about our mission, compensation, and onboarding process.
+//         </p>
+
+//         <button className="mt-8 px-8 py-3 rounded-full bg-white text-emerald-700 font-medium hover:bg-stone-100 transition">
+//           Apply as a Clinician
+//         </button>
+//       </section>
+//     </main>
+//   );
+// }
+
+function Card({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+      <h3 className="text-xl font-semibold text-emerald-800 mb-3">
+        {title}
+      </h3>
+      <p className="text-stone-600 leading-relaxed">{text}</p>
+    </div>
+  );
+}
+

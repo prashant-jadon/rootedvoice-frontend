@@ -25,7 +25,7 @@ export default function LandingPage() {
     <div className="min-h-screen palette-background">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-xl border-b border-white/20 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center">
@@ -54,6 +54,7 @@ export default function LandingPage() {
                   }}
                 ></span>
               </Link>
+              
               <Link 
                 href="/meet-our-therapists" 
                 className="text-sm font-semibold transition-all duration-300 hover:scale-105 relative group"
@@ -69,6 +70,10 @@ export default function LandingPage() {
                   }}
                 ></span>
               </Link>
+
+{/* <Link href="/meet-our-therapists" className="hover:text-emerald-600">
+            For Therapists
+          </Link> */}
               <Link 
                 href="/pricing" 
                 className="text-sm font-semibold transition-all duration-300 hover:scale-105 relative group"
@@ -99,6 +104,7 @@ export default function LandingPage() {
                   }}
                 ></span>
               </Link>
+              
               <Link 
                 href="/who-we-are" 
                 className="text-sm font-semibold transition-all duration-300 hover:scale-105 relative group"

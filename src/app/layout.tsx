@@ -6,7 +6,9 @@ import Footer from '../components/Footer'
 import AccessibilityFeatures from '../components/AccessibilityFeatures'
 import { AuthProvider } from '../contexts/AuthContext'
 import { LanguageProvider } from '../contexts/LanguageContext'
+import { TranslationProvider } from '../contexts/TranslationContext'
 
+// import { LanguageProvider } from '@/contexts/LanguageContext'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -23,12 +25,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <LanguageProvider>
-        <AuthProvider>
-          {children}
-          <Footer />
-          <LiveChatWidget />
-          <AccessibilityFeatures />
-        </AuthProvider>
+        <TranslationProvider>
+          <AuthProvider>
+            {children}
+            <Footer />
+            <LiveChatWidget />
+            <AccessibilityFeatures />
+          </AuthProvider>
+        </TranslationProvider>
         </LanguageProvider>
       </body>
     </html>
