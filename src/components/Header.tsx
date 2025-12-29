@@ -116,14 +116,35 @@ export default function Header() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center">
-              <img 
-                src="/logorooted 1.png" 
-                alt="Rooted Voices" 
-                className="w-18 h-20 mr-2"
-              />
-              <span className="text-2xl font-bold text-black">Rooted Voices</span>
-            </Link>
+            <div className="flex items-center space-x-8">
+              <Link href="/" className="flex items-center">
+                <img 
+                  src="/logorooted 1.png" 
+                  alt="Rooted Voices" 
+                  className="w-18 h-20 mr-2"
+                />
+                <span className="text-2xl font-bold text-black">Rooted Voices</span>
+              </Link>
+              
+              {/* Navigation Links for Unauthenticated Users */}
+              <nav className="hidden md:flex items-center space-x-6">
+                <Link href="/services" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  Services
+                </Link>
+                <Link href="/who-we-are" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  Who We Are
+                </Link>
+                <Link href="/for-therapists" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  For Therapists
+                </Link>
+                <Link href="/meet-our-therapists" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  {t('nav.therapists')}
+                </Link>
+                <Link href="/pricing" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  {t('nav.pricing')}
+                </Link>
+              </nav>
+            </div>
             
             <div className="flex items-center space-x-4">
               <Link href="/login" className="text-gray-600 hover:text-black transition-colors">

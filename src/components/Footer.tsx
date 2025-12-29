@@ -104,6 +104,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/for-therapists" className="hover:text-white transition-colors">
+                  For Therapists
+                </Link>
+              </li>
+              <li>
                 <Link href="/faq" className="hover:text-white transition-colors">
                   FAQ
                 </Link>

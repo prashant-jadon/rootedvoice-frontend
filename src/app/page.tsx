@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, Play, Users, Calendar, Shield, Star, CheckCircle, Video, FileText, CreditCard, Palette } from 'lucide-react'
+import { ArrowRight, Play, Users, Calendar, Shield, Star, CheckCircle, Video, FileText, CreditCard, Palette, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import DemoModal from '../components/DemoModal'
@@ -11,6 +11,7 @@ import { useTranslation } from '@/hooks/useTranslation'
 export default function LandingPage() {
   const [currentPalette, setCurrentPalette] = useState('1')
   const [showDemoModal, setShowDemoModal] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const t = useTranslation()
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function LandingPage() {
             </Link>
             
             {/* Main Navigation Links */}
-            <div className="hidden lg:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-6">
               <Link 
                 href="/services" 
                 className="text-sm font-semibold transition-all duration-300 hover:scale-105 relative group"
@@ -46,7 +47,37 @@ export default function LandingPage() {
                   color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
                 }}
               >
-                {t('nav.services')}
+                Services
+                <span 
+                  className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
+                  style={{
+                    backgroundColor: currentPalette === '3' ? '#4D7D7D' : 'white'
+                  }}
+                ></span>
+              </Link>
+              <Link 
+                href="/who-we-are" 
+                className="text-sm font-semibold transition-all duration-300 hover:scale-105 relative group"
+                style={{
+                  color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+                }}
+              >
+                Who We Are
+                <span 
+                  className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
+                  style={{
+                    backgroundColor: currentPalette === '3' ? '#4D7D7D' : 'white'
+                  }}
+                ></span>
+              </Link>
+              <Link 
+                href="/for-therapists" 
+                className="text-sm font-semibold transition-all duration-300 hover:scale-105 relative group"
+                style={{
+                  color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+                }}
+              >
+                For Therapists
                 <span 
                   className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                   style={{
@@ -84,37 +115,18 @@ export default function LandingPage() {
                   }}
                 ></span>
               </Link>
-              <Link 
-                href="/community" 
-                className="text-sm font-semibold transition-all duration-300 hover:scale-105 relative group"
-                style={{
-                  color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
-                }}
-              >
-                {t('nav.community')}
-                <span 
-                  className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
-                  style={{
-                    backgroundColor: currentPalette === '3' ? '#4D7D7D' : 'white'
-                  }}
-                ></span>
-              </Link>
-              <Link 
-                href="/who-we-are" 
-                className="text-sm font-semibold transition-all duration-300 hover:scale-105 relative group"
-                style={{
-                  color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
-                }}
-              >
-                {t('nav.about')}
-                <span 
-                  className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
-                  style={{
-                    backgroundColor: currentPalette === '3' ? '#4D7D7D' : 'white'
-                  }}
-                ></span>
-              </Link>
             </div>
+            
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2"
+              style={{
+                color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+              }}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
             
             {/* Color Palette Switcher */}
             <div 
@@ -214,9 +226,91 @@ export default function LandingPage() {
             <Link href="/my-practice" className="text-xs font-medium text-green-600 hover:text-green-800 transition-colors">
               My Practice →
             </Link>
+            </div>
           </div>
-        </div>
-      </nav>
+          
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden border-t border-white/20 bg-white/10 backdrop-blur-xl"
+            >
+              <div className="px-4 py-4 space-y-4">
+                <Link
+                  href="/services"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-semibold transition-colors"
+                  style={{
+                    color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+                  }}
+                >
+                  Services
+                </Link>
+                <Link
+                  href="/who-we-are"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-semibold transition-colors"
+                  style={{
+                    color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+                  }}
+                >
+                  Who We Are
+                </Link>
+                <Link
+                  href="/for-therapists"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-semibold transition-colors"
+                  style={{
+                    color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+                  }}
+                >
+                  For Therapists
+                </Link>
+                <Link
+                  href="/meet-our-therapists"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-semibold transition-colors"
+                  style={{
+                    color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+                  }}
+                >
+                  {t('nav.therapists')}
+                </Link>
+                <Link
+                  href="/pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-semibold transition-colors"
+                  style={{
+                    color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+                  }}
+                >
+                  {t('nav.pricing')}
+                </Link>
+                <div className="pt-4 border-t border-white/20 flex flex-col space-y-2">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block text-sm font-semibold transition-colors"
+                    style={{
+                      color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
+                    }}
+                  >
+                    {t('nav.signIn')}
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block bg-black text-white px-4 py-2 rounded-lg font-semibold text-center"
+                  >
+                    {t('nav.signUp')}
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </nav>
 
       {/* Hero Section */}
       <section className="pt-40 pb-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
