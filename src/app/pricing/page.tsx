@@ -22,6 +22,7 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { subscriptionAPI, stripeAPI } from '@/lib/api'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslation } from '@/hooks/useTranslation'
 
 function PricingContent() {
   const [selectedPlan, setSelectedPlan] = useState('flourish')
@@ -33,6 +34,7 @@ function PricingContent() {
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useTranslation()
 
   useEffect(() => {
     fetchPricing()
@@ -433,13 +435,10 @@ function PricingContent() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-            Simple, Transparent
-            <br />
-            <span className="gradient-text">Pricing</span>
+            {t('pricing.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Choose the plan that best fits your needs and budget. All plans include 
-            access to our licensed therapists and secure teletherapy platform.
+            {t('pricing.subtitle')}
           </p>
           {!isAuthenticated && (
             <p className="text-sm text-gray-500">
@@ -468,7 +467,7 @@ function PricingContent() {
               {tier.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-semibold">
-                    Most Popular
+                    {t('pricing.mostPopular')}
                   </span>
                 </div>
               )}
@@ -496,7 +495,7 @@ function PricingContent() {
               
               {currentSubscription?.tier === tier.id ? (
                 <div className="w-full py-3 rounded-full font-semibold bg-green-500 text-white text-center">
-                  ✓ Current Plan
+                  ✓ {t('pricing.currentPlan')}
                 </div>
               ) : (
                 <button 
@@ -508,7 +507,7 @@ function PricingContent() {
                       : 'border-2 border-black text-black hover:bg-black hover:text-white'
                   }`}
                 >
-                  {isLoading ? 'Processing...' : isAuthenticated ? 'Select Plan' : 'Get Started'}
+                  {isLoading ? t('common.loading') : isAuthenticated ? t('pricing.selectPlan') : t('nav.getStarted')}
                 </button>
               )}
             </motion.div>

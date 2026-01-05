@@ -65,6 +65,12 @@ export const therapistAPI = {
   updateAvailability: (id: string, availability: any) =>
     api.put(`/therapists/${id}/availability`, { availability }),
   getStats: (id: string) => api.get(`/therapists/${id}/stats`),
+  uploadDocuments: (formData: FormData) =>
+    api.post('/therapists/upload-documents', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
 };
 
 export const clientAPI = {

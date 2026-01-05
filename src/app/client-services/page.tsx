@@ -14,70 +14,72 @@ import {
   Shield
 } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function ClientServicesPage() {
+  const t = useTranslation()
   const [selectedType, setSelectedType] = useState<'pediatric' | 'adult' | null>(null)
 
   const pediatricServices = [
     {
-      category: 'Infants & Toddlers (0-3 years)',
+      category: t('clientServices.infantsToddlers'),
       services: [
-        'Early intervention for speech, language, and feeding',
-        'Parent coaching on communication strategies',
-        'Feeding and swallowing therapy (latching, bottle feeding, transitioning to solids)',
-        'Assessment of developmental milestones',
-        'Augmentative and alternative communication (AAC) introduction if needed'
+        t('clientServices.earlyIntervention'),
+        t('clientServices.parentCoaching'),
+        t('clientServices.feedingSwallowing'),
+        t('clientServices.developmentalMilestones'),
+        t('clientServices.aacIntroduction')
       ]
     },
     {
-      category: 'Preschool & School-Age Children (3-12 years)',
+      category: t('clientServices.preschoolSchoolAge'),
       services: [
-        'Articulation and phonological disorder treatment',
-        'Language development (vocabulary, grammar, sentence structure)',
-        'Social communication and pragmatic skills training',
-        'Stuttering/fluency therapy',
-        'Literacy support (reading, writing, phonological awareness)',
-        'Voice therapy (hoarseness, vocal misuse)',
-        'Feeding and swallowing therapy (oral-motor skills, picky eating)',
-        'AAC assessment and training for complex needs'
+        t('clientServices.articulationPhonology'),
+        t('clientServices.languageDevelopment'),
+        t('clientServices.socialCommunication'),
+        t('clientServices.fluencyStuttering'),
+        t('clientServices.literacySupport'),
+        t('clientServices.voiceTherapy'),
+        t('clientServices.feedingOralMotor'),
+        t('clientServices.aacAssessment')
       ]
     },
     {
-      category: 'Adolescents (13-18 years)',
+      category: t('clientServices.adolescents'),
       services: [
-        'Academic language skills (comprehension, writing, organization)',
-        'Fluency and stuttering therapy',
-        'Voice therapy (including gender-affirming voice services)',
-        'Social communication skills (peer interaction, conflict resolution)',
-        'Executive function support (organization, planning, memory)',
-        'AAC device customization and training',
-        'Feeding/swallowing if medically needed'
+        t('clientServices.academicLanguage'),
+        t('clientServices.fluencyStuttering'),
+        t('clientServices.genderAffirmingVoice'),
+        t('clientServices.socialSkills'),
+        t('clientServices.executiveFunction'),
+        t('clientServices.aacDevice'),
+        t('clientServices.feedingMedicallyNeeded')
       ]
     }
   ]
 
   const adultServices = [
     {
-      category: 'Adults (18+ years)',
+      category: t('clientServices.adults'),
       services: [
-        'Aphasia therapy (language loss after stroke or brain injury)',
-        'Cognitive-communication therapy (attention, memory, problem-solving)',
-        'Speech and intelligibility therapy (Parkinson\'s, ALS, TBI)',
-        'Voice therapy (vocal strain, nodules, professional voice users)',
-        'Fluency therapy for adults who stutter',
-        'Swallowing and feeding therapy (dysphagia management)',
-        'Accent modification (if desired)',
-        'AAC services for complex communication needs'
+        t('clientServices.aphasiaTherapy'),
+        t('clientServices.cognitiveCommunication'),
+        t('clientServices.speechIntelligibility'),
+        t('clientServices.voiceDisorders'),
+        t('clientServices.fluencyAdults'),
+        t('clientServices.swallowingDisorders'),
+        t('clientServices.accentModification'),
+        t('clientServices.aacComplex')
       ]
     },
     {
-      category: 'Older Adults & Geriatrics (65+ years)',
+      category: t('clientServices.olderAdults'),
       services: [
-        'Cognitive-communication therapy for dementia and memory decline',
-        'Compensatory strategies for daily living communication',
-        'Swallowing therapy (safe eating and drinking strategies)',
-        'Voice care for age-related changes (presbyphonia)',
-        'Support for maintaining social connection and quality of life'
+        t('clientServices.olderAdults1'),
+        t('clientServices.olderAdults2'),
+        t('clientServices.olderAdults3'),
+        t('clientServices.olderAdults4'),
+        t('clientServices.olderAdults5')
       ]
     }
   ]
@@ -91,7 +93,7 @@ export default function ClientServicesPage() {
             <div className="flex items-center space-x-4">
               <Link href="/" className="text-2xl font-bold text-black">Rooted Voices</Link>
               <span className="text-gray-400">/</span>
-              <h1 className="text-2xl font-bold text-black">Find Services</h1>
+              <h1 className="text-2xl font-bold text-black">{t('clientServices.title')}</h1>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -117,10 +119,10 @@ export default function ClientServicesPage() {
               className="text-center mb-16"
             >
               <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-                Who are the services for?
+                {t('clientServices.title')}
               </h1>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Select who will be receiving therapy to see our specialized services and find the right therapist for your needs.
+                {t('clientServices.subtitle')}
               </p>
             </motion.div>
 
@@ -137,18 +139,18 @@ export default function ClientServicesPage() {
                   <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Baby className="w-12 h-12 text-blue-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-black mb-3">Pediatric Services</h2>
+                  <h2 className="text-2xl font-bold text-black mb-3">{t('clientServices.pediatric')}</h2>
                   <p className="text-gray-600 mb-6">
-                    For infants, toddlers, and adolescents (0-18 years)
+                    {t('clientServices.subtitlePediatric')}
                   </p>
                   <div className="text-sm text-gray-500 space-y-1">
-                    <p>• Early intervention</p>
-                    <p>• Language development</p>
-                    <p>• Articulation therapy</p>
-                    <p>• Academic support</p>
+                    <p>• {t('clientServices.earlyIntervention')}</p>
+                    <p>• {t('clientServices.languageDevelopment')}</p>
+                    <p>• {t('clientServices.articulationPhonology')}</p>
+                    <p>• {t('clientServices.academicLanguage')}</p>
                   </div>
                   <div className="mt-6 flex items-center text-black group-hover:translate-x-2 transition-transform">
-                    <span className="font-semibold">Explore Services</span>
+                    <span className="font-semibold">{t('clientServices.exploreServices')}</span>
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </div>
                 </div>
@@ -166,18 +168,18 @@ export default function ClientServicesPage() {
                   <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <User className="w-12 h-12 text-purple-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-black mb-3">Adult Services</h2>
+                  <h2 className="text-2xl font-bold text-black mb-3">{t('clientServices.adult')}</h2>
                   <p className="text-gray-600 mb-6">
-                    For adults and older adults (18+ years)
+                    {t('clientServices.subtitleAdult')}
                   </p>
                   <div className="text-sm text-gray-500 space-y-1">
-                    <p>• Aphasia therapy</p>
-                    <p>• Voice therapy</p>
-                    <p>• Cognitive communication</p>
-                    <p>• Swallowing therapy</p>
+                    <p>• {t('clientServices.aphasiaTherapy')}</p>
+                    <p>• {t('clientServices.voiceTherapy')}</p>
+                    <p>• {t('clientServices.cognitiveCommunication')}</p>
+                    <p>• {t('clientServices.swallowingDisorders')}</p>
                   </div>
                   <div className="mt-6 flex items-center text-black group-hover:translate-x-2 transition-transform">
-                    <span className="font-semibold">Explore Services</span>
+                    <span className="font-semibold">{t('clientServices.exploreServices')}</span>
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </div>
                 </div>
@@ -196,18 +198,18 @@ export default function ClientServicesPage() {
                 {[
                   {
                     icon: <Shield className="w-8 h-8" />,
-                    title: 'HIPAA Compliant',
-                    description: 'Secure, confidential therapy sessions'
+                    title: t('clientServices.hipaaCompliant'),
+                    description: t('clientServices.secureConfidential')
                   },
                   {
                     icon: <Award className="w-8 h-8" />,
-                    title: 'Licensed Professionals',
-                    description: 'Certified, experienced therapists'
+                    title: t('clientServices.licensedProfessionals'),
+                    description: t('clientServices.certifiedExperienced')
                   },
                   {
                     icon: <Heart className="w-8 h-8" />,
-                    title: 'Personalized Care',
-                    description: 'Treatment plans tailored to your needs'
+                    title: t('clientServices.personalizedCare'),
+                    description: t('clientServices.tailoredTreatment')
                   }
                 ].map((feature, index) => (
                   <div key={index} className="text-center">
@@ -230,11 +232,11 @@ export default function ClientServicesPage() {
                 className="inline-flex items-center text-gray-600 hover:text-black transition-colors group"
               >
                 <ArrowRight className="w-4 h-4 mr-2 rotate-180 group-hover:-translate-x-1 transition-transform" />
-                Back to Selection
+                {t('clientServices.backToSelection')}
               </button>
               <div className="flex items-center space-x-2">
                 <Link href="/meet-our-therapists" className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors">
-                  Find a Therapist
+                  {t('clientServices.findTherapist')}
                 </Link>
               </div>
             </div>

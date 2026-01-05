@@ -17,36 +17,39 @@ import {
   Calendar
 } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function WhoWeArePage() {
+  const t = useTranslation()
+  
   const values = [
     {
       icon: <Heart className="w-8 h-8" />,
-      title: 'Compassionate Care',
-      description: 'We believe in treating every client with empathy, respect, and understanding, creating a safe space for growth and healing.'
+      title: t('whoWeAre.compassionateCare'),
+      description: t('whoWeAre.compassionateCareDesc')
     },
     {
       icon: <Target className="w-8 h-8" />,
-      title: 'Evidence-Based Practice',
-      description: 'Our therapy approaches are grounded in research and proven methodologies, ensuring the most effective treatment for each individual.'
+      title: t('whoWeAre.evidenceBased'),
+      description: t('whoWeAre.evidenceBasedDesc')
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: 'Collaborative Approach',
-      description: 'We work closely with clients, families, and other healthcare providers to create comprehensive, personalized treatment plans.'
+      title: t('whoWeAre.collaborative'),
+      description: t('whoWeAre.collaborativeDesc')
     },
     {
       icon: <Lightbulb className="w-8 h-8" />,
-      title: 'Innovation & Technology',
-      description: 'We leverage cutting-edge technology and innovative approaches to make therapy more accessible and effective for everyone.'
+      title: t('whoWeAre.innovation'),
+      description: t('whoWeAre.innovationDesc')
     }
   ]
 
   const teamStats = [
-    { number: '50+', label: 'Licensed Therapists' },
-    { number: '15+', label: 'Years Combined Experience' },
-    { number: '10,000+', label: 'Sessions Completed' },
-    { number: '95%', label: 'Client Satisfaction Rate' }
+    { number: '50+', label: t('whoWeAre.therapists'), context: 'Licensed and verified therapists across multiple states' },
+    { number: '15+', label: t('whoWeAre.experience'), context: 'Combined years of clinical experience from our team' },
+    { number: '10,000+', label: t('whoWeAre.sessions'), context: 'Total therapy sessions completed on our platform' },
+    { number: '95%', label: t('whoWeAre.satisfaction'), context: t('whoWeAre.satisfactionContext') }
   ]
 
   const certifications = [
@@ -178,14 +181,20 @@ export default function WhoWeArePage() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="grid md:grid-cols-4 gap-8 mb-16"
+          className="mb-16"
         >
-          {teamStats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="text-4xl font-bold text-black mb-2">{stat.number}</div>
-              <div className="text-gray-600">{stat.label}</div>
-            </div>
-          ))}
+          <h2 className="text-3xl font-bold text-black text-center mb-8">{t('whoWeAre.statsTitle')}</h2>
+          <div className="grid md:grid-cols-4 gap-8">
+            {teamStats.map((stat, index) => (
+              <div key={index} className="text-center bg-white rounded-2xl premium-shadow p-6">
+                <div className="text-4xl font-bold text-black mb-2">{stat.number}</div>
+                <div className="text-gray-700 font-semibold mb-2">{stat.label}</div>
+                {stat.context && (
+                  <div className="text-sm text-gray-500 mt-2">{stat.context}</div>
+                )}
+              </div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Our Values */}

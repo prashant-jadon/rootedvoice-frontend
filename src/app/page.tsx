@@ -361,13 +361,23 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-xl mb-12 max-w-4xl mx-auto leading-relaxed"
+              className="text-xl mb-8 max-w-4xl mx-auto leading-relaxed"
               style={{ 
                 color: currentPalette === '3' ? '#202D3E' : 'rgba(40, 34, 34, 0.8)'
               }}
             >
-              A revolutionary platform where clients access world-class therapy from home, 
-              while therapists leverage AI-powered tools to deliver exceptional care and grow their practice.
+              {t('landing.hero.subtitle')}
+            </motion.p>
+            <motion.p 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="text-lg mb-12 max-w-4xl mx-auto leading-relaxed font-medium"
+              style={{ 
+                color: currentPalette === '3' ? '#202D3E' : 'rgba(40, 34, 34, 0.9)'
+              }}
+            >
+              {t('landing.dualAudience')}
             </motion.p>
             
             <motion.div 
@@ -385,10 +395,11 @@ export default function LandingPage() {
                   boxShadow: currentPalette === '3' ? '0 25px 50px -12px rgba(77, 125, 125, 0.4)' : currentPalette === '1' ? '0 25px 50px -12px rgba(32, 57, 54, 0.4)' : '0 25px 50px -12px rgba(255, 255, 255, 0.25)'
                 }}
               >
-                Start Free Trial
+                {t('landing.hero.cta')}
                 <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
               </Link>
               <button 
+                onClick={() => setShowDemoModal(true)}
                 className="flex items-center transition-all duration-300 hover:scale-105 backdrop-blur-sm px-8 py-4 rounded-full border"
                 style={{
                   color: currentPalette === '3' ? '#202D3E' : 'rgba(255,255,255,0.9)',
@@ -397,7 +408,7 @@ export default function LandingPage() {
                 }}
               >
                 <Play className="mr-3 w-6 h-6" />
-                <span className="font-semibold">Watch Demo</span>
+                <span className="font-semibold">{t('landing.hero.watchDemo')}</span>
               </button>
             </motion.div>
           </div>
@@ -697,7 +708,7 @@ export default function LandingPage() {
                   color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'rgba(255,255,255,0.9)'
                 }}
               >
-                💰 Transparent Pricing
+                💰 {t('landing.pricingTitle')}
               </span>
             </div>
             <h2 
@@ -706,9 +717,7 @@ export default function LandingPage() {
                 color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'white'
               }}
             >
-              Simple, transparent
-              <br />
-              <span className="text-palette-primary drop-shadow-lg">pricing</span>
+              {t('landing.pricingTitle')}
             </h2>
             <p 
               className="text-xl max-w-4xl mx-auto leading-relaxed mb-8"
@@ -716,8 +725,7 @@ export default function LandingPage() {
                 color: currentPalette === '3' ? '#202D3E' : 'rgba(0, 0, 0, 0.8)'
               }}
             >
-              Choose the plan that works best for your practice. All plans include 
-              access to our licensed therapists and secure teletherapy platform.
+              {t('landing.pricingSubtitle')}
             </p>
             
             {/* Insurance Banner */}

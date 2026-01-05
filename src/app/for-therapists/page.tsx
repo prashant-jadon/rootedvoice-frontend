@@ -25,29 +25,35 @@ import {
 import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function ForTherapistsPage() {
+  const t = useTranslation()
   const compensationRanges = [
     {
       credential: 'SLP (Speech-Language Pathologist)',
       maxRate: '$75',
-      description: 'Full license holders can set rates up to $75/hour',
+      description: 'Fully licensed Speech-Language Pathologists can set rates up to $75/hour',
       benefits: [
-        '80% of session fee goes directly to you',
+        '80% of session fee goes directly to you (20% platform fee)',
         'Set your own hourly rate (up to $75/hour)',
+        '$20 cancellation fee protection when clients cancel',
         'Flexible scheduling on your terms',
-        'Direct payment processing'
+        'Direct payment processing with transparent reporting',
+        'No hidden fees or surprise deductions'
       ]
     },
     {
       credential: 'SLPA (Speech-Language Pathology Assistant)',
       maxRate: '$55',
-      description: 'Assistants can set rates up to $55/hour',
+      description: 'Speech-Language Pathology Assistants can set rates up to $55/hour',
       benefits: [
-        '80% of session fee goes directly to you',
+        '80% of session fee goes directly to you (20% platform fee)',
         'Set your own hourly rate (up to $55/hour)',
-        '$15 cancellation fee protection',
-        'Supportive platform for career growth'
+        '$15 cancellation fee protection when clients cancel',
+        'Supportive platform designed for career growth',
+        'Clear guidelines and supervision support',
+        'Direct payment processing with transparent reporting'
       ]
     }
   ]
@@ -189,25 +195,24 @@ export default function ForTherapistsPage() {
             className="text-center"
           >
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Join Rooted Voices
+              {t('forTherapists.heroTitle')}
             </h1>
             <p className="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
-              Build a thriving practice on a platform designed by therapists, for therapists. 
-              Fair compensation, flexible scheduling, and tools that actually help you succeed.
+              {t('forTherapists.heroSubtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/signup?role=therapist"
                 className="bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-colors inline-flex items-center justify-center"
               >
-                Join as a Therapist
+                {t('forTherapists.joinButton')}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
               <Link
                 href="/who-we-are"
                 className="bg-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors border-2 border-gray-300 inline-flex items-center justify-center"
               >
-                Learn More About Us
+                {t('forTherapists.learnMoreButton')}
               </Link>
             </div>
           </motion.div>
@@ -225,10 +230,10 @@ export default function ForTherapistsPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Fair & Transparent Compensation
+              {t('forTherapists.compensationTitle')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We believe therapists deserve to be fairly compensated. That's why we offer one of the best revenue splits in the industry.
+              {t('forTherapists.compensationSubtitle')}
             </p>
           </motion.div>
 
@@ -243,10 +248,16 @@ export default function ForTherapistsPage() {
                 className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl border-2 border-blue-100"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-2xl font-bold text-gray-900">{range.credential}</h3>
-                  <div className="text-3xl font-bold text-blue-600">{range.maxRate}/hr</div>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    {range.credential === 'SLP (Speech-Language Pathologist)' ? t('forTherapists.slpTitle') : t('forTherapists.slpaTitle')}
+                  </h3>
+                  <div className="text-3xl font-bold text-blue-600">
+                    {range.credential === 'SLP (Speech-Language Pathologist)' ? t('forTherapists.slpMaxRate') : t('forTherapists.slpaMaxRate')}
+                  </div>
                 </div>
-                <p className="text-gray-600 mb-6">{range.description}</p>
+                <p className="text-gray-600 mb-6">
+                  {range.credential === 'SLP (Speech-Language Pathologist)' ? t('forTherapists.slpDesc') : t('forTherapists.slpaDesc')}
+                </p>
                 <ul className="space-y-3">
                   {range.benefits.map((benefit, i) => (
                     <li key={i} className="flex items-start">
@@ -266,23 +277,22 @@ export default function ForTherapistsPage() {
             transition={{ duration: 0.6 }}
             className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-8 rounded-2xl text-center"
           >
-            <h3 className="text-2xl font-bold mb-4">80/20 Revenue Split</h3>
+            <h3 className="text-2xl font-bold mb-4">{t('forTherapists.revenueSplitTitle')}</h3>
             <p className="text-lg mb-6">
-              You keep 80% of every session fee. We only take 20% to cover platform costs, 
-              payment processing, and continued development of tools that help you succeed.
+              {t('forTherapists.revenueSplitDesc')}
             </p>
             <div className="grid md:grid-cols-3 gap-6 mt-8">
               <div>
                 <div className="text-4xl font-bold mb-2">80%</div>
-                <div className="text-blue-100">Your Earnings</div>
+                <div className="text-blue-100">{t('forTherapists.yourEarnings')}</div>
               </div>
               <div>
                 <div className="text-4xl font-bold mb-2">20%</div>
-                <div className="text-blue-100">Platform Fee</div>
+                <div className="text-blue-100">{t('forTherapists.platformFee')}</div>
               </div>
               <div>
                 <div className="text-4xl font-bold mb-2">0%</div>
-                <div className="text-blue-100">Hidden Fees</div>
+                <div className="text-blue-100">{t('forTherapists.noHiddenFees')}</div>
               </div>
             </div>
           </motion.div>
@@ -300,11 +310,10 @@ export default function ForTherapistsPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              A Platform Built for Clinicians
+              {t('forTherapists.platformTitle')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Every feature is designed to support your practice and make your work easier, 
-              not harder. Here's what makes Rooted Voices different.
+              {t('forTherapists.platformSubtitle')}
             </p>
           </motion.div>
 
@@ -346,10 +355,10 @@ export default function ForTherapistsPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Therapists Choose Rooted Voices
+              {t('forTherapists.whyTitle')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Join hundreds of therapists who have found a better way to practice.
+              {t('forTherapists.whySubtitle')}
             </p>
           </motion.div>
 
@@ -383,7 +392,7 @@ export default function ForTherapistsPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              What Therapists Are Saying
+              {t('forTherapists.testimonialsTitle')}
             </h2>
           </motion.div>
 
@@ -423,24 +432,24 @@ export default function ForTherapistsPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl font-bold text-white mb-6">
-              Ready to Grow Your Practice?
+              {t('forTherapists.readyTitle')}
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Join Rooted Voices today and start building a practice that works for you.
+              {t('forTherapists.readySubtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/signup?role=therapist"
                 className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center justify-center"
               >
-                Get Started
+                {t('forTherapists.getStarted')}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
               <Link
                 href="/faq"
                 className="bg-transparent text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors border-2 border-white inline-flex items-center justify-center"
               >
-                View FAQ
+                {t('forTherapists.viewFAQ')}
               </Link>
             </div>
           </motion.div>

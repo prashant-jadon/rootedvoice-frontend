@@ -16,8 +16,10 @@ import {
   Award
 } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function ServicesPage() {
+  const t = useTranslation()
   const services = [
     {
       id: 'infants-toddlers',
@@ -144,21 +146,18 @@ export default function ServicesPage() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-            Comprehensive Speech & Language
-            <br />
-            <span className="gradient-text">Therapy Services</span>
+            {t('services.heroTitle')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            From early intervention to specialized adult care, we provide evidence-based therapy 
-            tailored to every stage of life and communication need.
+            {t('services.heroSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/meet-our-therapists" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">
-              Meet Our Therapists
+              {t('nav.therapists')}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link href="/pricing" className="border border-gray-300 text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300">
-              View Pricing Plans
+              {t('nav.pricing')}
             </Link>
           </div>
         </motion.div>
@@ -203,7 +202,7 @@ export default function ServicesPage() {
                       className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center group"
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
-                      Find a Therapist
+                      {t('nav.findTherapists')}
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
                     <Link 
@@ -211,7 +210,7 @@ export default function ServicesPage() {
                       className="border border-gray-300 text-black px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
                     >
                       <Calendar className="w-4 h-4 mr-2" />
-                      Schedule Consultation
+                      {t('services.bookConsultation')}
                     </Link>
                   </div>
                 </div>
@@ -228,10 +227,9 @@ export default function ServicesPage() {
           className="mt-20 bg-white rounded-2xl premium-shadow p-8"
         >
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-black mb-4">Why Choose Rooted Voices?</h2>
+            <h2 className="text-3xl font-bold text-black mb-4">{t('services.whyChooseTitle')}</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              We combine evidence-based practices with personalized care to help you or your loved one 
-              achieve meaningful communication goals.
+              {t('services.whyChooseDesc')}
             </p>
           </div>
           
@@ -271,18 +269,17 @@ export default function ServicesPage() {
           transition={{ duration: 0.6 }}
           className="mt-16 text-center"
         >
-          <h2 className="text-3xl font-bold text-black mb-4">Ready to Get Started?</h2>
+          <h2 className="text-3xl font-bold text-black mb-4">{t('services.readyTitle')}</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Take the first step towards better communication. Schedule a consultation with one of our 
-            experienced therapists today.
+            {t('services.readySubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/meet-our-therapists" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">
-              Meet Our Therapists
+              {t('nav.therapists')}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link href="/pricing" className="border border-gray-300 text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300">
-              View Pricing Plans
+              {t('nav.pricing')}
             </Link>
           </div>
         </motion.div>

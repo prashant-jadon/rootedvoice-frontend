@@ -17,8 +17,10 @@ import {
   FileText
 } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function FAQPage() {
+  const t = useTranslation()
   const [openItems, setOpenItems] = useState<number[]>([])
 
   const toggleItem = (index: number) => {
@@ -31,90 +33,94 @@ export default function FAQPage() {
 
   const faqCategories = [
     {
-      title: 'Getting Started',
+      title: t('faq.gettingStarted'),
       icon: <HelpCircle className="w-6 h-6" />,
       questions: [
         {
-          question: 'How do I get started with therapy at Rooted Voices?',
-          answer: 'Getting started is easy! Simply visit our "Meet Our Therapists" page to browse our licensed professionals, or contact us directly. We\'ll schedule a free consultation to discuss your needs and match you with the right therapist.'
+          question: t('faq.howToGetStarted'),
+          answer: t('faq.getStartedAnswer')
         },
         {
-          question: 'Do you offer free consultations?',
-          answer: 'Yes! We offer free 15-minute consultations to help you understand our services and determine if we\'re a good fit for your needs. This is a great opportunity to ask questions and learn about our approach.'
+          question: t('faq.freeConsultations'),
+          answer: t('faq.freeConsultationsAnswer')
         },
         {
-          question: 'What age groups do you serve?',
-          answer: 'We serve clients of all ages, from infants (0-3 years) to older adults (65+). Our therapists specialize in different age groups and communication needs, ensuring you receive age-appropriate care.'
+          question: t('faq.ageGroups'),
+          answer: t('faq.ageGroupsAnswer')
         },
         {
-          question: 'Do you accept insurance?',
-          answer: 'We are currently in-network with several major insurance providers. Please contact us to verify your specific coverage. We also offer flexible payment plans and accept HSA/FSA payments.'
+          question: t('faq.acceptInsurance'),
+          answer: t('faq.acceptInsuranceAnswer')
         }
       ]
     },
     {
-      title: 'Services & Therapy',
+      title: t('faq.servicesTherapy'),
       icon: <MessageCircle className="w-6 h-6" />,
       questions: [
         {
-          question: 'What types of speech and language services do you offer?',
-          answer: 'We offer comprehensive services including articulation therapy, language development, fluency therapy, voice therapy, feeding/swallowing therapy, AAC services, cognitive-communication therapy, and more. Visit our Services page for detailed information.'
+          question: t('faq.typesOfServices'),
+          answer: t('faq.typesOfServicesAnswer')
         },
         {
-          question: 'How long are therapy sessions?',
-          answer: 'Session length varies by service tier: Rooted Tier (30 minutes), Flourish Tier (60 minutes), and Bloom Tier (60 minutes). We can adjust session length based on individual needs and attention spans.'
+          question: t('faq.sessionLength'),
+          answer: t('faq.sessionLengthAnswer')
         },
         {
-          question: 'How often will I have therapy sessions?',
-          answer: 'Frequency depends on your service tier and individual needs. Rooted Tier includes 2-4 sessions per month, Flourish Tier offers weekly or bi-weekly sessions, and Bloom Tier provides flexible scheduling with 2-3 sessions monthly.'
+          question: t('faq.sessionFrequency'),
+          answer: t('faq.sessionFrequencyAnswer')
         },
         {
-          question: 'Do you provide therapy in languages other than English?',
-          answer: 'Yes! Many of our therapists are bilingual or multilingual. Please let us know your language preferences during your consultation, and we\'ll match you with an appropriate therapist.'
+          question: t('faq.multilingualTherapy'),
+          answer: t('faq.multilingualTherapyAnswer')
         }
       ]
     },
     {
-      title: 'Technology & Platform',
+      title: t('faq.technologyPlatform'),
       icon: <Shield className="w-6 h-6" />,
       questions: [
         {
-          question: 'Is teletherapy as effective as in-person therapy?',
-          answer: 'Research shows that teletherapy can be just as effective as in-person therapy for many communication disorders. Our platform is designed specifically for speech therapy and includes interactive tools and resources.'
+          question: t('faq.telehealthEffective'),
+          answer: t('faq.telehealthEffectiveAnswer')
         },
         {
-          question: 'What technology do I need for teletherapy?',
-          answer: 'You\'ll need a computer, tablet, or smartphone with a camera and microphone, plus a stable internet connection. We recommend using Chrome or Safari browsers for the best experience.'
+          question: t('faq.technologyNeeded'),
+          answer: t('faq.technologyNeededAnswer')
         },
         {
-          question: 'Is my information secure and private?',
-          answer: 'Absolutely. We use HIPAA-compliant, encrypted video conferencing and secure data storage. All sessions are confidential, and we follow strict privacy protocols to protect your information.'
+          question: t('faq.platformSecure'),
+          answer: t('faq.platformSecureAnswer')
         },
         {
-          question: 'Can I record my therapy sessions?',
-          answer: 'Recording policies vary by state and individual therapist preferences. We\'ll discuss recording options during your initial consultation and obtain proper consent if recording is desired.'
+          question: t('faq.recordSessions'),
+          answer: t('faq.recordSessionsAnswer')
         }
       ]
     },
     {
-      title: 'Billing & Payments',
+      title: t('faq.pricingBilling'),
       icon: <CreditCard className="w-6 h-6" />,
       questions: [
         {
-          question: 'What are your pricing tiers?',
-          answer: 'We offer three service tiers: Rooted Tier ($50/30min, billed every 4 weeks), Flourish Tier ($85/hour, billed every 4 weeks), and Bloom Tier ($90/hour, pay-as-you-go). Each tier includes different features and support levels.'
+          question: t('faq.pricingPlans'),
+          answer: t('faq.pricingPlansAnswer')
         },
         {
-          question: 'When is payment due?',
-          answer: 'For Rooted and Flourish tiers, payment is due every 4 weeks in advance. Bloom Tier is pay-as-you-go, with payment due before each session. We accept major credit cards, HSA/FSA, and bank transfers.'
+          question: t('faq.paymentDue'),
+          answer: t('faq.paymentDueAnswer')
         },
         {
-          question: 'What is your cancellation policy?',
-          answer: 'We require 24-hour notice for cancellations. Cancellations with less than 24-hour notice may be subject to a fee. Please see our detailed Cancellation Policy for complete information.'
+          question: t('faq.cancellationPolicy'),
+          answer: t('faq.cancellationPolicyAnswer')
         },
         {
-          question: 'Do you offer payment plans or financial assistance?',
-          answer: 'Yes, we offer flexible payment plans and may have financial assistance options available. Please contact us to discuss your specific situation and available options.'
+          question: t('faq.paymentMethods'),
+          answer: t('faq.paymentMethodsAnswer')
+        },
+        {
+          question: t('faq.cancelSubscription'),
+          answer: t('faq.cancelSubscriptionAnswer')
         }
       ]
     },
@@ -200,13 +206,12 @@ export default function FAQPage() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-            Frequently Asked
+            {t('faq.title').split(' ').slice(0, 2).join(' ')}
             <br />
-            <span className="gradient-text">Questions</span>
+            <span className="gradient-text">{t('faq.title').split(' ').slice(2).join(' ')}</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            Find answers to common questions about our services, technology, billing, and more. 
-            Can't find what you're looking for? We're here to help!
+            {t('faq.subtitle')} {t('faq.subtitleHelp')}
           </p>
         </motion.div>
 
@@ -300,10 +305,11 @@ export default function FAQPage() {
             
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                <Clock className="w-6 h-6 text-black" />
+                <MessageCircle className="w-6 h-6 text-black" />
               </div>
-              <h3 className="font-semibold text-black mb-1">Response Time</h3>
-              <p className="text-gray-600 text-sm">Within 24 hours</p>
+              <h3 className="font-semibold text-black mb-1">{t('faq.visitUs')}</h3>
+              <p className="text-gray-600 text-sm">{t('faq.address')}</p>
+              <p className="text-gray-500 text-xs">{t('faq.cityState')}</p>
             </div>
           </div>
         </motion.div>
