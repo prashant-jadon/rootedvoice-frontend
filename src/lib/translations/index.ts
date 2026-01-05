@@ -63,6 +63,14 @@ export const translations = {
         subtitle: 'Join thousands of clients and therapists using Rooted Voices',
         button: 'Sign Up Now',
       },
+      pricingTitle: 'Simple, Transparent Pricing',
+      pricingSubtitle: 'Choose the plan that works best for your needs',
+      rootedTier: 'Rooted Tier',
+      flourishTier: 'Flourish Tier',
+      bloomTier: 'Bloom Tier',
+      forClients: 'For Clients',
+      forTherapists: 'For Therapists',
+      dualAudience: 'Rooted Voices serves both clients seeking therapy and clinicians building their practice. We\'re committed to supporting both communities equally.',
     },
     // Dashboard
     dashboard: {
@@ -481,17 +489,6 @@ export const translations = {
       insuranceNote: 'Insurance billing coming soon!',
       insuranceTimeline: '(60-90 day credentialing timeline)',
     },
-    // Landing Page
-    landing: {
-      pricingTitle: 'Simple, Transparent Pricing',
-      pricingSubtitle: 'Choose the plan that works best for your needs',
-      rootedTier: 'Rooted Tier',
-      flourishTier: 'Flourish Tier',
-      bloomTier: 'Bloom Tier',
-      forClients: 'For Clients',
-      forTherapists: 'For Therapists',
-      dualAudience: 'Rooted Voices serves both clients seeking therapy and clinicians building their practice. We\'re committed to supporting both communities equally.',
-    },
   },
   es: {
     nav: {
@@ -552,6 +549,14 @@ export const translations = {
         subtitle: 'Únase a miles de clientes y terapeutas que usan Rooted Voices',
         button: 'Regístrate Ahora',
       },
+      pricingTitle: 'Precios Simples y Transparentes',
+      pricingSubtitle: 'Elige el plan que mejor se adapte a tus necesidades',
+      rootedTier: 'Nivel Rooted',
+      flourishTier: 'Nivel Flourish',
+      bloomTier: 'Nivel Bloom',
+      forClients: 'Para Clientes',
+      forTherapists: 'Para Terapeutas',
+      dualAudience: 'Rooted Voices sirve tanto a clientes que buscan terapia como a clínicos que construyen su práctica. Estamos comprometidos a apoyar ambas comunidades por igual.',
     },
     dashboard: {
       welcome: 'Bienvenido de nuevo',
@@ -901,16 +906,6 @@ export const translations = {
       insuranceNote: '¡Facturación de seguros próximamente!',
       insuranceTimeline: '(cronograma de acreditación de 60-90 días)',
     },
-    landing: {
-      pricingTitle: 'Precios Simples y Transparentes',
-      pricingSubtitle: 'Elige el plan que mejor se adapte a tus necesidades',
-      rootedTier: 'Nivel Rooted',
-      flourishTier: 'Nivel Flourish',
-      bloomTier: 'Nivel Bloom',
-      forClients: 'Para Clientes',
-      forTherapists: 'Para Terapeutas',
-      dualAudience: 'Rooted Voices sirve tanto a clientes que buscan terapia como a clínicos que construyen su práctica. Estamos comprometidos a apoyar ambas comunidades por igual.',
-    },
   },
   fr: {
     nav: {
@@ -971,6 +966,14 @@ export const translations = {
         subtitle: 'Rejoignez des milliers de clients et de thérapeutes utilisant Rooted Voices',
         button: "S'inscrire Maintenant",
       },
+      pricingTitle: 'Tarification Simple et Transparente',
+      pricingSubtitle: 'Choisissez le plan qui répond le mieux à vos besoins',
+      rootedTier: 'Niveau Rooted',
+      flourishTier: 'Niveau Flourish',
+      bloomTier: 'Niveau Bloom',
+      forClients: 'Pour les Clients',
+      forTherapists: 'Pour les Thérapeutes',
+      dualAudience: 'Rooted Voices sert à la fois les clients cherchant une thérapie et les cliniciens construisant leur pratique. Nous nous engageons à soutenir les deux communautés également.',
     },
     dashboard: {
       welcome: 'Bon retour',
@@ -1223,16 +1226,6 @@ export const translations = {
       insuranceNote: 'Facturation d\'assurance bientôt disponible!',
       insuranceTimeline: '(délai d\'accréditation de 60-90 jours)',
     },
-    landing: {
-      pricingTitle: 'Tarification Simple et Transparente',
-      pricingSubtitle: 'Choisissez le plan qui répond le mieux à vos besoins',
-      rootedTier: 'Niveau Rooted',
-      flourishTier: 'Niveau Flourish',
-      bloomTier: 'Niveau Bloom',
-      forClients: 'Pour les Clients',
-      forTherapists: 'Pour les Thérapeutes',
-      dualAudience: 'Rooted Voices sert à la fois les clients cherchant une thérapie et les cliniciens construisant leur pratique. Nous nous engageons à soutenir les deux communautés également.',
-    },
   },
   // Add more languages as needed
   de: {
@@ -1294,6 +1287,14 @@ export const translations = {
         subtitle: 'Schließen Sie sich Tausenden von Klienten und Therapeuten an, die Rooted Voices verwenden',
         button: 'Jetzt Registrieren',
       },
+      pricingTitle: 'Einfache, Transparente Preise',
+      pricingSubtitle: 'Wählen Sie den Plan, der am besten zu Ihren Bedürfnissen passt',
+      rootedTier: 'Rooted Stufe',
+      flourishTier: 'Flourish Stufe',
+      bloomTier: 'Bloom Stufe',
+      forClients: 'Für Klienten',
+      forTherapists: 'Für Therapeuten',
+      dualAudience: 'Rooted Voices dient sowohl Klienten, die Therapie suchen, als auch Klinikern, die ihre Praxis aufbauen. Wir verpflichten uns, beide Gemeinschaften gleichermaßen zu unterstützen.',
     },
     dashboard: {
       welcome: 'Willkommen zurück',
@@ -1636,16 +1637,6 @@ export const translations = {
       paymentCanceled: 'Die Zahlung wurde storniert. Sie können es jederzeit erneut versuchen.',
       insuranceNote: 'Versicherungsabrechnung kommt bald!',
       insuranceTimeline: '(Akkreditierungszeitrahmen von 60-90 Tagen)',
-    },
-    landing: {
-      pricingTitle: 'Einfache, Transparente Preise',
-      pricingSubtitle: 'Wählen Sie den Plan, der am besten zu Ihren Bedürfnissen passt',
-      rootedTier: 'Rooted Stufe',
-      flourishTier: 'Flourish Stufe',
-      bloomTier: 'Bloom Stufe',
-      forClients: 'Für Klienten',
-      forTherapists: 'Für Therapeuten',
-      dualAudience: 'Rooted Voices dient sowohl Klienten, die Therapie suchen, als auch Klinikern, die ihre Praxis aufbauen. Wir verpflichten uns, beide Gemeinschaften gleichermaßen zu unterstützen.',
     },
   },
 }
