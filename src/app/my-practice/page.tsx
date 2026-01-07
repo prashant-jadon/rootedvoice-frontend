@@ -154,7 +154,7 @@ export default function MyPracticePage() {
               <p className="text-lg text-gray-600">
                 <div className="flex items-center gap-2">
                   <span>Licensed Speech-Language Pathologist</span>
-                  <CredentialsBadge credentials={therapistProfile.credentials || 'SLP'} />
+                  <CredentialsBadge credentials={therapistProfile.credentials || 'SLP'} canSupervise={therapistProfile.canSupervise || false} />
                 </div>
               </p>
               <div className="flex items-center space-x-4 mt-4 text-sm text-gray-600">

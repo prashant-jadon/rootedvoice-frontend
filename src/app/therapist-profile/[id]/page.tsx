@@ -21,6 +21,7 @@ import Link from 'next/link'
 import { therapistAPI, subscriptionAPI } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import CredentialsBadge from '@/components/CredentialsBadge'
 
 export default function TherapistProfilePage({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState('overview')
@@ -331,7 +332,14 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                     </li>
                     <li className="flex items-start space-x-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
-                      <span className="text-gray-600">Credential: {therapist.credentials || 'SLP'}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Credential:</span>
+                        <CredentialsBadge 
+                          credentials={therapist.credentials || 'SLP'} 
+                          canSupervise={therapist.canSupervise || false}
+                          size="sm"
+                        />
+                      </div>
                     </li>
                     {therapist.isVerified && (
                       <li className="flex items-start space-x-2">

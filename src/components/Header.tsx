@@ -19,6 +19,7 @@ export default function Header() {
   const t = useTranslation()
   const [isDetectingLanguage, setIsDetectingLanguage] = useState(false)
   const [therapistCredentials, setTherapistCredentials] = useState<'SLP' | 'SLPA' | null>(null)
+  const [canSupervise, setCanSupervise] = useState<boolean>(false)
 
   const handleLogout = () => {
     logout()
@@ -38,6 +39,7 @@ export default function Header() {
     try {
       const response = await therapistAPI.getMyProfile()
       setTherapistCredentials(response.data.data?.credentials || null)
+      setCanSupervise(response.data.data?.canSupervise || false)
     } catch (error) {
       console.error('Failed to fetch therapist credentials:', error)
     }
@@ -193,7 +195,7 @@ export default function Header() {
             
             {/* Credentials Badge for Therapists */}
             {user?.role === 'therapist' && therapistCredentials && (
-              <CredentialsBadge credentials={therapistCredentials} size="sm" />
+              <CredentialsBadge credentials={therapistCredentials} canSupervise={canSupervise} size="sm" />
             )}
             
             <button className="relative p-2 text-gray-600 hover:text-black transition-colors">

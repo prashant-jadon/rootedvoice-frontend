@@ -1,15 +1,17 @@
 'use client'
 
-import { Shield, AlertCircle } from 'lucide-react'
+import { Star, CheckCircle, Puzzle } from 'lucide-react'
 
 interface CredentialsBadgeProps {
   credentials: 'SLP' | 'SLPA' | null | undefined
+  canSupervise?: boolean
   showIcon?: boolean
   size?: 'sm' | 'md' | 'lg'
 }
 
 export default function CredentialsBadge({ 
   credentials, 
+  canSupervise = false,
   showIcon = true,
   size = 'md' 
 }: CredentialsBadgeProps) {
@@ -27,31 +29,51 @@ export default function CredentialsBadge({
     lg: 'w-5 h-5',
   }
 
-  const isSLPA = credentials === 'SLPA'
-  
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full font-medium ${
-        isSLPA
-          ? 'bg-amber-100 text-amber-800 border border-amber-200'
-          : 'bg-blue-100 text-blue-800 border border-blue-200'
-      } ${sizeClasses[size]}`}
-      title={
-        isSLPA
-          ? 'Speech-Language Pathology Assistant - Limited access to resources'
-          : 'Speech-Language Pathologist - Full access'
-      }
-    >
-      {showIcon && (
-        <Shield className={iconSizes[size]} />
-      )}
-      {credentials}
-      {isSLPA && (
-        <span title="SLPA has restricted access to certain resources">
-          <AlertCircle className={iconSizes[size]} />
-        </span>
-      )}
-    </span>
-  )
+  // Supervising SLP
+  if (credentials === 'SLP' && canSupervise) {
+    return (
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full font-medium bg-yellow-100 text-yellow-800 ${sizeClasses[size]}`}
+        title="⭐ Supervising SLP - Can supervise SLPA assistants"
+      >
+        {showIcon && (
+          <Star className={`${iconSizes[size]} fill-yellow-600 text-yellow-600`} />
+        )}
+        Supervising SLP
+      </span>
+    )
+  }
+
+  // Licensed SLP
+  if (credentials === 'SLP') {
+    return (
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full font-medium bg-green-100 text-green-800 ${sizeClasses[size]}`}
+        title="✔️ Licensed SLP - Speech-Language Pathologist"
+      >
+        {showIcon && (
+          <CheckCircle className={iconSizes[size]} />
+        )}
+        Licensed SLP
+      </span>
+    )
+  }
+
+  // SLPA
+  if (credentials === 'SLPA') {
+    return (
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full font-medium bg-blue-100 text-blue-800 ${sizeClasses[size]}`}
+        title="🧩 SLPA - Speech-Language Pathology Assistant"
+      >
+        {showIcon && (
+          <Puzzle className={iconSizes[size]} />
+        )}
+        SLPA
+      </span>
+    )
+  }
+
+  return null
 }
 

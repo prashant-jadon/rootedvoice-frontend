@@ -23,6 +23,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { therapistAPI, translationAPI } from '@/lib/api'
+import CredentialsBadge from '@/components/CredentialsBadge'
 
 export default function MeetOurTherapistsPage() {
   const [selectedSpecialty, setSelectedSpecialty] = useState('all')
@@ -315,7 +316,13 @@ export default function MeetOurTherapistsPage() {
                       {therapist.userId ? `${therapist.userId.firstName} ${therapist.userId.lastName}` : 'Unknown Therapist'}
                     </h3>
                     <p className="text-gray-600 mb-2">Speech-Language Pathologist</p>
-                    <p className="text-sm text-gray-500 mb-3">{therapist.credentials || 'CCC-SLP'}</p>
+                    <div className="mb-3">
+                      <CredentialsBadge 
+                        credentials={therapist.credentials || 'SLP'} 
+                        canSupervise={therapist.canSupervise || false}
+                        size="sm"
+                      />
+                    </div>
                     
                     {/* Rating */}
                     <div className="flex items-center space-x-2 mb-3">
