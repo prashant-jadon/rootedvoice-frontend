@@ -304,9 +304,17 @@ function BookSessionContent() {
                     </span>
                   </div>
                   {!remainingSessions.hasUnlimited && remainingSessions.remainingSessions === 0 && (
-                    <p className="text-sm text-red-600 mt-2 text-center">
-                      You've used all your sessions for this billing period.
-                    </p>
+                    <div className="mt-3 space-y-2">
+                      <p className="text-sm text-red-600 text-center">
+                        You've used all your sessions for this billing period.
+                      </p>
+                      <Link
+                        href="/pricing"
+                        className="block w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors font-semibold text-center text-sm shadow-md"
+                      >
+                        Renew Subscription
+                      </Link>
+                    </div>
                   )}
                   {!remainingSessions.hasUnlimited && remainingSessions.remainingSessions > 0 && (
                     <p className="text-sm text-gray-600 mt-2 text-center">

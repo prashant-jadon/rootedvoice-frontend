@@ -61,6 +61,7 @@ export const therapistAPI = {
   getAll: (params?: any) => api.get('/therapists', { params }),
   getById: (id: string) => api.get(`/therapists/${id}`),
   getMyProfile: () => api.get('/therapists/me'),
+  getMyPayments: (params?: any) => api.get('/therapists/me/payments', { params }),
   createOrUpdate: (data: any) => api.post('/therapists', data),
   updateAvailability: (id: string, availability: any) =>
     api.put(`/therapists/${id}/availability`, { availability }),

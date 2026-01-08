@@ -326,14 +326,24 @@ export default function ClientDashboardPage() {
                   )}
                 </div>
               </div>
-              {remainingSessions.remainingSessions > 0 && !remainingSessions.hasUnlimited && (
-                <Link
-                  href="/meet-our-therapists"
-                  className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold"
-                >
-                  Book Session
-                </Link>
-              )}
+              <div className="flex flex-col items-end gap-2">
+                {remainingSessions.remainingSessions > 0 && !remainingSessions.hasUnlimited && (
+                  <Link
+                    href="/meet-our-therapists"
+                    className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+                  >
+                    Book Session
+                  </Link>
+                )}
+                {remainingSessions.remainingSessions === 0 && !remainingSessions.hasUnlimited && (
+                  <Link
+                    href="/pricing"
+                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors font-semibold shadow-lg"
+                  >
+                    Renew Subscription
+                  </Link>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

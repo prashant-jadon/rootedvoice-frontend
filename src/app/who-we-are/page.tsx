@@ -185,15 +185,15 @@ export default function WhoWeArePage() {
         >
           <h2 className="text-3xl font-bold text-black text-center mb-8">{t('whoWeAre.statsTitle')}</h2>
           <div className="grid md:grid-cols-4 gap-8">
-            {teamStats.map((stat, index) => (
+          {teamStats.map((stat, index) => (
               <div key={index} className="text-center bg-white rounded-2xl premium-shadow p-6">
-                <div className="text-4xl font-bold text-black mb-2">{stat.number}</div>
+              <div className="text-4xl font-bold text-black mb-2">{stat.number}</div>
                 <div className="text-gray-700 font-semibold mb-2">{stat.label}</div>
                 {stat.context && (
                   <div className="text-sm text-gray-500 mt-2">{stat.context}</div>
                 )}
-              </div>
-            ))}
+            </div>
+          ))}
           </div>
         </motion.div>
 

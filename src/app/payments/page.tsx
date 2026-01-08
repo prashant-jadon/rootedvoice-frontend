@@ -26,81 +26,173 @@ import {
   BarChart3
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { therapistAPI, sessionAPI } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+
+interface Payment {
+  _id: string
+  amount: number
+  currency: string
+  status: string
+  paymentMethod: string
+  invoiceNumber?: string
+  createdAt: string
+  clientId: {
+    userId: {
+      firstName: string
+      lastName: string
+      email: string
+    }
+  }
+  sessionId: {
+    date: string
+    time: string
+    duration?: number
+    serviceType?: string
+  }
+}
 
 export default function PaymentsPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [payments, setPayments] = useState<Payment[]>([])
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    thisMonthRevenue: 0,
+    pendingAmount: 0,
+    completedSessions: 0,
+    monthChange: 0,
+  })
+  const [loading, setLoading] = useState(true)
+  const [statusFilter, setStatusFilter] = useState('')
+  const { user, isAuthenticated } = useAuth()
+  const router = useRouter()
 
-  // Dummy data
-  const stats = [
-    { title: 'Total Revenue', value: '$12,450', change: '+15.2%', icon: <DollarSign className="w-6 h-6" />, color: 'bg-green-500' },
-    { title: 'This Month', value: '$3,240', change: '+8.1%', icon: <TrendingUp className="w-6 h-6" />, color: 'bg-blue-500' },
-    { title: 'Pending Payments', value: '$890', change: '-2.3%', icon: <Clock className="w-6 h-6" />, color: 'bg-yellow-500' },
-    { title: 'Completed Sessions', value: '156', change: '+12.5%', icon: <CheckCircle className="w-6 h-6" />, color: 'bg-purple-500' }
-  ]
+  useEffect(() => {
+    if (!isAuthenticated || user?.role !== 'therapist') {
+      router.push('/login')
+      return
+    }
+    fetchPayments()
+  }, [isAuthenticated, user, statusFilter])
 
-  const recentPayments = [
-    {
-      id: 1,
-      client: 'Sarah Johnson',
-      amount: 120,
-      date: '2024-01-15',
-      status: 'completed',
-      method: 'Credit Card',
-      session: 'Speech Therapy - 45 min',
-      invoice: 'INV-001'
+  const fetchPayments = async () => {
+    try {
+      setLoading(true)
+      const params: any = {}
+      if (statusFilter) params.status = statusFilter
+      
+      const response = await therapistAPI.getMyPayments(params)
+      setPayments(response.data.data || [])
+      
+      if (response.data.stats) {
+        setStats(response.data.stats)
+      }
+    } catch (error) {
+      console.error('Failed to fetch payments:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount / 100) // Amount is in cents
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    })
+  }
+
+  const getPaymentMethodLabel = (method: string) => {
+    const labels: { [key: string]: string } = {
+      card: 'Credit Card',
+      bank: 'Bank Transfer',
+      insurance: 'Insurance',
+      cash: 'Cash',
+      other: 'Other'
+    }
+    return labels[method] || method
+  }
+
+  const getSessionDescription = (session: Payment['sessionId']) => {
+    if (session.serviceType) {
+      return session.serviceType
+    }
+    if (session.duration) {
+      return `Session - ${session.duration} min`
+    }
+    return 'Session'
+  }
+
+  // Calculate stats for display
+  const displayStats = [
+    { 
+      title: 'Total Revenue', 
+      value: formatCurrency(stats.totalRevenue), 
+      change: stats.monthChange >= 0 ? `+${stats.monthChange.toFixed(1)}%` : `${stats.monthChange.toFixed(1)}%`, 
+      icon: <DollarSign className="w-6 h-6" />, 
+      color: 'bg-green-500' 
     },
-    {
-      id: 2,
-      client: 'Michael Chen',
-      amount: 150,
-      date: '2024-01-14',
-      status: 'pending',
-      method: 'Bank Transfer',
-      session: 'Language Assessment - 60 min',
-      invoice: 'INV-002'
+    { 
+      title: 'This Month', 
+      value: formatCurrency(stats.thisMonthRevenue), 
+      change: stats.monthChange >= 0 ? `+${stats.monthChange.toFixed(1)}%` : `${stats.monthChange.toFixed(1)}%`, 
+      icon: <TrendingUp className="w-6 h-6" />, 
+      color: 'bg-blue-500' 
     },
-    {
-      id: 3,
-      client: 'Emma Wilson',
-      amount: 90,
-      date: '2024-01-13',
-      status: 'completed',
-      method: 'PayPal',
-      session: 'Follow-up - 30 min',
-      invoice: 'INV-003'
+    { 
+      title: 'Pending Payments', 
+      value: formatCurrency(stats.pendingAmount), 
+      change: '', 
+      icon: <Clock className="w-6 h-6" />, 
+      color: 'bg-yellow-500' 
     },
-    {
-      id: 4,
-      client: 'David Rodriguez',
-      amount: 120,
-      date: '2024-01-12',
-      status: 'failed',
-      method: 'Credit Card',
-      session: 'Speech Therapy - 45 min',
-      invoice: 'INV-004'
+    { 
+      title: 'Completed Sessions', 
+      value: stats.completedSessions.toString(), 
+      change: '', 
+      icon: <CheckCircle className="w-6 h-6" />, 
+      color: 'bg-purple-500' 
     }
   ]
 
-  const upcomingPayments = [
-    {
-      id: 1,
-      client: 'Sarah Johnson',
-      amount: 120,
-      dueDate: '2024-01-20',
-      session: 'Speech Therapy - 45 min',
-      status: 'scheduled'
-    },
-    {
-      id: 2,
-      client: 'Michael Chen',
-      amount: 150,
-      dueDate: '2024-01-22',
-      session: 'Language Assessment - 60 min',
-      status: 'scheduled'
+  // Get upcoming payments (scheduled sessions that haven't been paid)
+  const [upcomingPayments, setUpcomingPayments] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchUpcomingSessions = async () => {
+      try {
+        const response = await sessionAPI.getAll({ 
+          status: 'scheduled',
+          startDate: new Date().toISOString()
+        })
+        const sessions = response.data.data.sessions || []
+        setUpcomingPayments(sessions.slice(0, 5).map((session: any) => ({
+          id: session._id,
+          client: session.clientId?.userId 
+            ? `${session.clientId.userId.firstName} ${session.clientId.userId.lastName}`
+            : 'Unknown',
+          amount: session.price || 0,
+          dueDate: session.scheduledDate,
+          session: session.serviceType || 'Session',
+          status: 'scheduled'
+        })))
+      } catch (error) {
+        console.error('Failed to fetch upcoming sessions:', error)
+      }
     }
-  ]
+    fetchUpcomingSessions()
+  }, [])
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -130,6 +222,14 @@ export default function PaymentsPage() {
       default:
         return <AlertCircle className="w-4 h-4" />
     }
+  }
+
+  if (loading && payments.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+      </div>
+    )
   }
 
   return (
@@ -185,7 +285,7 @@ export default function PaymentsPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
+          {displayStats.map((stat, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -197,10 +297,12 @@ export default function PaymentsPage() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
                   <p className="text-2xl font-bold text-black">{stat.value}</p>
-                  <p className="text-sm text-green-600 flex items-center mt-1">
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                    {stat.change}
-                  </p>
+                  {stat.change && (
+                    <p className={`text-sm flex items-center mt-1 ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                      <TrendingUp className="w-4 h-4 mr-1" />
+                      {stat.change}
+                    </p>
+                  )}
                 </div>
                 <div className={`${stat.color} p-3 rounded-full text-white`}>
                   {stat.icon}
@@ -222,60 +324,95 @@ export default function PaymentsPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-black">Recent Payments</h2>
                 <div className="flex items-center space-x-2">
-                  <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                    <Search className="w-4 h-4" />
-                  </button>
-                  <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                    <Filter className="w-4 h-4" />
-                  </button>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  >
+                    <option value="">All Status</option>
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="failed">Failed</option>
+                  </select>
                 </div>
               </div>
               
-              <div className="space-y-4">
-                {recentPayments.map((payment, index) => (
-                  <div key={payment.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-semibold text-gray-600">
-                          {payment.client.split(' ').map(n => n[0]).join('')}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-black">{payment.client}</h3>
-                        <p className="text-sm text-gray-600">{payment.session}</p>
-                        <p className="text-xs text-gray-500">{payment.invoice}</p>
-                      </div>
-                    </div>
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+                </div>
+              ) : payments.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-500">No payments found</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {payments.map((payment) => {
+                    const clientName = payment.clientId?.userId 
+                      ? `${payment.clientId.userId.firstName} ${payment.clientId.userId.lastName}`
+                      : 'Unknown Client'
+                    const initials = clientName.split(' ').map(n => n[0]).join('').toUpperCase()
                     
-                    <div className="flex items-center space-x-6">
-                      <div className="text-right">
-                        <p className="font-semibold text-black">${payment.amount}</p>
-                        <p className="text-sm text-gray-600">{payment.date}</p>
-                        <p className="text-xs text-gray-500">{payment.method}</p>
+                    return (
+                      <div key={payment._id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-semibold text-gray-600">
+                              {initials}
+                            </span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-black">{clientName}</h3>
+                            <p className="text-sm text-gray-600">{getSessionDescription(payment.sessionId)}</p>
+                            {payment.invoiceNumber && (
+                              <p className="text-xs text-gray-500">{payment.invoiceNumber}</p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-6">
+                          <div className="text-right">
+                            <p className="font-semibold text-black">{formatCurrency(payment.amount, payment.currency)}</p>
+                            <p className="text-sm text-gray-600">{formatDate(payment.createdAt)}</p>
+                            <p className="text-xs text-gray-500">{getPaymentMethodLabel(payment.paymentMethod)}</p>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(payment.status)}`}>
+                              {getStatusIcon(payment.status)}
+                              <span>{payment.status}</span>
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            {payment.invoiceUrl && (
+                              <a 
+                                href={payment.invoiceUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                title="View Invoice"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </a>
+                            )}
+                            <button 
+                              onClick={() => {
+                                // TODO: Implement download invoice
+                              }}
+                              className="p-2 text-gray-400 hover:text-green-600 transition-colors"
+                              title="Download Invoice"
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(payment.status)}`}>
-                          {getStatusIcon(payment.status)}
-                          <span>{payment.status}</span>
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-green-600 transition-colors">
-                          <Download className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    )
+                  })}
+                </div>
+              )}
             </motion.div>
           </div>
 
@@ -289,18 +426,22 @@ export default function PaymentsPage() {
               className="bg-white rounded-2xl premium-shadow p-6"
             >
               <h3 className="text-lg font-bold text-black mb-4">Upcoming Payments</h3>
-              <div className="space-y-3">
-                {upcomingPayments.map((payment) => (
-                  <div key={payment.id} className="p-3 border border-gray-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-black text-sm">{payment.client}</span>
-                      <span className="text-sm font-semibold text-black">${payment.amount}</span>
+              {upcomingPayments.length === 0 ? (
+                <p className="text-sm text-gray-500 text-center py-4">No upcoming sessions</p>
+              ) : (
+                <div className="space-y-3">
+                  {upcomingPayments.map((payment) => (
+                    <div key={payment.id} className="p-3 border border-gray-200 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-semibold text-black text-sm">{payment.client}</span>
+                        <span className="text-sm font-semibold text-black">{formatCurrency(payment.amount)}</span>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">{payment.session}</p>
+                      <p className="text-xs text-gray-500">Due: {formatDate(payment.dueDate)}</p>
                     </div>
-                    <p className="text-xs text-gray-600 mb-1">{payment.session}</p>
-                    <p className="text-xs text-gray-500">Due: {payment.dueDate}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </motion.div>
 
             {/* Payment Methods */}
