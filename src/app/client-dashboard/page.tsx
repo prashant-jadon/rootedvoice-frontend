@@ -327,14 +327,14 @@ export default function ClientDashboardPage() {
                 </div>
               </div>
               <div className="flex flex-col items-end gap-2">
-                {remainingSessions.remainingSessions > 0 && !remainingSessions.hasUnlimited && (
-                  <Link
-                    href="/meet-our-therapists"
-                    className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold"
-                  >
-                    Book Session
-                  </Link>
-                )}
+              {remainingSessions.remainingSessions > 0 && !remainingSessions.hasUnlimited && (
+                <Link
+                  href="/meet-our-therapists"
+                  className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+                >
+                  Book Session
+                </Link>
+              )}
                 {remainingSessions.remainingSessions === 0 && !remainingSessions.hasUnlimited && (
                   <Link
                     href="/pricing"

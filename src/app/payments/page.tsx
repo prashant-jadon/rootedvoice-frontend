@@ -186,7 +186,7 @@ export default function PaymentsPage() {
           amount: session.price || 0,
           dueDate: session.scheduledDate,
           session: session.serviceType || 'Session',
-          status: 'scheduled'
+      status: 'scheduled'
         })))
       } catch (error) {
         console.error('Failed to fetch upcoming sessions:', error)
@@ -300,9 +300,9 @@ export default function PaymentsPage() {
                   <p className="text-2xl font-bold text-black">{stat.value}</p>
                   {stat.change && (
                     <p className={`text-sm flex items-center mt-1 ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                      <TrendingUp className="w-4 h-4 mr-1" />
-                      {stat.change}
-                    </p>
+                    <TrendingUp className="w-4 h-4 mr-1" />
+                    {stat.change}
+                  </p>
                   )}
                 </div>
                 <div className={`${stat.color} p-3 rounded-full text-white`}>
@@ -348,7 +348,7 @@ export default function PaymentsPage() {
                   <p className="text-gray-500">No payments found</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+              <div className="space-y-4">
                   {payments.map((payment) => {
                     const clientName = payment.clientId?.userId 
                       ? `${payment.clientId.userId.firstName} ${payment.clientId.userId.lastName}`
@@ -357,36 +357,36 @@ export default function PaymentsPage() {
                     
                     return (
                       <div key={payment._id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-semibold text-gray-600">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-semibold text-gray-600">
                               {initials}
-                            </span>
-                          </div>
-                          <div>
+                        </span>
+                      </div>
+                      <div>
                             <h3 className="font-semibold text-black">{clientName}</h3>
                             <p className="text-sm text-gray-600">{getSessionDescription(payment.sessionId)}</p>
                             {payment.invoiceNumber && (
                               <p className="text-xs text-gray-500">{payment.invoiceNumber}</p>
                             )}
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-6">
-                          <div className="text-right">
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-6">
+                      <div className="text-right">
                             <p className="font-semibold text-black">{formatCurrency(payment.amount, payment.currency)}</p>
                             <p className="text-sm text-gray-600">{formatDate(payment.createdAt)}</p>
                             <p className="text-xs text-gray-500">{getPaymentMethodLabel(payment.paymentMethod)}</p>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(payment.status)}`}>
-                              {getStatusIcon(payment.status)}
-                              <span>{payment.status}</span>
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(payment.status)}`}>
+                          {getStatusIcon(payment.status)}
+                          <span>{payment.status}</span>
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
                             {payment.invoiceUrl && (
                               <a 
                                 href={payment.invoiceUrl} 
@@ -395,7 +395,7 @@ export default function PaymentsPage() {
                                 className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                                 title="View Invoice"
                               >
-                                <Eye className="w-4 h-4" />
+                          <Eye className="w-4 h-4" />
                               </a>
                             )}
                             <button 
@@ -405,14 +405,14 @@ export default function PaymentsPage() {
                               className="p-2 text-gray-400 hover:text-green-600 transition-colors"
                               title="Download Invoice"
                             >
-                              <Download className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
+                          <Download className="w-4 h-4" />
+                        </button>
                       </div>
+                    </div>
+                  </div>
                     )
                   })}
-                </div>
+              </div>
               )}
             </motion.div>
           </div>
@@ -430,18 +430,18 @@ export default function PaymentsPage() {
               {upcomingPayments.length === 0 ? (
                 <p className="text-sm text-gray-500 text-center py-4">No upcoming sessions</p>
               ) : (
-                <div className="space-y-3">
-                  {upcomingPayments.map((payment) => (
-                    <div key={payment.id} className="p-3 border border-gray-200 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-semibold text-black text-sm">{payment.client}</span>
+              <div className="space-y-3">
+                {upcomingPayments.map((payment) => (
+                  <div key={payment.id} className="p-3 border border-gray-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-black text-sm">{payment.client}</span>
                         <span className="text-sm font-semibold text-black">{formatCurrency(payment.amount)}</span>
-                      </div>
-                      <p className="text-xs text-gray-600 mb-1">{payment.session}</p>
-                      <p className="text-xs text-gray-500">Due: {formatDate(payment.dueDate)}</p>
                     </div>
-                  ))}
-                </div>
+                    <p className="text-xs text-gray-600 mb-1">{payment.session}</p>
+                      <p className="text-xs text-gray-500">Due: {formatDate(payment.dueDate)}</p>
+                  </div>
+                ))}
+              </div>
               )}
             </motion.div>
 

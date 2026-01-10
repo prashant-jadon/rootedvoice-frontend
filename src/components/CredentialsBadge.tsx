@@ -46,16 +46,16 @@ export default function CredentialsBadge({
 
   // Licensed SLP
   if (credentials === 'SLP') {
-    return (
-      <span
+  return (
+    <span
         className={`inline-flex items-center gap-1.5 rounded-full font-medium bg-green-100 text-green-800 ${sizeClasses[size]}`}
         title="✔️ Licensed SLP - Speech-Language Pathologist"
-      >
-        {showIcon && (
+    >
+      {showIcon && (
           <CheckCircle className={iconSizes[size]} />
-        )}
+      )}
         Licensed SLP
-      </span>
+        </span>
     )
   }
 
@@ -68,10 +68,10 @@ export default function CredentialsBadge({
       >
         {showIcon && (
           <Puzzle className={iconSizes[size]} />
-        )}
+      )}
         SLPA
-      </span>
-    )
+    </span>
+  )
   }
 
   return null

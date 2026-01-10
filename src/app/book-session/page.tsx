@@ -306,8 +306,8 @@ function BookSessionContent() {
                   {!remainingSessions.hasUnlimited && remainingSessions.remainingSessions === 0 && (
                     <div className="mt-3 space-y-2">
                       <p className="text-sm text-red-600 text-center">
-                        You've used all your sessions for this billing period.
-                      </p>
+                      You've used all your sessions for this billing period.
+                    </p>
                       <Link
                         href="/pricing"
                         className="block w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors font-semibold text-center text-sm shadow-md"

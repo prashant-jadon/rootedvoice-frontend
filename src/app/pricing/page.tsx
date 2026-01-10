@@ -168,7 +168,8 @@ function PricingContent() {
           popular: tierData.popular || false,
           color: tierData.popular ? 'border-black ring-2 ring-black' : 'border-gray-200',
           sessionsPerMonth: tierData.sessionsPerMonth || 0,
-          duration: tierData.duration || 45
+          duration: tierData.duration || 45,
+          durationRange: tierData.durationRange || ''
         }
       })
 
@@ -626,7 +627,7 @@ function PricingContent() {
                           <td className="py-4 px-4 font-medium text-black">Session Duration</td>
                           {pricingTiers.map((tier) => (
                             <td key={tier.id} className="py-4 px-4 text-center text-gray-600">
-                              {tier.duration ? `${tier.duration} minutes` : 'N/A'}
+                              {tier.durationRange ? tier.durationRange : (tier.duration ? `${tier.duration} minutes` : 'N/A')}
                             </td>
                           ))}
                         </tr>
