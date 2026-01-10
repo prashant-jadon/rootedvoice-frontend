@@ -104,7 +104,9 @@ function PricingContent() {
       const iconMap: Record<string, string> = {
         rooted: '🌱',
         flourish: '🌿',
-        bloom: '🌸'
+        bloom: '🌸',
+        'pay-as-you-go': '💳',
+        evaluation: '📋'
       }
 
       const descriptionMap: Record<string, string> = {
@@ -120,28 +122,53 @@ function PricingContent() {
       }
 
       const billingCycleMap: Record<string, string> = {
-        'every-4-weeks': 'billed every 4 weeks',
+        'every-4-weeks': 'billed monthly',
         'monthly': 'billed monthly',
-        'pay-as-you-go': 'pay-as-you-go'
+        'pay-as-you-go': 'per session',
+        'one-time': 'one-time payment'
       }
 
       const transformedPricing = Object.entries(backendPricing).map(([tierId, tierData]: [string, any]) => {
         const tierName = tierData.name.replace(' Tier', '').replace(' tier', '')
-        const durationText = tierData.duration === 30 ? '/30min' : '/hour'
-        const billingText = billingCycleMap[tierData.billingCycle] || tierData.billingCycle
+        
+        // For monthly subscriptions, show monthly rate clearly
+        let priceDisplay = `$${tierData.price}`
+        let periodDisplay = ''
+        let billingText = billingCycleMap[tierData.billingCycle] || tierData.billingCycle
+        
+        if (tierData.billingCycle === 'monthly') {
+          priceDisplay = `$${tierData.price}`
+          periodDisplay = '/month'
+          billingText = 'billed monthly'
+        } else if (tierData.billingCycle === 'pay-as-you-go') {
+          priceDisplay = `$${tierData.price}`
+          periodDisplay = '/session'
+          billingText = 'per session'
+        } else if (tierData.billingCycle === 'one-time') {
+          priceDisplay = `$${tierData.price}`
+          periodDisplay = ''
+          billingText = 'one-time payment'
+        } else {
+          // Legacy support for every-4-weeks (show as monthly)
+          priceDisplay = `$${tierData.price}`
+          periodDisplay = '/month'
+          billingText = 'billed monthly'
+        }
 
         return {
           id: tierId,
           name: tierName,
           icon: iconMap[tierId] || '💎',
-          price: `$${tierData.price}`,
-          period: durationText,
+          price: priceDisplay,
+          period: periodDisplay,
           billing: billingText,
           description: descriptionMap[tierId] || tierData.description || '',
           tagline: taglineMap[tierId] || '',
           features: tierData.features || [],
           popular: tierData.popular || false,
-          color: tierData.popular ? 'border-black ring-2 ring-black' : 'border-gray-200'
+          color: tierData.popular ? 'border-black ring-2 ring-black' : 'border-gray-200',
+          sessionsPerMonth: tierData.sessionsPerMonth || 0,
+          duration: tierData.duration || 45
         }
       })
 
@@ -154,13 +181,13 @@ function PricingContent() {
           id: 'rooted',
           name: 'Rooted',
           icon: '🌱',
-          price: '$50',
-          period: '/30min',
-          billing: 'billed every 4 weeks',
+          price: '$229',
+          period: '/month',
+          billing: 'billed monthly',
           description: 'Build a strong foundation where growth begins',
           tagline: 'For clients starting their therapy journey, establishing essential skills and confidence.',
           features: [
-            '2-4 sessions per month',
+            '2 sessions per month (45 minutes each)',
             'Personalized treatment plan',
             'Progress updates every 8-10 weeks',
             'Caregiver tips',
@@ -168,19 +195,21 @@ function PricingContent() {
             'Email support'
           ],
           popular: false,
-          color: 'border-gray-200'
+          color: 'border-gray-200',
+          sessionsPerMonth: 2,
+          duration: 45
         },
         {
           id: 'flourish',
           name: 'Flourish',
           icon: '🌿',
-          price: '$85',
-          period: '/hour',
-          billing: 'billed every 4 weeks',
+          price: '$439',
+          period: '/month',
+          billing: 'billed monthly',
           description: 'Grow, thrive, and expand your voice with care',
           tagline: 'For clients ready to dive deeper, strengthen abilities, and see meaningful progress.',
           features: [
-            'Weekly or bi-weekly sessions',
+            '4 sessions per month (45 minutes each)',
             'Advanced treatment strategies',
             'Detailed monthly progress reports',
             'Monthly family coaching',
@@ -189,26 +218,32 @@ function PricingContent() {
             'Direct messaging'
           ],
           popular: true,
-          color: 'border-black ring-2 ring-black'
+          color: 'border-black ring-2 ring-black',
+          sessionsPerMonth: 4,
+          duration: 45
         },
         {
           id: 'bloom',
           name: 'Bloom',
           icon: '🌸',
-          price: '$90',
-          period: '/hour',
-          billing: 'pay-as-you-go',
+          price: '$749',
+          period: '/month',
+          billing: 'billed monthly',
           description: 'Sustain your growth and keep your voice in full bloom',
           tagline: 'For clients maintaining progress through flexible, pay-as-you-go sessions.',
           features: [
-            '2-3 sessions monthly',
+            '8 sessions per month (45 minutes each)',
+            'Intensive therapy support',
             'Flexible scheduling',
-            'Focus on skill maintenance',
-            'No long-term commitment',
-            'Month-to-month flexibility'
+            'Priority access to therapists',
+            'Comprehensive progress tracking',
+            'Monthly family coaching',
+            'Direct messaging access'
           ],
           popular: false,
-          color: 'border-gray-200'
+          color: 'border-gray-200',
+          sessionsPerMonth: 8,
+          duration: 45
         }
       ])
     } finally {
@@ -480,6 +515,11 @@ function PricingContent() {
                   <span className="text-lg text-gray-600">{tier.period}</span>
                 </div>
                 <p className="text-sm text-gray-500 mb-2">{tier.billing}</p>
+                {tier.sessionsPerMonth > 0 && (
+                  <p className="text-sm font-semibold text-black mb-2">
+                    {tier.sessionsPerMonth} {tier.sessionsPerMonth === 1 ? 'session' : 'sessions'} per month ({tier.duration} min each)
+                  </p>
+                )}
                 <p className="text-gray-600 font-medium mb-2">{tier.description}</p>
                 <p className="text-sm text-gray-500">{tier.tagline}</p>
               </div>
@@ -557,6 +597,14 @@ function PricingContent() {
                           ))}
                         </tr>
                         <tr className="border-b border-gray-100">
+                          <td className="py-4 px-4 font-medium text-black">Monthly Rate</td>
+                          {pricingTiers.map((tier) => (
+                            <td key={tier.id} className="py-4 px-4 text-center text-gray-600">
+                              {tier.price}{tier.period}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-gray-100">
                           <td className="py-4 px-4 font-medium text-black">Billing Cycle</td>
                           {pricingTiers.map((tier) => (
                             <td key={tier.id} className="py-4 px-4 text-center text-gray-600">
@@ -564,11 +612,21 @@ function PricingContent() {
                             </td>
                           ))}
                         </tr>
+                        {pricingTiers.some(t => t.sessionsPerMonth > 0) && (
+                          <tr className="border-b border-gray-100">
+                            <td className="py-4 px-4 font-medium text-black">Sessions per Month</td>
+                            {pricingTiers.map((tier) => (
+                              <td key={tier.id} className="py-4 px-4 text-center text-gray-600">
+                                {tier.sessionsPerMonth > 0 ? `${tier.sessionsPerMonth} sessions` : 'N/A'}
+                              </td>
+                            ))}
+                          </tr>
+                        )}
                         <tr className="border-b border-gray-100">
                           <td className="py-4 px-4 font-medium text-black">Session Duration</td>
                           {pricingTiers.map((tier) => (
                             <td key={tier.id} className="py-4 px-4 text-center text-gray-600">
-                              {tier.period.replace('/', '')}
+                              {tier.duration ? `${tier.duration} minutes` : 'N/A'}
                             </td>
                           ))}
                         </tr>

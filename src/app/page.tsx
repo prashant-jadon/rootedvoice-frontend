@@ -755,13 +755,15 @@ export default function LandingPage() {
             {[
               {
                 name: "Rooted",
-                price: "$50",
-                period: "/30min",
-                billing: "billed every 4 weeks",
+                price: "$229",
+                period: "/month",
+                billing: "billed monthly",
+                sessionsPerMonth: 2,
+                sessionDuration: 45,
                 description: "Build a strong foundation where growth begins",
                 tagline: "For clients starting their therapy journey, establishing essential skills and confidence.",
                 features: [
-                  "Weekly therapy sessions (2–4 per month)",
+                  "2 sessions per month (45 minutes each)",
                   "Personalized treatment plan with clear goals",
                   "Progress updates every 8–10 weeks",
                   "Caregiver tips for at-home reinforcement",
@@ -772,13 +774,15 @@ export default function LandingPage() {
               },
               {
                 name: "Flourish",
-                price: "$85",
-                period: "/hour",
-                billing: "billed every 4 weeks",
+                price: "$439",
+                period: "/month",
+                billing: "billed monthly",
+                sessionsPerMonth: 4,
+                sessionDuration: 45,
                 description: "Grow, thrive, and expand your voice with care",
                 tagline: "For clients ready to dive deeper, strengthen abilities, and see meaningful progress.",
                 features: [
-                  "Weekly or bi-weekly therapy sessions",
+                  "4 sessions per month (45 minutes each)",
                   "Advanced treatment strategies tailored to client needs",
                   "Detailed progress reports with measurable outcomes",
                   "Monthly caregiver/family coaching sessions",
@@ -791,18 +795,21 @@ export default function LandingPage() {
               },
               {
                 name: "Bloom",
-                price: "$90",
-                period: "/hour",
-                billing: "pay-as-you-go",
+                price: "$749",
+                period: "/month",
+                billing: "billed monthly",
+                sessionsPerMonth: 8,
+                sessionDuration: 45,
                 description: "Sustain your growth and keep your voice in full bloom",
-                tagline: "For clients maintaining progress through flexible, pay-as-you-go sessions.",
+                tagline: "For clients seeking intensive therapy support with maximum flexibility.",
                 features: [
-                  "Pay-as-you-go pricing",
-                  "A few sessions per month (flexible scheduling, 2-3 sessions monthly)",
-                  "Focus on maintaining skills and building confidence",
-                  "Ongoing professional support without long-term commitment",
-                  "Perfect for maintenance check-ins rather than intensive therapy",
-                  "Month-to-month flexibility"
+                  "8 sessions per month (45 minutes each)",
+                  "Intensive therapy support",
+                  "Priority access to therapists",
+                  "Comprehensive progress tracking",
+                  "Monthly family coaching",
+                  "Direct messaging access",
+                  "Flexible scheduling"
                 ],
                 icon: "🌸"
               }
@@ -863,13 +870,23 @@ export default function LandingPage() {
                     </span>
                   </div>
                   <p 
-                    className="text-sm mb-3"
+                    className="text-sm mb-2"
                     style={{
                       color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? 'black' : 'rgba(255,255,255,0.6)'
                     }}
                   >
                     {plan.billing}
                   </p>
+                  {plan.sessionsPerMonth > 0 && (
+                    <p 
+                      className="text-sm font-semibold mb-2"
+                      style={{
+                        color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? 'black' : currentPalette === '1' ? 'black' : 'rgba(255,255,255,0.9)'
+                      }}
+                    >
+                      {plan.sessionsPerMonth} {plan.sessionsPerMonth === 1 ? 'session' : 'sessions'} per month ({plan.sessionDuration} min each)
+                    </p>
+                  )}
                   <p 
                     className="font-semibold mb-2"
                     style={{
