@@ -7,17 +7,116 @@ import { useState, useEffect } from 'react'
 import DemoModal from '../components/DemoModal'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useTranslation } from '@/hooks/useTranslation'
+import { subscriptionAPI } from '@/lib/api'
 
 export default function LandingPage() {
   const [currentPalette, setCurrentPalette] = useState('1')
   const [showDemoModal, setShowDemoModal] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [pricingTiers, setPricingTiers] = useState<any[]>([])
+  const [loadingPricing, setLoadingPricing] = useState(true)
   const t = useTranslation()
 
   useEffect(() => {
     // Set the data attribute on the html element to control CSS variables
     document.documentElement.setAttribute('data-palette', currentPalette)
   }, [currentPalette])
+
+  useEffect(() => {
+    fetchPricing()
+  }, [])
+
+  const fetchPricing = async () => {
+    try {
+      setLoadingPricing(true)
+      const response = await subscriptionAPI.getPricing()
+      const backendPricing = response.data.data
+
+      // Map backend pricing structure to frontend format
+      const iconMap: Record<string, string> = {
+        rooted: '🌱',
+        flourish: '🌿',
+        bloom: '🌸',
+        'pay-as-you-go': '💳',
+        evaluation: '📋'
+      }
+
+      const descriptionMap: Record<string, string> = {
+        rooted: 'Build a strong foundation where growth begins',
+        flourish: 'Grow, thrive, and expand your voice with care',
+        bloom: 'Sustain your growth and keep your voice in full bloom'
+      }
+
+      const taglineMap: Record<string, string> = {
+        rooted: 'For clients starting their therapy journey, establishing essential skills and confidence.',
+        flourish: 'For clients ready to dive deeper, strengthen abilities, and see meaningful progress.',
+        bloom: 'For clients seeking intensive therapy support with maximum flexibility.'
+      }
+
+      const billingCycleMap: Record<string, string> = {
+        'every-4-weeks': 'billed monthly',
+        'monthly': 'billed monthly',
+        'pay-as-you-go': 'per session',
+        'one-time': 'one-time payment'
+      }
+
+      const transformedPricing = Object.entries(backendPricing).map(([tierId, tierData]: [string, any]) => {
+        const tierName = tierData.name.replace(' Tier', '').replace(' tier', '')
+        
+        // For monthly subscriptions, show monthly rate clearly
+        let priceDisplay = `$${tierData.price}`
+        let periodDisplay = ''
+        let billingText = billingCycleMap[tierData.billingCycle] || tierData.billingCycle
+        
+        if (tierData.billingCycle === 'monthly') {
+          priceDisplay = `$${tierData.price}`
+          periodDisplay = '/month'
+          billingText = 'billed monthly'
+        } else if (tierData.billingCycle === 'pay-as-you-go') {
+          priceDisplay = `$${tierData.price}`
+          periodDisplay = '/session'
+          billingText = 'per session'
+        } else if (tierData.billingCycle === 'one-time') {
+          priceDisplay = `$${tierData.price}`
+          periodDisplay = ''
+          billingText = 'one-time payment'
+        } else {
+          // Legacy support for every-4-weeks (show as monthly)
+          priceDisplay = `$${tierData.price}`
+          periodDisplay = '/month'
+          billingText = 'billed monthly'
+        }
+
+        return {
+          id: tierId,
+          name: tierName,
+          icon: tierData.icon || iconMap[tierId] || '💎',
+          price: priceDisplay,
+          period: periodDisplay,
+          billing: billingText,
+          description: tierData.description || descriptionMap[tierId] || '',
+          tagline: taglineMap[tierId] || '',
+          features: tierData.features || [],
+          popular: tierData.popular || false,
+          sessionsPerMonth: tierData.sessionsPerMonth || 0,
+          duration: tierData.duration || 45
+        }
+      })
+
+      // Filter to show only main subscription tiers (rooted, flourish, bloom) for landing page
+      const mainTiers = transformedPricing.filter(tier => 
+        ['rooted', 'flourish', 'bloom'].includes(tier.id)
+      )
+
+      setPricingTiers(mainTiers)
+    } catch (error) {
+      console.error('Failed to fetch pricing:', error)
+      // Fallback to empty array on error
+      setPricingTiers([])
+    } finally {
+      setLoadingPricing(false)
+    }
+  }
 
   const switchPalette = (palette: string) => {
     setCurrentPalette(palette)
@@ -752,68 +851,16 @@ export default function LandingPage() {
           </motion.div>
           
           <div className="grid md:grid-cols-3 gap-8" >
-            {[
-              {
-                name: "Rooted",
-                price: "$229",
-                period: "/month",
-                billing: "billed monthly",
-                sessionsPerMonth: 2,
-                sessionDuration: 45,
-                description: "Build a strong foundation where growth begins",
-                tagline: "For clients starting their therapy journey, establishing essential skills and confidence.",
-                features: [
-                  "2 sessions per month (45 minutes each)",
-                  "Personalized treatment plan with clear goals",
-                  "Progress updates every 8–10 weeks",
-                  "Caregiver tips for at-home reinforcement",
-                  "Secure, HIPAA-compliant teletherapy platform",
-                  "Email support for brief follow-up questions"
-                ],
-                icon: "🌱"
-              },
-              {
-                name: "Flourish",
-                price: "$439",
-                period: "/month",
-                billing: "billed monthly",
-                sessionsPerMonth: 4,
-                sessionDuration: 45,
-                description: "Grow, thrive, and expand your voice with care",
-                tagline: "For clients ready to dive deeper, strengthen abilities, and see meaningful progress.",
-                features: [
-                  "4 sessions per month (45 minutes each)",
-                  "Advanced treatment strategies tailored to client needs",
-                  "Detailed progress reports with measurable outcomes",
-                  "Monthly caregiver/family coaching sessions",
-                  "Priority scheduling and flexible rescheduling options",
-                  "Collaboration with schools, physicians, or other providers",
-                  "Direct messaging access for timely support between sessions"
-                ],
-                popular: true,
-                icon: "🌿"
-              },
-              {
-                name: "Bloom",
-                price: "$749",
-                period: "/month",
-                billing: "billed monthly",
-                sessionsPerMonth: 8,
-                sessionDuration: 45,
-                description: "Sustain your growth and keep your voice in full bloom",
-                tagline: "For clients seeking intensive therapy support with maximum flexibility.",
-                features: [
-                  "8 sessions per month (45 minutes each)",
-                  "Intensive therapy support",
-                  "Priority access to therapists",
-                  "Comprehensive progress tracking",
-                  "Monthly family coaching",
-                  "Direct messaging access",
-                  "Flexible scheduling"
-                ],
-                icon: "🌸"
-              }
-            ].map((plan, index) => (
+            {loadingPricing ? (
+              <div className="col-span-3 flex items-center justify-center py-16">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-palette-primary"></div>
+              </div>
+            ) : pricingTiers.length === 0 ? (
+              <div className="col-span-3 text-center py-16">
+                <p className="text-gray-600">No pricing tiers available</p>
+              </div>
+            ) : (
+              pricingTiers.map((plan, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
@@ -881,10 +928,10 @@ export default function LandingPage() {
                     <p 
                       className="text-sm font-semibold mb-2"
                       style={{
-                        color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? 'black' : currentPalette === '1' ? 'black' : 'rgba(255,255,255,0.9)'
+                        color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? 'black' : 'rgba(255,255,255,0.9)'
                       }}
                     >
-                      {plan.sessionsPerMonth} {plan.sessionsPerMonth === 1 ? 'session' : 'sessions'} per month ({plan.sessionDuration} min each)
+                      {plan.sessionsPerMonth} {plan.sessionsPerMonth === 1 ? 'session' : 'sessions'} per month ({plan.duration} min each)
                     </p>
                   )}
                   <p 
@@ -919,8 +966,9 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <button 
-                  className="w-full py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105"
+                <Link 
+                  href="/pricing"
+                  className="w-full py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 block text-center"
                   style={{
                     backgroundColor: currentPalette === '3' 
                       ? (plan.popular ? '#4D7D7D' : 'rgba(77, 125, 125, 0.1)')
@@ -937,9 +985,10 @@ export default function LandingPage() {
                   }}
                 >
                   Get Started
-                </button>
+                </Link>
               </motion.div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
