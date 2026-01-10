@@ -38,6 +38,7 @@ interface Payment {
   status: string
   paymentMethod: string
   invoiceNumber?: string
+  invoiceUrl?: string
   createdAt: string
   clientId: {
     userId: {
