@@ -35,7 +35,7 @@ export default function ForTherapistsPage() {
       maxRate: '$75',
       description: 'Fully licensed Speech-Language Pathologists can set rates up to $75/hour',
       benefits: [
-        '80% of session fee goes directly to you (20% platform fee)',
+        '55% of session fee goes directly to you (45% platform fee)',
         'Set your own hourly rate (up to $75/hour)',
         '$20 cancellation fee protection when clients cancel',
         'Flexible scheduling on your terms',
@@ -48,7 +48,7 @@ export default function ForTherapistsPage() {
       maxRate: '$55',
       description: 'Speech-Language Pathology Assistants can set rates up to $55/hour',
       benefits: [
-        '80% of session fee goes directly to you (20% platform fee)',
+        '55% of session fee goes directly to you (45% platform fee)',
         'Set your own hourly rate (up to $55/hour)',
         '$15 cancellation fee protection when clients cancel',
         'Supportive platform designed for career growth',
@@ -62,9 +62,9 @@ export default function ForTherapistsPage() {
     {
       icon: <DollarSign className="w-8 h-8" />,
       title: 'Generous Compensation',
-      description: 'Keep 80% of every session fee. We believe therapists should be fairly compensated for their expertise and dedication.',
+      description: 'Keep 55% of every session fee. We believe therapists should be fairly compensated for their expertise and dedication.',
       details: [
-        '80/20 revenue split (you keep 80%)',
+        '55/45 revenue split (you keep 55%)',
         'Set your own rates within platform guidelines',
         'Transparent payment processing',
         'No hidden fees'
@@ -283,11 +283,11 @@ export default function ForTherapistsPage() {
             </p>
             <div className="grid md:grid-cols-3 gap-6 mt-8">
               <div>
-                <div className="text-4xl font-bold mb-2">80%</div>
+                <div className="text-4xl font-bold mb-2">55%</div>
                 <div className="text-blue-100">{t('forTherapists.yourEarnings')}</div>
               </div>
               <div>
-                <div className="text-4xl font-bold mb-2">20%</div>
+                <div className="text-4xl font-bold mb-2">45%</div>
                 <div className="text-blue-100">{t('forTherapists.platformFee')}</div>
               </div>
               <div>
