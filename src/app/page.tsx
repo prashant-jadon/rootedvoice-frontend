@@ -988,7 +988,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
+                  {plan.features.map((feature: string, featureIndex: number) => (
                     <li key={featureIndex} className="flex items-start">
                       <CheckCircle className="w-5 h-5 text-palette-primary mr-3 mt-0.5 flex-shrink-0" />
                       <span 

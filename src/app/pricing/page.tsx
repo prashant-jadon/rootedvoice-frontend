@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
-import { subscriptionAPI, stripeAPI } from '@/lib/api'
+import { subscriptionAPI, stripeAPI, clientAPI } from '@/lib/api'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslation } from '@/hooks/useTranslation'
 
@@ -254,6 +254,26 @@ function PricingContent() {
       ])
     } finally {
       setLoadingPricing(false)
+    }
+  }
+
+  const checkIntakeStatus = async () => {
+    try {
+      setCheckingIntake(true)
+      const response = await clientAPI.getIntakeStatus()
+      const isCompleted = response.data.data?.intakeCompleted || false
+      setIntakeCompleted(isCompleted)
+      
+      if (!isCompleted) {
+        // Redirect to intake form if not completed
+        router.push('/client-intake')
+      }
+    } catch (error) {
+      console.error('Failed to check intake status:', error)
+      // If error, assume not completed to be safe
+      setIntakeCompleted(false)
+    } finally {
+      setCheckingIntake(false)
     }
   }
 

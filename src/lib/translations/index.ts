@@ -626,8 +626,6 @@ export const translations = {
       compensationModelDesc: 'Earn your way to higher rates through hours worked. Every 5 hours you complete unlocks a $5 increase in your hourly rate. SLPs progress from $35/hour to $75/hour. SLPAs progress from $30/hour to $55/hour.',
       progressionTitle: 'How Progression Works',
       progressionDesc: 'Your hourly rate increases predictably as you accumulate hours. You are paid a fixed hourly rate based on your current tier - no percentage splits, no revenue sharing. Your rate grows with your commitment.',
-      slpStartingRate: 'Starting at $35/hour',
-      slpaStartingRate: 'Starting at $30/hour',
       yourEarnings: 'Your Earnings',
       platformFee: 'Platform Fee',
       noHiddenFees: 'No Hidden Fees',
