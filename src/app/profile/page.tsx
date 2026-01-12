@@ -430,6 +430,7 @@ export default function ProfilePage() {
                 {[
                   { id: 'personal', label: 'Personal Info', icon: <User className="w-5 h-5" /> },
                   { id: 'professional', label: 'Professional', icon: <Briefcase className="w-5 h-5" /> },
+                  { id: 'credentials', label: 'Credentials & Compliance', icon: <Shield className="w-5 h-5" /> },
                   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> }
                 ].map((tab) => (
                   <button
@@ -825,6 +826,226 @@ export default function ProfilePage() {
                     )}
                   </div>
                 </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'credentials' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="space-y-6"
+              >
+                {/* Clinical Role */}
+                <div className="bg-white rounded-2xl premium-shadow p-6">
+                  <h2 className="text-xl font-bold text-black mb-4">Clinical Role</h2>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="text-gray-700">
+                        {therapist.credentials === 'SLP' 
+                          ? 'Speech-Language Pathologist (SLP – Fully Licensed)'
+                          : 'Speech-Language Pathology Assistant (SLPA – Supervised Role)'}
+                      </span>
+                    </div>
+                    {therapist.isVerified && (
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                        <span className="text-gray-700">Verified by Rooted Voices</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* ASHA Certification (SLP Only) */}
+                {therapist.credentials === 'SLP' && therapist.complianceDocuments?.ashaCertification && (
+                  <div className="bg-white rounded-2xl premium-shadow p-6">
+                    <h2 className="text-xl font-bold text-black mb-4">ASHA Certification</h2>
+                    <div className="space-y-3">
+                      {therapist.complianceDocuments.ashaCertification.certificationNumber && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Certification Number (CCC-SLP):</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.ashaCertification.certificationNumber}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.ashaCertification.expirationDate && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Expiration Date:</span>
+                          <p className="text-gray-900 mt-1">{new Date(therapist.complianceDocuments.ashaCertification.expirationDate).toLocaleDateString()}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.ashaCertification.verified ? (
+                        <div className="flex items-center space-x-2 text-green-600">
+                          <CheckCircle className="w-5 h-5" />
+                          <span className="text-sm font-medium">Verified</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-yellow-600">
+                          <Clock className="w-5 h-5" />
+                          <span className="text-sm font-medium">Pending Verification</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* State Licensure */}
+                {therapist.complianceDocuments?.stateLicensure && (
+                  <div className="bg-white rounded-2xl premium-shadow p-6">
+                    <h2 className="text-xl font-bold text-black mb-4">State Licensure</h2>
+                    <div className="space-y-3">
+                      {therapist.complianceDocuments.stateLicensure.licenseNumber && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">License Number:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.stateLicensure.licenseNumber}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.stateLicensure.state && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Licensing State:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.stateLicensure.state}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.stateLicensure.expirationDate && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Expiration Date:</span>
+                          <p className="text-gray-900 mt-1">{new Date(therapist.complianceDocuments.stateLicensure.expirationDate).toLocaleDateString()}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.stateLicensure.verified ? (
+                        <div className="flex items-center space-x-2 text-green-600">
+                          <CheckCircle className="w-5 h-5" />
+                          <span className="text-sm font-medium">Verified</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-yellow-600">
+                          <Clock className="w-5 h-5" />
+                          <span className="text-sm font-medium">Pending Verification</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Supervision (SLPA Only) */}
+                {therapist.credentials === 'SLPA' && therapist.complianceDocuments?.supervision && (
+                  <div className="bg-white rounded-2xl premium-shadow p-6">
+                    <h2 className="text-xl font-bold text-black mb-4">Supervision</h2>
+                    <div className="space-y-3">
+                      {therapist.complianceDocuments.supervision.supervisingSLPName && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Supervising SLP Name:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.supervision.supervisingSLPName}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.supervision.supervisingSLPLicenseNumber && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Supervising SLP License Number:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.supervision.supervisingSLPLicenseNumber}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.supervision.supervisingState && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Supervising State:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.supervision.supervisingState}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.supervision.verified ? (
+                        <div className="flex items-center space-x-2 text-green-600">
+                          <CheckCircle className="w-5 h-5" />
+                          <span className="text-sm font-medium">Verified</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-yellow-600">
+                          <Clock className="w-5 h-5" />
+                          <span className="text-sm font-medium">Pending Verification</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Professional Liability Insurance */}
+                {therapist.complianceDocuments?.professionalLiabilityInsurance && (
+                  <div className="bg-white rounded-2xl premium-shadow p-6">
+                    <h2 className="text-xl font-bold text-black mb-4">Professional Liability Insurance</h2>
+                    <div className="space-y-3">
+                      {therapist.complianceDocuments.professionalLiabilityInsurance.provider && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Provider:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.professionalLiabilityInsurance.provider}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.professionalLiabilityInsurance.policyNumber && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Policy Number:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.professionalLiabilityInsurance.policyNumber}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.professionalLiabilityInsurance.coverageAmount && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Coverage Amount:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.professionalLiabilityInsurance.coverageAmount}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.professionalLiabilityInsurance.expirationDate && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Expiration Date:</span>
+                          <p className="text-gray-900 mt-1">{new Date(therapist.complianceDocuments.professionalLiabilityInsurance.expirationDate).toLocaleDateString()}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.professionalLiabilityInsurance.verified ? (
+                        <div className="flex items-center space-x-2 text-green-600">
+                          <CheckCircle className="w-5 h-5" />
+                          <span className="text-sm font-medium">Verified</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-yellow-600">
+                          <Clock className="w-5 h-5" />
+                          <span className="text-sm font-medium">Pending Verification</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Background Check */}
+                {therapist.complianceDocuments?.backgroundCheck && (
+                  <div className="bg-white rounded-2xl premium-shadow p-6">
+                    <h2 className="text-xl font-bold text-black mb-4">Background Check / Child Safety Clearance</h2>
+                    <div className="space-y-3">
+                      {therapist.complianceDocuments.backgroundCheck.clearanceNumber && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Clearance Number:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.backgroundCheck.clearanceNumber}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.backgroundCheck.state && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">State:</span>
+                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.backgroundCheck.state}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.backgroundCheck.expirationDate && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600">Expiration Date:</span>
+                          <p className="text-gray-900 mt-1">{new Date(therapist.complianceDocuments.backgroundCheck.expirationDate).toLocaleDateString()}</p>
+                        </div>
+                      )}
+                      {therapist.complianceDocuments.backgroundCheck.verified ? (
+                        <div className="flex items-center space-x-2 text-green-600">
+                          <CheckCircle className="w-5 h-5" />
+                          <span className="text-sm font-medium">Verified</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-yellow-600">
+                          <Clock className="w-5 h-5" />
+                          <span className="text-sm font-medium">Pending Verification</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 

@@ -26,6 +26,7 @@ import { sessionAPI, therapistAPI, clientAPI } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import CompensationChart from '@/components/CompensationChart'
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview')
@@ -33,6 +34,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null)
   const [clients, setClients] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [therapistProfile, setTherapistProfile] = useState<any>(null)
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
 
@@ -75,20 +77,14 @@ export default function DashboardPage() {
       const clientsData = clientsRes.data.data || []
       setClients(clientsData.slice(0, 3)) // Get first 3 clients
 
-      // Get therapist ID from localStorage
-      const storedUser = localStorage.getItem('user')
-      if (storedUser) {
-        const userData = JSON.parse(storedUser)
-        // Fetch therapist profile to get the therapist ID
-        const therapistsRes = await therapistAPI.getAll()
-        const therapists = therapistsRes.data.data.therapists || []
-        const currentTherapist = therapists.find((t: any) => t.userId._id === userData.id)
-        
-        if (currentTherapist) {
-          // Fetch therapist stats
-          const statsRes = await therapistAPI.getStats(currentTherapist._id)
-          setStats(statsRes.data.data)
-        }
+      // Fetch therapist profile
+      const therapistRes = await therapistAPI.getMyProfile()
+      setTherapistProfile(therapistRes.data.data)
+      
+      // Fetch therapist stats
+      if (therapistRes.data.data?._id) {
+        const statsRes = await therapistAPI.getStats(therapistRes.data.data._id)
+        setStats(statsRes.data.data)
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
@@ -238,7 +234,23 @@ export default function DashboardPage() {
         </div>
 
         {activeTab === 'overview' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="space-y-8">
+          {/* Compensation Chart */}
+          {therapistProfile && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <CompensationChart
+                credentialType={therapistProfile.credentials || 'SLP'}
+                hoursAccumulated={therapistProfile.totalHoursWorked || 0}
+                currentHourlyRate={therapistProfile.hourlyRate || (therapistProfile.credentials === 'SLPA' ? 30 : 35)}
+              />
+            </motion.div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Upcoming Sessions */}
           <div className="lg:col-span-2">
             <motion.div
@@ -493,6 +505,7 @@ export default function DashboardPage() {
               )}
             </div>
           </motion.div>
+          </div>
         )}
       </div>
     </div>

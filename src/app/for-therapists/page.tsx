@@ -32,24 +32,31 @@ export default function ForTherapistsPage() {
   const compensationRanges = [
     {
       credential: 'SLP (Speech-Language Pathologist)',
+      startingRate: '$35',
       maxRate: '$75',
-      description: 'Fully licensed Speech-Language Pathologists can set rates up to $75/hour',
+      description: 'Fully licensed Speech-Language Pathologists start at $35/hour and can progress up to $75/hour through our tiered compensation model',
       benefits: [
-        '55% of session fee goes directly to you (45% platform fee)',
-        'Set your own hourly rate (up to $75/hour)',
+        'Fixed hourly rate compensation - no percentage splits',
+        'Starting rate: $35/hour, maximum rate: $75/hour',
+        '$5 rate increase every 5 hours worked',
+        'Transparent hour-based progression with clear milestones',
+        'You are paid your current hourly rate for each session',
         '$20 cancellation fee protection when clients cancel',
         'Flexible scheduling on your terms',
-        'Direct payment processing with transparent reporting',
-        'No hidden fees or surprise deductions'
+        'Direct payment processing with transparent reporting'
       ]
     },
     {
       credential: 'SLPA (Speech-Language Pathology Assistant)',
+      startingRate: '$30',
       maxRate: '$55',
-      description: 'Speech-Language Pathology Assistants can set rates up to $55/hour',
+      description: 'Speech-Language Pathology Assistants start at $30/hour and can progress up to $55/hour through our tiered compensation model',
       benefits: [
-        '55% of session fee goes directly to you (45% platform fee)',
-        'Set your own hourly rate (up to $55/hour)',
+        'Fixed hourly rate compensation - no percentage splits',
+        'Starting rate: $30/hour, maximum rate: $55/hour',
+        '$5 rate increase every 5 hours worked',
+        'Transparent hour-based progression with clear milestones',
+        'You are paid your current hourly rate for each session',
         '$15 cancellation fee protection when clients cancel',
         'Supportive platform designed for career growth',
         'Clear guidelines and supervision support',
@@ -61,13 +68,14 @@ export default function ForTherapistsPage() {
   const platformBenefits = [
     {
       icon: <DollarSign className="w-8 h-8" />,
-      title: 'Generous Compensation',
-      description: 'Keep 55% of every session fee. We believe therapists should be fairly compensated for their expertise and dedication.',
+      title: 'Fixed Hourly Rate Compensation',
+      description: 'Earn your way to higher rates through hours worked. You are paid a fixed hourly rate based on your tier - no percentage splits, no revenue sharing. SLPs start at $35/hour (up to $75/hour). SLPAs start at $30/hour (up to $55/hour).',
       details: [
-        '55/45 revenue split (you keep 55%)',
-        'Set your own rates within platform guidelines',
-        'Transparent payment processing',
-        'No hidden fees'
+        'Fixed hourly rate - you are paid your current rate per hour',
+        'Tiered, hour-based progression model',
+        '$5 increase every 5 hours worked',
+        'Transparent milestones and clear path to maximum rate',
+        'No percentage splits or revenue sharing'
       ]
     },
     {
@@ -277,23 +285,45 @@ export default function ForTherapistsPage() {
             transition={{ duration: 0.6 }}
             className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-8 rounded-2xl text-center"
           >
-            <h3 className="text-2xl font-bold mb-4">{t('forTherapists.revenueSplitTitle')}</h3>
-            <p className="text-lg mb-6">
-              {t('forTherapists.revenueSplitDesc')}
+            <h3 className="text-2xl font-bold mb-4 text-center">{t('forTherapists.compensationModelTitle')}</h3>
+            <p className="text-lg mb-6 text-center">
+              {t('forTherapists.compensationModelDesc')}
             </p>
-            <div className="grid md:grid-cols-3 gap-6 mt-8">
-              <div>
-                <div className="text-4xl font-bold mb-2">55%</div>
-                <div className="text-blue-100">{t('forTherapists.yourEarnings')}</div>
+            <div className="bg-white/10 rounded-lg p-6 mb-6">
+              <h4 className="text-xl font-semibold mb-4 text-center">{t('forTherapists.progressionTitle')}</h4>
+              <p className="text-blue-100 mb-4 text-center">
+                {t('forTherapists.progressionDesc')}
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 mt-6">
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="text-sm text-blue-200 mb-2">SLP Starting Rate</div>
+                  <div className="text-2xl font-bold">$35/hour</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="text-sm text-blue-200 mb-2">SLP Maximum Rate</div>
+                  <div className="text-2xl font-bold">$75/hour</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="text-sm text-blue-200 mb-2">SLPA Starting Rate</div>
+                  <div className="text-2xl font-bold">$30/hour</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="text-sm text-blue-200 mb-2">SLPA Maximum Rate</div>
+                  <div className="text-2xl font-bold">$55/hour</div>
+                </div>
               </div>
-              <div>
-                <div className="text-4xl font-bold mb-2">45%</div>
-                <div className="text-blue-100">{t('forTherapists.platformFee')}</div>
+              <div className="mt-6 pt-6 border-t border-white/20">
+                <p className="text-blue-100 text-center mb-4">
+                  <strong>Progression:</strong> Every 5 hours worked = +$5/hour increase
+                </p>
+                <p className="text-blue-200 text-sm text-center">
+                  You are paid a fixed hourly rate - no percentage splits, no revenue sharing
+                </p>
               </div>
-              <div>
-                <div className="text-4xl font-bold mb-2">0%</div>
-                <div className="text-blue-100">{t('forTherapists.noHiddenFees')}</div>
-              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold mb-2">Fixed Hourly Rate</div>
+              <div className="text-blue-100">{t('forTherapists.noHiddenFees')}</div>
             </div>
           </motion.div>
         </div>

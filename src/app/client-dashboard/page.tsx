@@ -18,6 +18,7 @@ import {
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from '@/hooks/useTranslation'
 import { sessionAPI, clientAPI, subscriptionAPI, assignmentAPI } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
@@ -33,6 +34,7 @@ export default function ClientDashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
+  const t = useTranslation()
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -93,6 +95,24 @@ export default function ClientDashboardPage() {
         try {
           const clientProfileRes = await clientAPI.getMyProfile()
           const clientData = clientProfileRes.data.data
+          setClientProfile({ ...clientData, therapist: assignedTherapistName })
+          
+          // Check intake status
+          try {
+            const intakeStatusRes = await clientAPI.getIntakeStatus()
+            const intakeStatus = intakeStatusRes.data.data
+            
+            if (!intakeStatus.intakeCompleted) {
+              // Intake not completed, redirect to intake form
+              router.push('/client-intake')
+              return
+            }
+          } catch (error) {
+            console.log('Could not check intake status')
+            // If error checking intake, assume not completed and redirect
+            router.push('/client-intake')
+            return
+          }
           
           if (clientData.assignedTherapist?.userId) {
             assignedTherapistName = `Dr. ${clientData.assignedTherapist.userId.firstName} ${clientData.assignedTherapist.userId.lastName}`
@@ -118,17 +138,17 @@ export default function ClientDashboardPage() {
           name: `${userData.firstName} ${userData.lastName}`,
           email: userData.email,
           therapist: assignedTherapistName,
-          sessionStreak: 5,
-          progressScore: 78,
-          totalSessions: sessionsData.length,
-          upcomingGoals: 3
+          sessionStreak: 0, // Will be calculated from actual session data
+          progressScore: 0, // No progress until goals are created by therapist
+          totalSessions: sessionsData.filter((s: any) => s.status === 'completed').length,
+          upcomingGoals: 0 // No goals until created by therapist after evaluation
         })
       }
 
-      // Mock progress data - in real app, fetch from API
+      // No progress data until goals exist - set to empty/zero
       setProgress({
-        weeklyGoals: [65, 72, 78, 85, 78],
-        overallProgress: 78
+        weeklyGoals: [],
+        overallProgress: 0
       })
 
     } catch (error) {
@@ -168,34 +188,42 @@ export default function ClientDashboardPage() {
     )
   }
 
+  // Calculate session streak from actual session data
+  const calculateSessionStreak = () => {
+    if (!upcomingSessions || upcomingSessions.length === 0) return 0
+    // This would need to be calculated from completed sessions with dates
+    // For now, return 0 until we have proper session history
+    return 0
+  }
+
   const stats = [
     {
-      title: 'Session Streak',
-      value: clientProfile?.sessionStreak || '0',
+      title: t('clientProfile.stats.sessionStreak', 'Session Streak'),
+      value: calculateSessionStreak().toString(),
       icon: <Activity className="w-6 h-6" />,
       color: 'bg-purple-500',
-      description: 'consecutive weeks'
+      description: t('clientProfile.stats.consecutiveWeeks', 'consecutive weeks')
     },
     {
-      title: 'Progress Score',
+      title: t('clientProfile.stats.progressScore', 'Progress Score'),
       value: `${clientProfile?.progressScore || 0}%`,
       icon: <TrendingUp className="w-6 h-6" />,
       color: 'bg-green-500',
-      description: 'overall improvement'
+      description: t('clientProfile.stats.overallImprovement', 'overall improvement')
     },
     {
-      title: 'Total Sessions',
-      value: clientProfile?.totalSessions || '0',
+      title: t('clientProfile.stats.totalSessions'),
+      value: (clientProfile?.totalSessions || 0).toString(),
       icon: <Video className="w-6 h-6" />,
       color: 'bg-blue-500',
-      description: 'completed'
+      description: t('clientProfile.stats.completed', 'completed')
     },
     {
-      title: 'Active Goals',
-      value: clientProfile?.upcomingGoals || '0',
+      title: t('clientProfile.stats.activeGoals', 'Active Goals'),
+      value: (clientProfile?.upcomingGoals || 0).toString(),
       icon: <Target className="w-6 h-6" />,
       color: 'bg-orange-500',
-      description: 'in progress'
+      description: t('clientProfile.stats.inProgress', 'in progress')
     }
   ]
 
@@ -215,17 +243,17 @@ export default function ClientDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-black mb-2">
-                Welcome back, {user?.firstName}! 👋
+                {t('dashboard.welcome')}, {user?.firstName}! 👋
               </h1>
               {clientProfile?.therapist && clientProfile.therapist !== 'Not assigned yet' ? (
                 <p className="text-gray-600">
-                  Your therapist: <span className="font-semibold text-black">{clientProfile.therapist}</span>
+                  {t('clientProfile.therapist.yourTherapist')}: <span className="font-semibold text-black">{clientProfile.therapist}</span>
                 </p>
               ) : (
                 <p className="text-gray-600">
                   <Link href="/meet-our-therapists" className="text-purple-600 hover:text-purple-700 font-semibold underline">
-                    Find a therapist
-                  </Link> to get started with your therapy journey
+                    {t('nav.findTherapists', 'Find a therapist')}
+                  </Link> {t('common.toGetStarted', 'to get started with your therapy journey')}
                 </p>
               )}
             </div>
@@ -309,17 +337,17 @@ export default function ClientDashboardPage() {
                         : remainingSessions.remainingSessions}
                     </p>
                   </div>
-                  {!remainingSessions.hasUnlimited && (
+                      {!remainingSessions.hasUnlimited && (
                     <div className="text-sm text-gray-600">
-                      <p>Used: {remainingSessions.usedSessions} / {remainingSessions.totalSessions}</p>
+                      <p>{t('clientProfile.stats.used', 'Used')}: {remainingSessions.usedSessions} / {remainingSessions.totalSessions}</p>
                       {remainingSessions.remainingSessions === 0 && (
                         <p className="text-red-600 font-semibold mt-1">
-                          All sessions used this billing period
+                          {t('clientProfile.stats.allSessionsUsed', 'All sessions used this billing period')}
                         </p>
                       )}
                       {remainingSessions.remainingSessions > 0 && (
                         <p className="text-green-600 font-semibold mt-1">
-                          {remainingSessions.remainingSessions} more session{remainingSessions.remainingSessions !== 1 ? 's' : ''} available
+                          {remainingSessions.remainingSessions} {t('clientProfile.stats.moreSessionsAvailable', 'more session')}{remainingSessions.remainingSessions !== 1 ? 's' : ''} {t('clientProfile.stats.available', 'available')}
                         </p>
                       )}
                     </div>
@@ -332,7 +360,7 @@ export default function ClientDashboardPage() {
                   href="/meet-our-therapists"
                   className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold"
                 >
-                  Book Session
+                  {t('dashboard.bookSession')}
                 </Link>
               )}
                 {remainingSessions.remainingSessions === 0 && !remainingSessions.hasUnlimited && (
@@ -340,7 +368,7 @@ export default function ClientDashboardPage() {
                     href="/pricing"
                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors font-semibold shadow-lg"
                   >
-                    Renew Subscription
+                    {t('clientProfile.stats.renewSubscription', 'Renew Subscription')}
                   </Link>
                 )}
               </div>
@@ -412,23 +440,31 @@ export default function ClientDashboardPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="bg-white rounded-2xl premium-shadow p-6"
             >
-              <h2 className="text-xl font-bold text-black mb-6">Weekly Progress</h2>
+              <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.stats.weeklyProgress', 'Weekly Progress')}</h2>
               
-              <div className="flex items-end justify-between h-48 space-x-4">
-                {progress?.weeklyGoals.map((value: number, index: number) => (
-                  <div key={index} className="flex-1 flex flex-col items-center">
-                    <div className="w-full bg-gray-200 rounded-t-lg flex-grow relative" style={{ maxHeight: '192px' }}>
-                    <div 
-                        className="w-full bg-gradient-to-t from-purple-600 to-purple-400 rounded-t-lg absolute bottom-0"
-                        style={{ height: `${value}%` }}
-                    ></div>
+              {progress?.weeklyGoals && progress.weeklyGoals.length > 0 ? (
+                <div className="flex items-end justify-between h-48 space-x-4">
+                  {progress.weeklyGoals.map((value: number, index: number) => (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div className="w-full bg-gray-200 rounded-t-lg flex-grow relative" style={{ maxHeight: '192px' }}>
+                        <div 
+                          className="w-full bg-gradient-to-t from-purple-600 to-purple-400 rounded-t-lg absolute bottom-0"
+                          style={{ height: `${value}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-2">
+                        {t('common.week', 'Week')} {index + 1}
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-600 mt-2">
-                      Week {index + 1}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-gray-500">
+                  <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">{t('clientProfile.stats.noProgressData', 'No progress data yet')}</p>
+                  <p className="text-xs mt-1">{t('clientProfile.stats.progressTrackingMessage', 'Progress tracking will begin after your therapist creates goals following your evaluation')}</p>
+                </div>
+              )}
             </motion.div>
           </div>
 
@@ -441,37 +477,28 @@ export default function ClientDashboardPage() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="bg-white rounded-2xl premium-shadow p-6"
             >
-              <h2 className="text-xl font-bold text-black mb-4">Current Goals</h2>
+              <h2 className="text-xl font-bold text-black mb-4">{t('clientProfile.stats.currentGoals', 'Current Goals')}</h2>
               
               <div className="space-y-4">
-                <div className="p-4 bg-purple-50 rounded-lg">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-black text-sm">Improve /r/ sound</h3>
-                    <span className="text-xs font-medium text-purple-600">85%</span>
-                      </div>
-                  <div className="w-full bg-purple-200 rounded-full h-2">
-                    <div className="bg-purple-600 h-2 rounded-full" style={{ width: '85%' }}></div>
-                      </div>
-                  <p className="text-xs text-gray-600 mt-2">Target: March 2025</p>
-                    </div>
-                    
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-black text-sm">Expand vocabulary</h3>
-                    <span className="text-xs font-medium text-blue-600">65%</span>
-                      </div>
-                  <div className="w-full bg-blue-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '65%' }}></div>
+                {clientProfile?.upcomingGoals && clientProfile.upcomingGoals > 0 ? (
+                  <>
+                    <p className="text-sm text-gray-600">
+                      {t('clientProfile.stats.youHaveGoals', 'You have')} {clientProfile.upcomingGoals} {t('clientProfile.stats.activeGoal', 'active goal')}{clientProfile.upcomingGoals !== 1 ? 's' : ''}.
+                    </p>
+                    <Link
+                      href="/client-profile"
+                      className="w-full mt-4 py-2 border-2 border-black rounded-lg text-black hover:bg-black hover:text-white transition-colors flex items-center justify-center text-sm font-semibold"
+                    >
+                      {t('clientProfile.stats.viewAllGoals', 'View All Goals')}
+                    </Link>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <Target className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">{t('clientProfile.stats.noGoalsYet', 'No goals yet')}</p>
+                    <p className="text-xs mt-1">{t('clientProfile.stats.goalsWillBeCreated', 'Goals will be created by your therapist after your diagnostic evaluation')}</p>
                   </div>
-                  <p className="text-xs text-gray-600 mt-2">Target: April 2025</p>
-                </div>
-
-                <Link
-                  href="/client-profile"
-                  className="w-full mt-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:text-black hover:border-black transition-colors flex items-center justify-center text-sm"
-                >
-                  View All Goals
-                </Link>
+                )}
               </div>
             </motion.div>
 
@@ -482,13 +509,13 @@ export default function ClientDashboardPage() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="bg-white rounded-2xl premium-shadow p-6"
             >
-              <h2 className="text-xl font-bold text-black mb-4">Homework</h2>
+              <h2 className="text-xl font-bold text-black mb-4">{t('clientProfile.assignments.title')}</h2>
               
               {assignments.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">No assignments yet</p>
-                  <p className="text-xs mt-1">Your therapist will assign homework here</p>
+                  <p className="text-sm">{t('clientProfile.assignments.noAssignments')}</p>
+                  <p className="text-xs mt-1">{t('clientProfile.assignments.yourTherapistWillAssign')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">

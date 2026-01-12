@@ -31,6 +31,8 @@ function PricingContent() {
   const [successMessage, setSuccessMessage] = useState('')
   const [pricingTiers, setPricingTiers] = useState<any[]>([])
   const [loadingPricing, setLoadingPricing] = useState(true)
+  const [intakeCompleted, setIntakeCompleted] = useState(false)
+  const [checkingIntake, setCheckingIntake] = useState(true)
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -38,8 +40,11 @@ function PricingContent() {
 
   useEffect(() => {
     fetchPricing()
-    if (isAuthenticated) {
+    if (isAuthenticated && user?.role === 'client') {
+      checkIntakeStatus()
       fetchCurrentSubscription()
+    } else {
+      setCheckingIntake(false)
     }
 
     // Check if returning from Stripe checkout
@@ -92,7 +97,7 @@ function PricingContent() {
         router.replace('/pricing', { scroll: false })
       }, 3000)
     }
-  }, [isAuthenticated, searchParams])
+  }, [isAuthenticated, searchParams, user])
 
   const fetchPricing = async () => {
     try {
@@ -280,6 +285,13 @@ function PricingContent() {
     if (!isAuthenticated) {
       // Redirect to signup with selected plan
       router.push(`/signup?plan=${tierId}`)
+      return
+    }
+
+    // Check intake status for clients
+    if (user?.role === 'client' && !intakeCompleted) {
+      setSuccessMessage('Please complete your intake form before selecting a plan.')
+      router.push('/client-intake')
       return
     }
 
@@ -541,14 +553,22 @@ function PricingContent() {
               ) : (
                 <button 
                   onClick={() => handleSelectPlan(tier.id)}
-                  disabled={isLoading}
+                  disabled={isLoading || (isAuthenticated && user?.role === 'client' && !intakeCompleted) || checkingIntake}
                   className={`w-full py-3 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
                     tier.popular 
                       ? 'bg-black text-white hover:bg-gray-800' 
                       : 'border-2 border-black text-black hover:bg-black hover:text-white'
                   }`}
                 >
-                  {isLoading ? t('common.loading') : isAuthenticated ? t('pricing.selectPlan') : t('nav.getStarted')}
+                  {checkingIntake 
+                    ? 'Checking...' 
+                    : isLoading 
+                    ? t('common.loading') 
+                    : (isAuthenticated && user?.role === 'client' && !intakeCompleted)
+                    ? 'Complete Intake First'
+                    : isAuthenticated 
+                    ? t('pricing.selectPlan') 
+                    : t('nav.getStarted')}
                 </button>
               )}
             </motion.div>

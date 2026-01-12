@@ -79,6 +79,8 @@ export const clientAPI = {
   getById: (id: string) => api.get(`/clients/${id}`),
   getMyProfile: () => api.get('/clients/me'),
   createOrUpdate: (data: any) => api.post('/clients', data),
+  submitIntake: (data: any) => api.post('/clients/intake', data),
+  getIntakeStatus: () => api.get('/clients/intake/status'),
   uploadDocument: (id: string, data: any) =>
     api.post(`/clients/${id}/documents`, data),
   uploadDocumentFile: (id: string, formData: FormData) =>
@@ -243,6 +245,10 @@ export const familyCoachingAPI = {
 };
 
 export const healthCheck = () => api.get('/health');
+
+export const publicAPI = {
+  getPlatformStats: () => api.get('/public/platform-stats'),
+};
 
 export default api;
 

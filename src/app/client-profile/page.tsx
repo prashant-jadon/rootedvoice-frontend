@@ -24,12 +24,14 @@ import {
   X,
   FileText,
   Upload,
-  UserX
+  UserX,
+  ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/hooks/useTranslation'
 import { clientAPI, therapistAPI, sessionAPI, assignmentAPI, calendarAPI, familyCoachingAPI, subscriptionAPI } from '@/lib/api'
 import CalendarSync from '@/components/CalendarSync'
 import DocumentUpload from '@/components/DocumentUpload'
@@ -43,6 +45,7 @@ import FamilyCoachingList from '@/components/FamilyCoachingList'
 export default function ClientProfilePage() {
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
+  const t = useTranslation()
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('personal')
   const [isLoading, setIsLoading] = useState(true)
@@ -208,7 +211,7 @@ export default function ClientProfilePage() {
                 className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
               >
                 {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
-                <span>{isEditing ? 'Save Changes' : 'Edit Profile'}</span>
+                <span>{isEditing ? t('clientProfile.saveChanges') : t('clientProfile.editProfile')}</span>
               </button>
             </div>
           </div>
@@ -256,7 +259,7 @@ export default function ClientProfilePage() {
                     )}
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4" />
-                      <span>Joined {new Date(clientProfile.createdAt).toLocaleDateString()}</span>
+                      <span>{t('common.joined', 'Joined')} {new Date(clientProfile.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
 
@@ -265,7 +268,7 @@ export default function ClientProfilePage() {
                     <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-green-800 mb-1">Your Therapist</p>
+                          <p className="text-sm text-green-800 mb-1">{t('clientProfile.therapist.yourTherapist')}</p>
                           <p className="font-semibold text-green-900">
                             Dr. {therapist.userId?.firstName} {therapist.userId?.lastName}
                           </p>
@@ -276,18 +279,18 @@ export default function ClientProfilePage() {
                           className="text-green-700 hover:text-green-900 flex items-center space-x-1 text-sm"
                         >
                           <UserX className="w-4 h-4" />
-                          <span>Change Therapist</span>
+                          <span>{t('clientProfile.therapist.changeTherapist')}</span>
                         </button>
                       </div>
                     </div>
                   ) : (
                     <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <p className="text-sm text-yellow-800 mb-2">No therapist assigned</p>
+                      <p className="text-sm text-yellow-800 mb-2">{t('clientProfile.therapist.notAssigned')}</p>
                       <Link 
                         href="/meet-our-therapists"
                         className="text-yellow-900 font-semibold underline hover:text-yellow-700"
                       >
-                        Browse and select a therapist
+                        {t('clientProfile.therapist.browseTherapists')}
                       </Link>
                     </div>
                   )}
@@ -299,21 +302,21 @@ export default function ClientProfilePage() {
                         <CheckCircle className="w-5 h-5" />
                         <span className="text-2xl font-bold text-black">{completedSessions}</span>
                       </div>
-                      <p className="text-sm text-gray-600">Completed Sessions</p>
+                      <p className="text-sm text-gray-600">{t('clientProfile.stats.completedSessions')}</p>
                     </div>
                     <div className="text-center">
                       <div className="flex items-center justify-center space-x-2 mb-1">
                         <Calendar className="w-5 h-5" />
                         <span className="text-2xl font-bold text-black">{upcomingSessions}</span>
                       </div>
-                      <p className="text-sm text-gray-600">Upcoming Sessions</p>
+                      <p className="text-sm text-gray-600">{t('clientProfile.stats.upcomingSessions')}</p>
                     </div>
                     <div className="text-center">
                       <div className="flex items-center justify-center space-x-2 mb-1">
                         <Target className="w-5 h-5" />
                         <span className="text-2xl font-bold text-black">{sessions.length}</span>
                       </div>
-                      <p className="text-sm text-gray-600">Total Sessions</p>
+                      <p className="text-sm text-gray-600">{t('clientProfile.stats.totalSessions')}</p>
                     </div>
                   </div>
                 </div>
@@ -329,12 +332,13 @@ export default function ClientProfilePage() {
             <div className="mb-6">
               <nav className="flex space-x-8">
                 {[
-                  { id: 'personal', label: 'Personal Info', icon: <User className="w-5 h-5" /> },
-                  { id: 'sessions', label: 'My Sessions', icon: <Calendar className="w-5 h-5" /> },
-                  { id: 'documents', label: 'Documents', icon: <FileText className="w-5 h-5" /> },
-                  { id: 'assignments', label: 'Assignments', icon: <FileText className="w-5 h-5" /> },
-                  ...(subscription?.tier === 'flourish' ? [{ id: 'family-coaching', label: 'Family Coaching', icon: <Heart className="w-5 h-5" /> }] : []),
-                  { id: 'preferences', label: 'Preferences', icon: <Settings className="w-5 h-5" /> }
+                  { id: 'personal', label: t('clientProfile.tabs.personal'), icon: <User className="w-5 h-5" /> },
+                  { id: 'intake', label: t('clientProfile.tabs.intake'), icon: <FileText className="w-5 h-5" /> },
+                  { id: 'sessions', label: t('clientProfile.tabs.sessions'), icon: <Calendar className="w-5 h-5" /> },
+                  { id: 'documents', label: t('clientProfile.tabs.documents'), icon: <FileText className="w-5 h-5" /> },
+                  { id: 'assignments', label: t('clientProfile.tabs.assignments'), icon: <FileText className="w-5 h-5" /> },
+                  ...(subscription?.tier === 'flourish' ? [{ id: 'family-coaching', label: t('clientProfile.tabs.familyCoaching'), icon: <Heart className="w-5 h-5" /> }] : []),
+                  { id: 'preferences', label: t('clientProfile.tabs.preferences'), icon: <Settings className="w-5 h-5" /> }
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -360,11 +364,11 @@ export default function ClientProfilePage() {
                 transition={{ duration: 0.6 }}
                 className="bg-white rounded-2xl premium-shadow p-6"
               >
-                <h2 className="text-xl font-bold text-black mb-6">Personal Information</h2>
+                <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.personalInfo.title')}</h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.firstName')}</label>
                     <input 
                       type="text" 
                       defaultValue={user?.firstName || ''}
@@ -374,7 +378,7 @@ export default function ClientProfilePage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.lastName')}</label>
                     <input 
                       type="text" 
                       defaultValue={user?.lastName || ''}
@@ -384,7 +388,7 @@ export default function ClientProfilePage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.email')}</label>
                     <input 
                       type="email" 
                       defaultValue={user?.email || ''}
@@ -394,7 +398,7 @@ export default function ClientProfilePage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.phone')}</label>
                     <input 
                       type="tel" 
                       defaultValue={clientProfile.userId?.phone || ''}
@@ -404,7 +408,7 @@ export default function ClientProfilePage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.dateOfBirth')}</label>
                     <input 
                       type="date" 
                       defaultValue={clientProfile.dateOfBirth ? new Date(clientProfile.dateOfBirth).toISOString().split('T')[0] : ''}
@@ -414,7 +418,7 @@ export default function ClientProfilePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.guardianName')}</label>
                     <input 
                       type="text" 
                       defaultValue={clientProfile.guardianName || 'N/A'}
@@ -426,6 +430,150 @@ export default function ClientProfilePage() {
               </motion.div>
             )}
 
+            {activeTab === 'intake' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="bg-white rounded-2xl premium-shadow p-6"
+              >
+                  <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-black">{t('clientProfile.intake.title')}</h2>
+                  {clientProfile?.intake?.intakeCompleted ? (
+                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium flex items-center space-x-1">
+                      <CheckCircle className="w-4 h-4" />
+                      <span>{t('clientProfile.intake.completed')}</span>
+                    </span>
+                  ) : (
+                    <Link
+                      href="/client-intake"
+                      className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
+                    >
+                      {t('clientProfile.intake.completeIntake')}
+                    </Link>
+                  )}
+                </div>
+
+                {clientProfile?.intake?.intakeCompleted ? (
+                  <div className="space-y-6">
+                    {/* Client Type */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-600 mb-2">{t('clientProfile.intake.clientType')}</h3>
+                      <p className="text-black capitalize">{clientProfile.intake.clientType || t('clientProfile.intake.notSpecified')}</p>
+                    </div>
+
+                    {/* Primary Concerns */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-600 mb-2">{t('clientProfile.intake.primaryConcerns')}</h3>
+                      <p className="text-black whitespace-pre-line">{clientProfile.intake.primaryConcerns || t('clientProfile.intake.notProvided')}</p>
+                    </div>
+
+                    {/* Communication Concerns */}
+                    {clientProfile.intake.communicationConcerns && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-600 mb-2">{t('clientProfile.intake.communicationConcerns')}</h3>
+                        <p className="text-black whitespace-pre-line">{clientProfile.intake.communicationConcerns}</p>
+                      </div>
+                    )}
+
+                    {/* State of Residence */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-600 mb-2">{t('clientProfile.intake.stateOfResidence')}</h3>
+                      <p className="text-black">{clientProfile.intake.stateOfResidence || t('clientProfile.intake.notProvided')}</p>
+                    </div>
+
+                    {/* Telehealth Consent */}
+                    <div className="border-t pt-6">
+                      <h3 className="text-sm font-medium text-gray-600 mb-4">{t('clientProfile.intake.telehealthConsent')}</h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          {clientProfile.intake.telehealthConsent?.consented ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <X className="w-5 h-5 text-red-500" />
+                          )}
+                          <span className="text-sm text-gray-700">{t('clientProfile.intake.consentToTelehealth')}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {clientProfile.intake.telehealthConsent?.understandsTechnology ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <X className="w-5 h-5 text-red-500" />
+                          )}
+                          <span className="text-sm text-gray-700">{t('clientProfile.intake.understandsTechnology')}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {clientProfile.intake.telehealthConsent?.understandsPrivacy ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <X className="w-5 h-5 text-red-500" />
+                          )}
+                          <span className="text-sm text-gray-700">{t('clientProfile.intake.understandsPrivacy')}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {clientProfile.intake.telehealthConsent?.understandsLimitations ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <X className="w-5 h-5 text-red-500" />
+                          )}
+                          <span className="text-sm text-gray-700">{t('clientProfile.intake.understandsLimitations')}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {clientProfile.intake.telehealthConsent?.emergencyContactProvided ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <X className="w-5 h-5 text-red-500" />
+                          )}
+                          <span className="text-sm text-gray-700">{t('clientProfile.intake.emergencyContactProvided')}</span>
+                        </div>
+                        {clientProfile.intake.telehealthConsent?.consentSignature && (
+                          <div className="mt-4 pt-4 border-t">
+                            <p className="text-sm text-gray-600">{t('clientProfile.intake.signedBy')}: <span className="font-medium text-black">{clientProfile.intake.telehealthConsent.consentSignature}</span></p>
+                            <p className="text-sm text-gray-600">{t('clientProfile.intake.relationship')}: <span className="font-medium text-black">{clientProfile.intake.telehealthConsent.relationshipToClient}</span></p>
+                            {clientProfile.intake.telehealthConsent.consentDate && (
+                              <p className="text-sm text-gray-600">{t('clientProfile.intake.date')}: <span className="font-medium text-black">{new Date(clientProfile.intake.telehealthConsent.consentDate).toLocaleDateString()}</span></p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Additional Notes */}
+                    {clientProfile.intake.additionalNotes && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-600 mb-2">{t('clientProfile.intake.additionalNotes')}</h3>
+                        <p className="text-black whitespace-pre-line">{clientProfile.intake.additionalNotes}</p>
+                      </div>
+                    )}
+
+                    {/* Completion Date */}
+                    {clientProfile.intake.completedAt && (
+                      <div className="pt-4 border-t">
+                        <p className="text-xs text-gray-500">
+                          {t('clientProfile.intake.completedOn')} {new Date(clientProfile.intake.completedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-lg font-semibold text-black mb-2">{t('clientProfile.intake.notCompleted')}</h3>
+                    <p className="text-gray-600 mb-6">
+                      {t('clientProfile.intake.notCompletedDesc')}
+                    </p>
+                    <Link
+                      href="/client-intake"
+                      className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+                    >
+                      <span>{t('clientProfile.intake.completeIntakeForm')}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
             {activeTab === 'sessions' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -433,14 +581,14 @@ export default function ClientProfilePage() {
                 transition={{ duration: 0.6 }}
                 className="bg-white rounded-2xl premium-shadow p-6"
               >
-                <h2 className="text-xl font-bold text-black mb-6">My Sessions</h2>
+                <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.sessions.title')}</h2>
                 
                 {sessions.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
                     <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>No sessions found</p>
+                    <p>{t('clientProfile.sessions.noSessions')}</p>
                     <Link href="/meet-our-therapists" className="text-blue-600 hover:underline mt-2 block">
-                      Book your first session
+                      {t('clientProfile.sessions.bookFirstSession')}
                     </Link>
                   </div>
                 ) : (
@@ -449,11 +597,11 @@ export default function ClientProfilePage() {
                       <div key={session._id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-semibold text-black capitalize">{session.sessionType} Session</h4>
+                            <h4 className="font-semibold text-black capitalize">{session.sessionType} {t('clientProfile.sessions.sessionType')}</h4>
                             <p className="text-sm text-gray-600">
                               {new Date(session.scheduledDate).toLocaleDateString()} at {session.scheduledTime}
                             </p>
-                            <p className="text-sm text-gray-600">Duration: {session.duration} minutes</p>
+                            <p className="text-sm text-gray-600">{t('clientProfile.sessions.duration')}: {session.duration} {t('clientProfile.sessions.minutes')}</p>
                           </div>
                           <div className="text-right">
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -462,14 +610,14 @@ export default function ClientProfilePage() {
                               session.status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
-                              {session.status}
+                              {t(`clientProfile.sessions.status.${session.status}`) || session.status}
                             </span>
                             {(session.status === 'confirmed' || session.status === 'scheduled') && (
                               <Link 
                                 href={`/video-call?session=${session._id}`}
                                 className="mt-2 block text-blue-600 hover:underline text-sm"
                               >
-                                Join Session
+                                {t('clientProfile.sessions.joinSession')}
                               </Link>
                             )}
                           </div>
@@ -499,13 +647,13 @@ export default function ClientProfilePage() {
                 className="space-y-6"
               >
                 <div className="bg-white rounded-2xl premium-shadow p-6">
-                  <h2 className="text-xl font-bold text-black mb-6">My Assignments</h2>
+                  <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.assignments.title')}</h2>
                   
                   {assignments.length === 0 ? (
                     <div className="text-center py-12 text-gray-500">
                       <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>No assignments yet</p>
-                      <p className="text-sm mt-2">Your therapist will assign homework here</p>
+                      <p>{t('clientProfile.assignments.noAssignments')}</p>
+                      <p className="text-sm mt-2">{t('clientProfile.assignments.yourTherapistWillAssign')}</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -541,19 +689,19 @@ export default function ClientProfilePage() {
                                 </div>
                                 <p className="text-sm text-gray-600 mb-2">{assignment.description}</p>
                                 <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
-                                  <span>Due: {dueDate.toLocaleDateString()} {dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                  <span>{t('clientProfile.assignments.dueDate')}: {dueDate.toLocaleDateString()} {dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                   {assignment.completed && assignment.completedAt && (
                                     <span className="text-green-600">
-                                      Completed: {new Date(assignment.completedAt).toLocaleDateString()}
+                                      {t('clientProfile.assignments.completed')}: {new Date(assignment.completedAt).toLocaleDateString()}
                                     </span>
                                   )}
                                   {isOverdue && (
-                                    <span className="text-red-600 font-medium">Overdue</span>
+                                    <span className="text-red-600 font-medium">{t('clientProfile.assignments.overdue')}</span>
                                   )}
                                 </div>
                                 {assignment.instructions && (
                                   <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700 mb-2">
-                                    <strong>Instructions:</strong> {assignment.instructions}
+                                    <strong>{t('common.instructions', 'Instructions')}:</strong> {assignment.instructions}
                                   </div>
                                 )}
                                 {assignment.attachments && assignment.attachments.length > 0 && (
@@ -600,7 +748,7 @@ export default function ClientProfilePage() {
                                   }}
                                   className="ml-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
                                 >
-                                  Mark Complete
+                                  {t('clientProfile.assignments.markAsComplete')}
                                 </button>
                               )}
                             </div>
@@ -628,9 +776,9 @@ export default function ClientProfilePage() {
                     <div className="bg-white rounded-2xl premium-shadow p-6">
                       <div className="flex items-center justify-between mb-6">
                         <div>
-                          <h2 className="text-xl font-bold text-black">Family Coaching Sessions</h2>
+                          <h2 className="text-xl font-bold text-black">{t('clientProfile.familyCoaching.title')}</h2>
                           <p className="text-sm text-gray-600 mt-1">
-                            Schedule and manage family coaching sessions (Flourish Tier Feature)
+                            {t('clientProfile.familyCoaching.noSessions')}
                           </p>
                         </div>
                         <button
@@ -638,7 +786,7 @@ export default function ClientProfilePage() {
                           className="flex items-center space-x-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
                         >
                           <Calendar className="w-4 h-4" />
-                          <span>Schedule Session</span>
+                          <span>{t('clientProfile.familyCoaching.scheduleSession')}</span>
                         </button>
                       </div>
                       
@@ -648,7 +796,7 @@ export default function ClientProfilePage() {
                     {showCoachingScheduler && (
                       <div className="bg-white rounded-2xl premium-shadow p-6 mt-6">
                         <div className="flex items-center justify-between mb-6">
-                          <h3 className="text-lg font-bold text-black">Schedule New Family Coaching Session</h3>
+                          <h3 className="text-lg font-bold text-black">{t('clientProfile.familyCoaching.scheduleSession')}</h3>
                           <button
                             onClick={() => setShowCoachingScheduler(false)}
                             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -671,9 +819,9 @@ export default function ClientProfilePage() {
                   <div className="bg-white rounded-2xl premium-shadow p-6">
                     <div className="text-center py-12">
                       <Heart className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-                      <h2 className="text-2xl font-bold text-black mb-2">Family Coaching</h2>
+                      <h2 className="text-2xl font-bold text-black mb-2">{t('clientProfile.familyCoaching.title')}</h2>
                       <p className="text-gray-600 mb-6">
-                        Family coaching sessions are available with the <strong>Flourish Tier</strong> subscription.
+                        {t('clientProfile.familyCoaching.noSessions')}
                       </p>
                       <Link
                         href="/pricing"
@@ -704,11 +852,11 @@ export default function ClientProfilePage() {
 
                 {/* Session Preferences */}
                 <div className="bg-white rounded-2xl premium-shadow p-6">
-                  <h2 className="text-xl font-bold text-black mb-6">Session Preferences</h2>
+                  <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.preferences.title')}</h2>
                   
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Session Time</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.preferences.sessionReminders', 'Preferred Session Time')}</label>
                       <select 
                         disabled={!isEditing}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
@@ -720,7 +868,7 @@ export default function ClientProfilePage() {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Session Length</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.preferences.sessionLength', 'Session Length')}</label>
                       <select 
                         disabled={!isEditing}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
@@ -745,25 +893,25 @@ export default function ClientProfilePage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="bg-white rounded-2xl premium-shadow p-6"
             >
-              <h3 className="text-lg font-bold text-black mb-4">Quick Actions</h3>
+              <h3 className="text-lg font-bold text-black mb-4">{t('common.quickActions', 'Quick Actions')}</h3>
               <div className="space-y-3">
                 <Link href="/client-dashboard" className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-blue-600" />
                   </div>
-                  <span className="text-sm font-medium text-black">Dashboard</span>
+                  <span className="text-sm font-medium text-black">{t('nav.dashboard')}</span>
                 </Link>
                 <Link href="/meet-our-therapists" className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                     <Calendar className="w-4 h-4 text-green-600" />
                   </div>
-                  <span className="text-sm font-medium text-black">Book Session</span>
+                  <span className="text-sm font-medium text-black">{t('dashboard.bookSession')}</span>
                 </Link>
                 <Link href="/pricing" className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                     <Award className="w-4 h-4 text-purple-600" />
                   </div>
-                  <span className="text-sm font-medium text-black">View Pricing</span>
+                  <span className="text-sm font-medium text-black">{t('nav.pricing')}</span>
                 </Link>
               </div>
             </motion.div>

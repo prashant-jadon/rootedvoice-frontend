@@ -324,16 +324,12 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                 </div>
                 
                 <div>
-                  <h3 className="text-lg font-semibold text-black mb-4">License & Credentials</h3>
+                  <h3 className="text-lg font-semibold text-black mb-4">Clinical Role & Credentials</h3>
                   <ul className="space-y-2">
                     <li className="flex items-start space-x-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
-                      <span className="text-gray-600">License: {therapist.licenseNumber}</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-600">Credential:</span>
+                        <span className="text-gray-600">Clinical Role:</span>
                         <CredentialsBadge 
                           credentials={therapist.credentials || 'SLP'} 
                           canSupervise={therapist.canSupervise || false}
@@ -341,6 +337,31 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                         />
                       </div>
                     </li>
+                    {therapist.complianceDocuments?.stateLicensure?.licenseNumber && (
+                      <li className="flex items-start space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                        <span className="text-gray-600">
+                          State License: {therapist.complianceDocuments.stateLicensure.licenseNumber} 
+                          {therapist.complianceDocuments.stateLicensure.state && ` (${therapist.complianceDocuments.stateLicensure.state})`}
+                        </span>
+                      </li>
+                    )}
+                    {therapist.credentials === 'SLP' && therapist.complianceDocuments?.ashaCertification?.certificationNumber && (
+                      <li className="flex items-start space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                        <span className="text-gray-600">
+                          ASHA Certification (CCC-SLP): {therapist.complianceDocuments.ashaCertification.certificationNumber}
+                        </span>
+                      </li>
+                    )}
+                    {therapist.credentials === 'SLPA' && therapist.complianceDocuments?.supervision?.supervisingSLPName && (
+                      <li className="flex items-start space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                        <span className="text-gray-600">
+                          Supervised by: {therapist.complianceDocuments.supervision.supervisingSLPName}
+                        </span>
+                      </li>
+                    )}
                     {therapist.isVerified && (
                       <li className="flex items-start space-x-2">
                         <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />

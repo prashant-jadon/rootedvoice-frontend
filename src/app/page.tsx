@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 import DemoModal from '../components/DemoModal'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useTranslation } from '@/hooks/useTranslation'
-import { subscriptionAPI } from '@/lib/api'
+import { subscriptionAPI, publicAPI } from '@/lib/api'
 
 export default function LandingPage() {
   const [currentPalette, setCurrentPalette] = useState('1')
@@ -15,6 +15,12 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [pricingTiers, setPricingTiers] = useState<any[]>([])
   const [loadingPricing, setLoadingPricing] = useState(true)
+  const [landingStats, setLandingStats] = useState([
+    { number: "10,000+", label: "Active Therapists", icon: "🎯" },
+    { number: "50,000+", label: "Sessions Completed", icon: "⚡" },
+    { number: "99.9%", label: "Platform Uptime", icon: "⭐" },
+    { number: "4.9/5", label: "Client Rating", icon: "⭐" }
+  ])
   const t = useTranslation()
 
   useEffect(() => {
@@ -24,7 +30,42 @@ export default function LandingPage() {
 
   useEffect(() => {
     fetchPricing()
+    fetchLandingStats()
   }, [])
+
+  const fetchLandingStats = async () => {
+    try {
+      const response = await publicAPI.getPlatformStats()
+      const stats = response.data.data
+      if (stats?.landingPageStats) {
+        setLandingStats([
+          {
+            number: stats.landingPageStats.activeTherapists.number,
+            label: stats.landingPageStats.activeTherapists.label,
+            icon: stats.landingPageStats.activeTherapists.icon
+          },
+          {
+            number: stats.landingPageStats.sessionsCompleted.number,
+            label: stats.landingPageStats.sessionsCompleted.label,
+            icon: stats.landingPageStats.sessionsCompleted.icon
+          },
+          {
+            number: stats.landingPageStats.platformUptime.number,
+            label: stats.landingPageStats.platformUptime.label,
+            icon: stats.landingPageStats.platformUptime.icon
+          },
+          {
+            number: stats.landingPageStats.clientRating.number,
+            label: stats.landingPageStats.clientRating.label,
+            icon: stats.landingPageStats.clientRating.icon
+          }
+        ])
+      }
+    } catch (error) {
+      console.error('Failed to fetch landing stats:', error)
+      // Keep default stats on error
+    }
+  }
 
   const fetchPricing = async () => {
     try {
@@ -561,7 +602,7 @@ export default function LandingPage() {
                       color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'white'
                     }}
                   >
-                    10K+
+                    {landingStats[0]?.number || '10,000+'}
                   </div>
                   <div 
                     className="text-sm"
@@ -569,7 +610,7 @@ export default function LandingPage() {
                       color: currentPalette === '3' ? '#202D3E' : 'rgba(255,255,255,0.7)'
                     }}
                   >
-                    Active Therapists
+                    {landingStats[0]?.label || 'Active Therapists'}
                   </div>
                 </div>
                 <div 
@@ -585,7 +626,7 @@ export default function LandingPage() {
                       color: currentPalette === '3' ? '#202D3E' : currentPalette === '1' ? '#132D22' : 'white'
                     }}
                   >
-                    50K+
+                    {landingStats[1]?.number || '50,000+'}
                   </div>
                   <div 
                     className="text-sm"
@@ -593,7 +634,7 @@ export default function LandingPage() {
                       color: currentPalette === '3' ? '#202D3E' : 'rgba(255,255,255,0.7)'
                     }}
                   >
-                    Sessions Completed
+                    {landingStats[1]?.label || 'Sessions Completed'}
                   </div>
                 </div>
               </div>
@@ -742,12 +783,7 @@ export default function LandingPage() {
         
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { number: "10,000+", label: "Active Therapists", icon: "👥" },
-              { number: "50,000+", label: "Sessions Completed", icon: "🎯" },
-              { number: "99.9%", label: "Platform Uptime", icon: "⚡" },
-              { number: "4.9/5", label: "Client Rating", icon: "⭐" }
-            ].map((stat, index) => (
+            {landingStats.map((stat, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}

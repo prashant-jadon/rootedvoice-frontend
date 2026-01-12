@@ -25,6 +25,18 @@ export default function SignupPage() {
     practiceState: '',
     practiceCity: '',
     practicePostcode: '',
+    // ASHA Certification (SLP only)
+    ashaCertificationNumber: '',
+    ashaCertificationExpiration: '',
+    // State Licensure
+    licenseNumber: '',
+    licensingState: '',
+    licenseExpirationDate: '',
+    // Supervision (SLPA only)
+    supervisingSLPName: '',
+    supervisingSLPLicenseNumber: '',
+    supervisingState: '',
+    // Legacy field names for backward compatibility
     spaMembershipNumber: '',
     spaMembershipType: '',
     spaMembershipExpiration: '',
@@ -44,6 +56,9 @@ export default function SignupPage() {
     hourlyRate: 75,
     specializations: [] as string[],
     // Document files
+    ashaCertificationFile: null as File | null,
+    licenseFile: null as File | null,
+    supervisionAgreementFile: null as File | null,
     spaMembershipFile: null as File | null,
     stateRegistrationFile: null as File | null,
     insuranceFile: null as File | null,
@@ -88,10 +103,38 @@ export default function SignupPage() {
         return
       }
 
-      if (!formData.spaMembershipNumber || !formData.spaMembershipFile) {
-        setError(t('signup.spaMembershipRequired'))
+      // ASHA Certification required for SLP only
+      if (formData.credentials === 'SLP') {
+        if (!formData.ashaCertificationNumber || !formData.ashaCertificationFile) {
+          setError(t('signup.ashaCertificationRequired'))
+          setIsLoading(false)
+          return
+        }
+      }
+
+      // State Licensure required for all
+      if (!formData.licenseNumber || !formData.licenseFile) {
+        setError(t('signup.stateLicensureRequired'))
         setIsLoading(false)
         return
+      }
+
+      // Supervision required for SLPA only
+      if (formData.credentials === 'SLPA') {
+        if (!formData.supervisingSLPName || !formData.supervisingSLPLicenseNumber || !formData.supervisingState) {
+          setError('Supervising SLP information is required for SLPA')
+          setIsLoading(false)
+          return
+        }
+      }
+
+      // Legacy validation for backward compatibility
+      if (!formData.spaMembershipNumber || !formData.spaMembershipFile) {
+        if (formData.credentials === 'SLP') {
+          setError(t('signup.spaMembershipRequired'))
+          setIsLoading(false)
+          return
+        }
       }
 
       if (!formData.stateRegistrationNumber || !formData.stateRegistrationFile) {
@@ -145,17 +188,34 @@ export default function SignupPage() {
             city: formData.practiceCity,
             postcode: formData.practicePostcode,
           },
-          // Add top-level for backend validation
-          spaMembershipNumber: formData.spaMembershipNumber,
+          // ASHA Certification (SLP only)
+          ashaCertification: formData.credentials === 'SLP' ? {
+            certificationNumber: formData.ashaCertificationNumber,
+            expirationDate: formData.ashaCertificationExpiration || null,
+          } : null,
+          // State Licensure
+          stateLicensure: {
+            licenseNumber: formData.licenseNumber,
+            state: formData.licensingState,
+            expirationDate: formData.licenseExpirationDate || null,
+          },
+          // Supervision (SLPA only)
+          supervision: formData.credentials === 'SLPA' ? {
+            supervisingSLPName: formData.supervisingSLPName,
+            supervisingSLPLicenseNumber: formData.supervisingSLPLicenseNumber,
+            supervisingState: formData.supervisingState,
+          } : null,
+          // Legacy fields for backward compatibility
+          spaMembershipNumber: formData.credentials === 'SLP' ? formData.ashaCertificationNumber : formData.spaMembershipNumber,
           spaMembership: {
-            membershipNumber: formData.spaMembershipNumber,
+            membershipNumber: formData.credentials === 'SLP' ? formData.ashaCertificationNumber : formData.spaMembershipNumber,
             membershipType: formData.spaMembershipType,
             expirationDate: formData.spaMembershipExpiration || null,
           },
           stateRegistration: {
-            registrationNumber: formData.stateRegistrationNumber,
-            state: formData.stateRegistrationState,
-            expirationDate: formData.stateRegistrationExpiration || null,
+            registrationNumber: formData.licenseNumber || formData.stateRegistrationNumber,
+            state: formData.licensingState || formData.stateRegistrationState,
+            expirationDate: formData.licenseExpirationDate || formData.stateRegistrationExpiration || null,
           },
           professionalIndemnityInsurance: {
             provider: formData.insuranceProvider,
@@ -182,21 +242,47 @@ export default function SignupPage() {
         if (token) {
           const formDataToUpload = new FormData()
           
+          // ASHA Certification (SLP only)
+          if (formData.credentials === 'SLP' && formData.ashaCertificationFile) {
+            formDataToUpload.append('ashaCertification', formData.ashaCertificationFile)
+            formDataToUpload.append('ashaCertificationNumber', formData.ashaCertificationNumber)
+            if (formData.ashaCertificationExpiration) {
+              formDataToUpload.append('ashaCertificationExpirationDate', formData.ashaCertificationExpiration)
+            }
+          }
+          // Legacy SPA membership for backward compatibility
           if (formData.spaMembershipFile) {
             formDataToUpload.append('spaMembership', formData.spaMembershipFile)
-            formDataToUpload.append('spaMembershipNumber', formData.spaMembershipNumber)
+            formDataToUpload.append('spaMembershipNumber', formData.credentials === 'SLP' ? formData.ashaCertificationNumber : formData.spaMembershipNumber)
             formDataToUpload.append('spaMembershipType', formData.spaMembershipType)
             if (formData.spaMembershipExpiration) {
               formDataToUpload.append('spaMembershipExpirationDate', formData.spaMembershipExpiration)
             }
           }
+          // State License
+          if (formData.licenseFile) {
+            formDataToUpload.append('stateLicense', formData.licenseFile)
+            formDataToUpload.append('licenseNumber', formData.licenseNumber)
+            formDataToUpload.append('licensingState', formData.licensingState)
+            if (formData.licenseExpirationDate) {
+              formDataToUpload.append('licenseExpirationDate', formData.licenseExpirationDate)
+            }
+          }
+          // Supervision (SLPA only)
+          if (formData.credentials === 'SLPA' && formData.supervisionAgreementFile) {
+            formDataToUpload.append('supervisionAgreement', formData.supervisionAgreementFile)
+            formDataToUpload.append('supervisingSLPName', formData.supervisingSLPName)
+            formDataToUpload.append('supervisingSLPLicenseNumber', formData.supervisingSLPLicenseNumber)
+            formDataToUpload.append('supervisingState', formData.supervisingState)
+          }
 
+          // Legacy state registration for backward compatibility
           if (formData.stateRegistrationFile) {
             formDataToUpload.append('stateRegistration', formData.stateRegistrationFile)
-            formDataToUpload.append('stateRegistrationNumber', formData.stateRegistrationNumber)
-            formDataToUpload.append('stateRegistrationState', formData.stateRegistrationState)
-            if (formData.stateRegistrationExpiration) {
-              formDataToUpload.append('stateRegistrationExpirationDate', formData.stateRegistrationExpiration)
+            formDataToUpload.append('stateRegistrationNumber', formData.licenseNumber || formData.stateRegistrationNumber)
+            formDataToUpload.append('stateRegistrationState', formData.licensingState || formData.stateRegistrationState)
+            if (formData.licenseExpirationDate || formData.stateRegistrationExpiration) {
+              formDataToUpload.append('stateRegistrationExpirationDate', formData.licenseExpirationDate || formData.stateRegistrationExpiration || '')
             }
           }
 
@@ -255,7 +341,7 @@ export default function SignupPage() {
         }
 
         await register(registrationData)
-        router.push('/client-dashboard')
+        router.push('/client-intake')
       }
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || t('signup.registrationFailed'))
@@ -409,7 +495,7 @@ export default function SignupPage() {
                   {/* Credentials Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
-                      {t('signup.credentials')} <span className="text-red-500">*</span>
+                      {t('signup.clinicalRole')} <span className="text-red-500">*</span>
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       <button
@@ -424,7 +510,7 @@ export default function SignupPage() {
                         }`}
                       >
                         <div className="font-semibold">SLP</div>
-                        <div className="text-xs mt-1">{t('signup.fullyLicensed')}</div>
+                        <div className="text-xs mt-1">{t('signup.slpFullyLicensed')}</div>
                       </button>
                       <button
                         type="button"
@@ -438,12 +524,12 @@ export default function SignupPage() {
                         }`}
                       >
                         <div className="font-semibold">SLPA</div>
-                        <div className="text-xs mt-1">{t('signup.assistant')}</div>
+                        <div className="text-xs mt-1">{t('signup.slpaSupervised')}</div>
                       </button>
-                    </div>
+                      </div>
                   </div>
 
-                  {/* Practice Location - Australia */}
+                  {/* Practice Location - U.S. States */}
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label htmlFor="practiceState" className="block text-sm font-medium text-gray-700 mb-2">
@@ -457,14 +543,57 @@ export default function SignupPage() {
                         className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                       >
                         <option value="">{t('signup.state')}</option>
-                        <option value="NSW">New South Wales (NSW)</option>
-                        <option value="VIC">Victoria (VIC)</option>
-                        <option value="QLD">Queensland (QLD)</option>
-                        <option value="SA">South Australia (SA)</option>
-                        <option value="WA">Western Australia (WA)</option>
-                        <option value="TAS">Tasmania (TAS)</option>
-                        <option value="NT">Northern Territory (NT)</option>
-                        <option value="ACT">Australian Capital Territory (ACT)</option>
+                        <option value="AL">Alabama (AL)</option>
+                        <option value="AK">Alaska (AK)</option>
+                        <option value="AZ">Arizona (AZ)</option>
+                        <option value="AR">Arkansas (AR)</option>
+                        <option value="CA">California (CA)</option>
+                        <option value="CO">Colorado (CO)</option>
+                        <option value="CT">Connecticut (CT)</option>
+                        <option value="DE">Delaware (DE)</option>
+                        <option value="FL">Florida (FL)</option>
+                        <option value="GA">Georgia (GA)</option>
+                        <option value="HI">Hawaii (HI)</option>
+                        <option value="ID">Idaho (ID)</option>
+                        <option value="IL">Illinois (IL)</option>
+                        <option value="IN">Indiana (IN)</option>
+                        <option value="IA">Iowa (IA)</option>
+                        <option value="KS">Kansas (KS)</option>
+                        <option value="KY">Kentucky (KY)</option>
+                        <option value="LA">Louisiana (LA)</option>
+                        <option value="ME">Maine (ME)</option>
+                        <option value="MD">Maryland (MD)</option>
+                        <option value="MA">Massachusetts (MA)</option>
+                        <option value="MI">Michigan (MI)</option>
+                        <option value="MN">Minnesota (MN)</option>
+                        <option value="MS">Mississippi (MS)</option>
+                        <option value="MO">Missouri (MO)</option>
+                        <option value="MT">Montana (MT)</option>
+                        <option value="NE">Nebraska (NE)</option>
+                        <option value="NV">Nevada (NV)</option>
+                        <option value="NH">New Hampshire (NH)</option>
+                        <option value="NJ">New Jersey (NJ)</option>
+                        <option value="NM">New Mexico (NM)</option>
+                        <option value="NY">New York (NY)</option>
+                        <option value="NC">North Carolina (NC)</option>
+                        <option value="ND">North Dakota (ND)</option>
+                        <option value="OH">Ohio (OH)</option>
+                        <option value="OK">Oklahoma (OK)</option>
+                        <option value="OR">Oregon (OR)</option>
+                        <option value="PA">Pennsylvania (PA)</option>
+                        <option value="RI">Rhode Island (RI)</option>
+                        <option value="SC">South Carolina (SC)</option>
+                        <option value="SD">South Dakota (SD)</option>
+                        <option value="TN">Tennessee (TN)</option>
+                        <option value="TX">Texas (TX)</option>
+                        <option value="UT">Utah (UT)</option>
+                        <option value="VT">Vermont (VT)</option>
+                        <option value="VA">Virginia (VA)</option>
+                        <option value="WA">Washington (WA)</option>
+                        <option value="WV">West Virginia (WV)</option>
+                        <option value="WI">Wisconsin (WI)</option>
+                        <option value="WY">Wyoming (WY)</option>
+                        <option value="DC">District of Columbia (DC)</option>
                       </select>
                     </div>
                     <div>
@@ -522,154 +651,306 @@ export default function SignupPage() {
                     />
                   </div>
 
-                  {/* SPA Membership */}
-                  <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.spaMembership')}</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label htmlFor="spaMembershipNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.spaMembershipNumber')} <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="spaMembershipNumber"
-                          type="text"
-                          required
-                          value={formData.spaMembershipNumber}
-                          onChange={(e) => setFormData({ ...formData, spaMembershipNumber: e.target.value })}
-                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                          placeholder={t('signup.enterSpaMembershipNumber')}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
+                  {/* ASHA Certification (SLP Only) */}
+                  {formData.credentials === 'SLP' && (
+                    <div className="border-t pt-4 mt-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.ashaCertification')}</h3>
+                      <div className="space-y-4">
                         <div>
-                          <label htmlFor="spaMembershipType" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.membershipType')}
+                          <label htmlFor="ashaCertificationNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.ashaCertificationNumber')} <span className="text-red-500">*</span>
                           </label>
-                          <select
-                            id="spaMembershipType"
-                            value={formData.spaMembershipType}
-                            onChange={(e) => setFormData({ ...formData, spaMembershipType: e.target.value })}
+                          <input
+                            id="ashaCertificationNumber"
+                            type="text"
+                            required={formData.credentials === 'SLP'}
+                            value={formData.ashaCertificationNumber}
+                            onChange={(e) => setFormData({ ...formData, ashaCertificationNumber: e.target.value, spaMembershipNumber: e.target.value })}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                          >
-                            <option value="">Select Type</option>
-                            <option value="Full Member">Full Member</option>
-                            <option value="Provisional Member">Provisional Member</option>
-                            <option value="Associate Member">Associate Member</option>
-                          </select>
+                            placeholder={t('signup.enterAshaCertificationNumber')}
+                          />
                         </div>
                         <div>
-                          <label htmlFor="spaMembershipExpiration" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor="ashaCertificationExpiration" className="block text-sm font-medium text-gray-700 mb-2">
                             {t('signup.expirationDate')}
                           </label>
                           <input
-                            id="spaMembershipExpiration"
+                            id="ashaCertificationExpiration"
                             type="date"
-                            value={formData.spaMembershipExpiration}
-                            onChange={(e) => setFormData({ ...formData, spaMembershipExpiration: e.target.value })}
+                            value={formData.ashaCertificationExpiration}
+                            onChange={(e) => setFormData({ ...formData, ashaCertificationExpiration: e.target.value, spaMembershipExpiration: e.target.value })}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                           />
                         </div>
-                      </div>
-                      <div>
-                        <label htmlFor="spaMembershipFile" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.uploadSpaMembershipCertificate')} <span className="text-red-500">*</span>
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            id="spaMembershipFile"
-                            type="file"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            required
-                            onChange={(e) => setFormData({ ...formData, spaMembershipFile: e.target.files?.[0] || null })}
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-                          />
+                        <div>
+                          <label htmlFor="ashaCertificationFile" className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.uploadAshaCertification')} <span className="text-red-500">*</span>
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              id="ashaCertificationFile"
+                              type="file"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              required={formData.credentials === 'SLP'}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0] || null
+                                setFormData({ ...formData, ashaCertificationFile: file, spaMembershipFile: file })
+                              }}
+                              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                            />
+                          </div>
+                          {formData.ashaCertificationFile && (
+                            <p className="text-xs text-green-600 mt-1">✓ {formData.ashaCertificationFile.name}</p>
+                          )}
                         </div>
-                        {formData.spaMembershipFile && (
-                          <p className="text-xs text-green-600 mt-1">✓ {formData.spaMembershipFile.name}</p>
-                        )}
                       </div>
                     </div>
-                  </div>
+                  )}
 
-                  {/* State Registration */}
+                  {/* State Licensure */}
                   <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.stateRegistration')}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.stateLicensure')}</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label htmlFor="stateRegistrationNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.stateRegistrationNumber')} <span className="text-red-500">*</span>
+                          <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.licenseNumber')} <span className="text-red-500">*</span>
                           </label>
                           <input
-                            id="stateRegistrationNumber"
+                            id="licenseNumber"
                             type="text"
                             required
-                            value={formData.stateRegistrationNumber}
-                            onChange={(e) => setFormData({ ...formData, stateRegistrationNumber: e.target.value })}
+                            value={formData.licenseNumber}
+                            onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value, stateRegistrationNumber: e.target.value })}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                            placeholder={t('signup.enterStateRegistrationNumber')}
+                            placeholder={t('signup.enterLicenseNumber')}
                           />
                         </div>
                         <div>
-                          <label htmlFor="stateRegistrationState" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.registrationState')} <span className="text-red-500">*</span>
-                          </label>
-                          <select
-                            id="stateRegistrationState"
+                          <label htmlFor="licensingState" className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.licensingState')} <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                            id="licensingState"
                             required
-                            value={formData.stateRegistrationState}
-                            onChange={(e) => setFormData({ ...formData, stateRegistrationState: e.target.value })}
+                            value={formData.licensingState}
+                            onChange={(e) => setFormData({ ...formData, licensingState: e.target.value, stateRegistrationState: e.target.value })}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                           >
-                            <option value="">{t('signup.state')}</option>
-                            <option value="NSW">NSW</option>
-                            <option value="VIC">VIC</option>
-                            <option value="QLD">QLD</option>
-                            <option value="SA">SA</option>
-                            <option value="WA">WA</option>
-                            <option value="TAS">TAS</option>
-                            <option value="NT">NT</option>
-                            <option value="ACT">ACT</option>
-                          </select>
+                            <option value="">Select State</option>
+                            <option value="AL">Alabama (AL)</option>
+                            <option value="AK">Alaska (AK)</option>
+                            <option value="AZ">Arizona (AZ)</option>
+                            <option value="AR">Arkansas (AR)</option>
+                            <option value="CA">California (CA)</option>
+                            <option value="CO">Colorado (CO)</option>
+                            <option value="CT">Connecticut (CT)</option>
+                            <option value="DE">Delaware (DE)</option>
+                            <option value="FL">Florida (FL)</option>
+                            <option value="GA">Georgia (GA)</option>
+                            <option value="HI">Hawaii (HI)</option>
+                            <option value="ID">Idaho (ID)</option>
+                            <option value="IL">Illinois (IL)</option>
+                            <option value="IN">Indiana (IN)</option>
+                            <option value="IA">Iowa (IA)</option>
+                            <option value="KS">Kansas (KS)</option>
+                            <option value="KY">Kentucky (KY)</option>
+                            <option value="LA">Louisiana (LA)</option>
+                            <option value="ME">Maine (ME)</option>
+                            <option value="MD">Maryland (MD)</option>
+                            <option value="MA">Massachusetts (MA)</option>
+                            <option value="MI">Michigan (MI)</option>
+                            <option value="MN">Minnesota (MN)</option>
+                            <option value="MS">Mississippi (MS)</option>
+                            <option value="MO">Missouri (MO)</option>
+                            <option value="MT">Montana (MT)</option>
+                            <option value="NE">Nebraska (NE)</option>
+                            <option value="NV">Nevada (NV)</option>
+                            <option value="NH">New Hampshire (NH)</option>
+                            <option value="NJ">New Jersey (NJ)</option>
+                            <option value="NM">New Mexico (NM)</option>
+                            <option value="NY">New York (NY)</option>
+                            <option value="NC">North Carolina (NC)</option>
+                            <option value="ND">North Dakota (ND)</option>
+                            <option value="OH">Ohio (OH)</option>
+                            <option value="OK">Oklahoma (OK)</option>
+                            <option value="OR">Oregon (OR)</option>
+                            <option value="PA">Pennsylvania (PA)</option>
+                            <option value="RI">Rhode Island (RI)</option>
+                            <option value="SC">South Carolina (SC)</option>
+                            <option value="SD">South Dakota (SD)</option>
+                            <option value="TN">Tennessee (TN)</option>
+                            <option value="TX">Texas (TX)</option>
+                            <option value="UT">Utah (UT)</option>
+                            <option value="VT">Vermont (VT)</option>
+                            <option value="VA">Virginia (VA)</option>
+                            <option value="WA">Washington (WA)</option>
+                            <option value="WV">West Virginia (WV)</option>
+                            <option value="WI">Wisconsin (WI)</option>
+                            <option value="WY">Wyoming (WY)</option>
+                            <option value="DC">District of Columbia (DC)</option>
+                    </select>
                         </div>
                       </div>
                       <div>
-                        <label htmlFor="stateRegistrationExpiration" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.expirationDate')}
+                        <label htmlFor="licenseExpirationDate" className="block text-sm font-medium text-gray-700 mb-2">
+                          {t('signup.licenseExpirationDate')}
                         </label>
                         <input
-                          id="stateRegistrationExpiration"
+                          id="licenseExpirationDate"
                           type="date"
-                          value={formData.stateRegistrationExpiration}
-                          onChange={(e) => setFormData({ ...formData, stateRegistrationExpiration: e.target.value })}
+                          value={formData.licenseExpirationDate}
+                          onChange={(e) => setFormData({ ...formData, licenseExpirationDate: e.target.value, stateRegistrationExpiration: e.target.value })}
                           className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                         />
                       </div>
                       <div>
-                        <label htmlFor="stateRegistrationFile" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.uploadStateRegistrationDocument')} <span className="text-red-500">*</span>
+                        <label htmlFor="licenseFile" className="block text-sm font-medium text-gray-700 mb-2">
+                          {t('signup.uploadLicenseDocument')} <span className="text-red-500">*</span>
                         </label>
                         <input
-                          id="stateRegistrationFile"
+                          id="licenseFile"
                           type="file"
                           accept=".pdf,.jpg,.jpeg,.png"
                           required
-                          onChange={(e) => setFormData({ ...formData, stateRegistrationFile: e.target.files?.[0] || null })}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null
+                            setFormData({ ...formData, licenseFile: file, stateRegistrationFile: file })
+                          }}
                           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
                         />
-                        {formData.stateRegistrationFile && (
-                          <p className="text-xs text-green-600 mt-1">✓ {formData.stateRegistrationFile.name}</p>
+                        {formData.licenseFile && (
+                          <p className="text-xs text-green-600 mt-1">✓ {formData.licenseFile.name}</p>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Professional Indemnity Insurance */}
+                  {/* Supervision (SLPA Only) */}
+                  {formData.credentials === 'SLPA' && (
+                    <div className="border-t pt-4 mt-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.supervision')}</h3>
+                      <div className="space-y-4">
+                  <div>
+                          <label htmlFor="supervisingSLPName" className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.supervisingSLPName')} <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            id="supervisingSLPName"
+                            type="text"
+                            required={formData.credentials === 'SLPA'}
+                            value={formData.supervisingSLPName}
+                            onChange={(e) => setFormData({ ...formData, supervisingSLPName: e.target.value })}
+                            className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                            placeholder={t('signup.enterSupervisingSLPName')}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="supervisingSLPLicenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                              {t('signup.supervisingSLPLicenseNumber')} <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              id="supervisingSLPLicenseNumber"
+                              type="text"
+                              required={formData.credentials === 'SLPA'}
+                              value={formData.supervisingSLPLicenseNumber}
+                              onChange={(e) => setFormData({ ...formData, supervisingSLPLicenseNumber: e.target.value })}
+                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                              placeholder={t('signup.enterSupervisingSLPLicenseNumber')}
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="supervisingState" className="block text-sm font-medium text-gray-700 mb-2">
+                              {t('signup.supervisingState')} <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                              id="supervisingState"
+                              required={formData.credentials === 'SLPA'}
+                              value={formData.supervisingState}
+                              onChange={(e) => setFormData({ ...formData, supervisingState: e.target.value })}
+                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                            >
+                              <option value="">Select State</option>
+                              <option value="AL">Alabama (AL)</option>
+                              <option value="AK">Alaska (AK)</option>
+                              <option value="AZ">Arizona (AZ)</option>
+                              <option value="AR">Arkansas (AR)</option>
+                              <option value="CA">California (CA)</option>
+                              <option value="CO">Colorado (CO)</option>
+                              <option value="CT">Connecticut (CT)</option>
+                              <option value="DE">Delaware (DE)</option>
+                              <option value="FL">Florida (FL)</option>
+                              <option value="GA">Georgia (GA)</option>
+                              <option value="HI">Hawaii (HI)</option>
+                              <option value="ID">Idaho (ID)</option>
+                              <option value="IL">Illinois (IL)</option>
+                              <option value="IN">Indiana (IN)</option>
+                              <option value="IA">Iowa (IA)</option>
+                              <option value="KS">Kansas (KS)</option>
+                              <option value="KY">Kentucky (KY)</option>
+                              <option value="LA">Louisiana (LA)</option>
+                              <option value="ME">Maine (ME)</option>
+                              <option value="MD">Maryland (MD)</option>
+                              <option value="MA">Massachusetts (MA)</option>
+                              <option value="MI">Michigan (MI)</option>
+                              <option value="MN">Minnesota (MN)</option>
+                              <option value="MS">Mississippi (MS)</option>
+                              <option value="MO">Missouri (MO)</option>
+                              <option value="MT">Montana (MT)</option>
+                              <option value="NE">Nebraska (NE)</option>
+                              <option value="NV">Nevada (NV)</option>
+                              <option value="NH">New Hampshire (NH)</option>
+                              <option value="NJ">New Jersey (NJ)</option>
+                              <option value="NM">New Mexico (NM)</option>
+                              <option value="NY">New York (NY)</option>
+                              <option value="NC">North Carolina (NC)</option>
+                              <option value="ND">North Dakota (ND)</option>
+                              <option value="OH">Ohio (OH)</option>
+                              <option value="OK">Oklahoma (OK)</option>
+                              <option value="OR">Oregon (OR)</option>
+                              <option value="PA">Pennsylvania (PA)</option>
+                              <option value="RI">Rhode Island (RI)</option>
+                              <option value="SC">South Carolina (SC)</option>
+                              <option value="SD">South Dakota (SD)</option>
+                              <option value="TN">Tennessee (TN)</option>
+                              <option value="TX">Texas (TX)</option>
+                              <option value="UT">Utah (UT)</option>
+                              <option value="VT">Vermont (VT)</option>
+                              <option value="VA">Virginia (VA)</option>
+                              <option value="WA">Washington (WA)</option>
+                              <option value="WV">West Virginia (WV)</option>
+                              <option value="WI">Wisconsin (WI)</option>
+                              <option value="WY">Wyoming (WY)</option>
+                              <option value="DC">District of Columbia (DC)</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div>
+                          <label htmlFor="supervisionAgreementFile" className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.uploadSupervisionAgreement')}
+                          </label>
+                          <input
+                            id="supervisionAgreementFile"
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => setFormData({ ...formData, supervisionAgreementFile: e.target.files?.[0] || null })}
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                          />
+                          {formData.supervisionAgreementFile && (
+                            <p className="text-xs text-green-600 mt-1">✓ {formData.supervisionAgreementFile.name}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Professional Liability Insurance */}
                   <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.professionalIndemnityInsurance')}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.professionalLiabilityInsurance')}</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
-                        <div>
+                  <div>
                           <label htmlFor="insuranceProvider" className="block text-sm font-medium text-gray-700 mb-2">
                             {t('signup.insuranceProvider')} <span className="text-red-500">*</span>
                           </label>
