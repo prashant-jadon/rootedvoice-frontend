@@ -327,7 +327,7 @@ function PricingContent() {
     },
     {
       question: 'Do you accept insurance?',
-      answer: 'We are in-network with several major insurance providers. Please contact us to verify your specific coverage and benefits.'
+      answer: 'At this time, Rooted Voices operates as a private-pay practice. This allows us to provide high-quality, flexible, and affirming care while building sustainable systems that support both clients and clinicians.\n\nWe also offer multiple pathways to care, including tiered options and pay-as-you-go services, so individuals and families can choose support that aligns with their needs and circumstances. As our ecosystem grows, we remain committed to expanding access through additional offerings, partnerships, and community-based initiatives.'
     },
     {
       question: 'What if I need to cancel?',
@@ -658,7 +658,7 @@ function PricingContent() {
             {faqItems.map((item, index) => (
               <div key={index} className="border-b border-gray-100 pb-6 last:border-b-0">
                 <h3 className="text-lg font-semibold text-black mb-2">{item.question}</h3>
-                <p className="text-gray-600">{item.answer}</p>
+                <p className="text-gray-600 whitespace-pre-line">{item.answer}</p>
               </div>
             ))}
           </div>

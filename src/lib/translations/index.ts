@@ -255,7 +255,7 @@ export const translations = {
       ageGroups: 'What age groups do you serve?',
       ageGroupsAnswer: 'We serve clients of all ages, from infants (0-3 years) to older adults (65+). Our therapists specialize in different age groups and communication needs, ensuring you receive age-appropriate care.',
       acceptInsurance: 'Do you accept insurance?',
-      acceptInsuranceAnswer: 'We are currently in-network with several major insurance providers. Please contact us to verify your specific coverage. We also offer flexible payment plans and accept HSA/FSA payments.',
+      acceptInsuranceAnswer: 'At this time, Rooted Voices operates as a private-pay practice. This allows us to provide high-quality, flexible, and affirming care while building sustainable systems that support both clients and clinicians.\n\nWe also offer multiple pathways to care, including tiered options and pay-as-you-go services, so individuals and families can choose support that aligns with their needs and circumstances. As our ecosystem grows, we remain committed to expanding access through additional offerings, partnerships, and community-based initiatives.',
       typesOfServices: 'What types of speech and language services do you offer?',
       typesOfServicesAnswer: 'We offer comprehensive services including articulation therapy, language development, fluency therapy, voice therapy, feeding/swallowing therapy, AAC services, cognitive-communication therapy, and more. Visit our Services page for detailed information.',
       sessionLength: 'How long are therapy sessions?',

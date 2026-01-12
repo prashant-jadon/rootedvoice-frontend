@@ -261,7 +261,7 @@ export default function FAQPage() {
                           transition={{ duration: 0.3 }}
                           className="px-6 pb-4"
                         >
-                          <p className="text-gray-600 leading-relaxed">
+                          <p className="text-gray-600 leading-relaxed whitespace-pre-line">
                             {item.answer}
                           </p>
                         </motion.div>
