@@ -19,10 +19,7 @@ export default function Footer() {
                 <Mail className="w-4 h-4" />
                 <span>info@rootedvoices.com</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="w-4 h-4" />
-                <span>(555) 123-4567</span>
-              </div>
+
               <div className="flex items-center space-x-2">
                 <MapPin className="w-4 h-4" />
                 <span>Available Nationwide</span>

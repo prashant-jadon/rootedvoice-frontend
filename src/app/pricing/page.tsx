@@ -2,13 +2,13 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect, Suspense } from 'react'
-import { 
-  CheckCircle, 
-  Star, 
-  ArrowRight, 
-  Calendar, 
-  MessageCircle, 
-  Users, 
+import {
+  CheckCircle,
+  Star,
+  ArrowRight,
+  Calendar,
+  MessageCircle,
+  Users,
   FileText,
   Clock,
   Shield,
@@ -50,10 +50,10 @@ function PricingContent() {
     // Check if returning from Stripe checkout
     const success = searchParams.get('success')
     const canceled = searchParams.get('canceled')
-    
+
     if (success === 'true') {
       setSuccessMessage('Payment successful! Your subscription is being activated...')
-      
+
       // Poll for subscription status (webhook might take a moment)
       let attempts = 0
       const maxAttempts = 20
@@ -62,7 +62,7 @@ function PricingContent() {
         try {
           const subscription = await fetchCurrentSubscription()
           console.log('Polling attempt', attempts, 'Subscription:', subscription)
-          
+
           // If subscription found and active, stop polling
           if (subscription && subscription.status === 'active') {
             clearInterval(pollInterval)
@@ -76,18 +76,18 @@ function PricingContent() {
         } catch (error) {
           console.error('Error polling subscription:', error)
         }
-        
+
         if (attempts >= maxAttempts) {
           clearInterval(pollInterval)
           setSuccessMessage('Payment successful! If your subscription doesn\'t appear, please click "Refresh Status" below.')
         }
       }, 1000) // Check every second
-      
+
       // Also check immediately and after delays
       fetchCurrentSubscription()
       setTimeout(() => fetchCurrentSubscription(), 2000)
       setTimeout(() => fetchCurrentSubscription(), 5000)
-      
+
       // Cleanup on unmount
       return () => clearInterval(pollInterval)
     } else if (canceled === 'true') {
@@ -135,12 +135,12 @@ function PricingContent() {
 
       const transformedPricing = Object.entries(backendPricing).map(([tierId, tierData]: [string, any]) => {
         const tierName = tierData.name.replace(' Tier', '').replace(' tier', '')
-        
+
         // For monthly subscriptions, show monthly rate clearly
         let priceDisplay = `$${tierData.price}`
         let periodDisplay = ''
         let billingText = billingCycleMap[tierData.billingCycle] || tierData.billingCycle
-        
+
         if (tierData.billingCycle === 'monthly') {
           priceDisplay = `$${tierData.price}`
           periodDisplay = '/month'
@@ -263,7 +263,7 @@ function PricingContent() {
       const response = await clientAPI.getIntakeStatus()
       const isCompleted = response.data.data?.intakeCompleted || false
       setIntakeCompleted(isCompleted)
-      
+
       if (!isCompleted) {
         // Redirect to intake form if not completed
         router.push('/client-intake')
@@ -281,7 +281,7 @@ function PricingContent() {
     try {
       const response = await subscriptionAPI.getCurrent()
       const subscription = response.data.data
-      
+
       // Only update if subscription exists and is active
       if (subscription && subscription.status === 'active') {
         setCurrentSubscription(subscription)
@@ -375,17 +375,17 @@ function PricingContent() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center">
-                <img 
-                  src="/logorooted 1.png" 
-                  alt="Rooted Voices Speech & Language Therapy" 
-                   className="w-18 h-20 mr-2"
+                <img
+                  src="/logorooted 1.png"
+                  alt="Rooted Voices Speech & Language Therapy"
+                  className="w-18 h-20 mr-2"
                 />
                 <span className="text-2xl font-bold text-black">Rooted Voices</span>
               </Link>
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">Pricing</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/services" className="text-gray-600 hover:text-black transition-colors">
                 Services
@@ -521,79 +521,77 @@ function PricingContent() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
           </div>
         ) : (
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {pricingTiers.map((tier, index) => (
-            <motion.div
-              key={tier.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={`bg-white p-8 rounded-2xl premium-shadow relative ${tier.color} ${
-                tier.popular ? 'ring-2 ring-black' : ''
-              }`}
-            >
-              {tier.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-semibold">
-                    {t('pricing.mostPopular')}
-                  </span>
-                </div>
-              )}
-              
-              <div className="text-center mb-8">
-                <div className="text-4xl mb-2">{tier.icon}</div>
-                <h3 className="text-2xl font-bold text-black mb-2">{tier.name} Tier</h3>
-                <div className="text-4xl font-bold text-black mb-2">
-                  {tier.price}
-                  <span className="text-lg text-gray-600">{tier.period}</span>
-                </div>
-                <p className="text-sm text-gray-500 mb-2">{tier.billing}</p>
-                {tier.sessionsPerMonth > 0 && (
-                  <p className="text-sm font-semibold text-black mb-2">
-                    {tier.sessionsPerMonth} {tier.sessionsPerMonth === 1 ? 'session' : 'sessions'} per month ({tier.duration} min each)
-                  </p>
-                )}
-                <p className="text-gray-600 font-medium mb-2">{tier.description}</p>
-                <p className="text-sm text-gray-500">{tier.tagline}</p>
-              </div>
-              
-              <ul className="space-y-4 mb-8">
-                {tier.features.map((feature: string, featureIndex: number) => (
-                  <li key={featureIndex} className="flex items-start">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              
-              {currentSubscription?.tier === tier.id ? (
-                <div className="w-full py-3 rounded-full font-semibold bg-green-500 text-white text-center">
-                  ✓ {t('pricing.currentPlan')}
-                </div>
-              ) : (
-                <button 
-                  onClick={() => handleSelectPlan(tier.id)}
-                  disabled={isLoading || (isAuthenticated && user?.role === 'client' && !intakeCompleted) || checkingIntake}
-                  className={`w-full py-3 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    tier.popular 
-                      ? 'bg-black text-white hover:bg-gray-800' 
-                      : 'border-2 border-black text-black hover:bg-black hover:text-white'
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            {pricingTiers.map((tier, index) => (
+              <motion.div
+                key={tier.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className={`bg-white p-8 rounded-2xl premium-shadow relative ${tier.color} ${tier.popular ? 'ring-2 ring-black' : ''
                   }`}
-                >
-                  {checkingIntake 
-                    ? 'Checking...' 
-                    : isLoading 
-                    ? t('common.loading') 
-                    : (isAuthenticated && user?.role === 'client' && !intakeCompleted)
-                    ? 'Complete Intake First'
-                    : isAuthenticated 
-                    ? t('pricing.selectPlan') 
-                    : t('nav.getStarted')}
-                </button>
-              )}
-            </motion.div>
-          ))}
-        </div>
+              >
+                {tier.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-semibold">
+                      {t('pricing.mostPopular')}
+                    </span>
+                  </div>
+                )}
+
+                <div className="text-center mb-8">
+                  <div className="text-4xl mb-2">{tier.icon}</div>
+                  <h3 className="text-2xl font-bold text-black mb-2">{tier.name} Tier</h3>
+                  <div className="text-4xl font-bold text-black mb-2">
+                    {tier.price}
+                    <span className="text-lg text-gray-600">{tier.period}</span>
+                  </div>
+                  <p className="text-sm text-gray-500 mb-2">{tier.billing}</p>
+                  {tier.sessionsPerMonth > 0 && (
+                    <p className="text-sm font-semibold text-black mb-2">
+                      {tier.sessionsPerMonth} {tier.sessionsPerMonth === 1 ? 'session' : 'sessions'} per month ({tier.duration} min each)
+                    </p>
+                  )}
+                  <p className="text-gray-600 font-medium mb-2">{tier.description}</p>
+                  <p className="text-sm text-gray-500">{tier.tagline}</p>
+                </div>
+
+                <ul className="space-y-4 mb-8">
+                  {tier.features.map((feature: string, featureIndex: number) => (
+                    <li key={featureIndex} className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {currentSubscription?.tier === tier.id ? (
+                  <div className="w-full py-3 rounded-full font-semibold bg-green-500 text-white text-center">
+                    ✓ {t('pricing.currentPlan')}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleSelectPlan(tier.id)}
+                    disabled={isLoading || (isAuthenticated && user?.role === 'client' && !intakeCompleted) || checkingIntake}
+                    className={`w-full py-3 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${tier.popular
+                        ? 'bg-black text-white hover:bg-gray-800'
+                        : 'border-2 border-black text-black hover:bg-black hover:text-white'
+                      }`}
+                  >
+                    {checkingIntake
+                      ? 'Checking...'
+                      : isLoading
+                        ? t('common.loading')
+                        : (isAuthenticated && user?.role === 'client' && !intakeCompleted)
+                          ? 'Complete Intake First'
+                          : isAuthenticated
+                            ? t('pricing.selectPlan')
+                            : t('nav.getStarted')}
+                  </button>
+                )}
+              </motion.div>
+            ))}
+          </div>
         )}
 
         {/* Plan Comparison */}
@@ -755,7 +753,7 @@ function PricingContent() {
         >
           <h2 className="text-3xl font-bold text-black mb-4">Ready to Get Started?</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Choose your plan and start your journey towards better communication. 
+            Choose your plan and start your journey towards better communication.
             All plans include a free 15-minute consultation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -780,20 +778,20 @@ function PricingContent() {
         >
           <h2 className="text-2xl font-bold text-black mb-6">Questions About Pricing?</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Our team is here to help you choose the right plan for your needs. 
+            Our team is here to help you choose the right plan for your needs.
             Contact us for personalized recommendations.
           </p>
-          
+
           <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Phone className="w-6 h-6 text-black" />
               </div>
               <h3 className="font-semibold text-black mb-1">Call Us</h3>
-              <p className="text-gray-600 text-sm">(555) 123-4567</p>
+              <p className="text-gray-600 text-sm">Contact Us</p>
               <p className="text-gray-500 text-xs">Mon-Fri, 8AM-6PM</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Mail className="w-6 h-6 text-black" />
@@ -802,7 +800,7 @@ function PricingContent() {
               <p className="text-gray-600 text-sm">info@rootedvoices.com</p>
               <p className="text-gray-500 text-xs">24-hour response</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <HelpCircle className="w-6 h-6 text-black" />

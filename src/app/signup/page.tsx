@@ -55,6 +55,11 @@ export default function SignupPage() {
     policeCheckExpiration: '',
     hourlyRate: 75,
     specializations: [] as string[],
+    // Banking Information (Therapist only)
+    bankName: '',
+    accountName: '',
+    routingNumber: '',
+    accountNumber: '',
     // Document files
     ashaCertificationFile: null as File | null,
     licenseFile: null as File | null,
@@ -65,7 +70,27 @@ export default function SignupPage() {
     wwccFile: null as File | null,
     policeCheckFile: null as File | null,
     academicQualificationFiles: [] as File[],
+    stateLicensures: [{ licenseNumber: '', state: '', expirationDate: '', file: null }] as { licenseNumber: string; state: string; expirationDate: string; file: File | null }[],
   })
+
+  const handleLicenseChange = (index: number, field: string, value: any) => {
+    const newLicensures = [...formData.stateLicensures]
+    // @ts-ignore
+    newLicensures[index] = { ...newLicensures[index], [field]: value }
+    setFormData({ ...formData, stateLicensures: newLicensures })
+  }
+
+  const addLicense = () => {
+    setFormData({
+      ...formData,
+      stateLicensures: [...formData.stateLicensures, { licenseNumber: '', state: '', expirationDate: '', file: null }]
+    })
+  }
+
+  const removeLicense = (index: number) => {
+    const newLicensures = formData.stateLicensures.filter((_, i) => i !== index)
+    setFormData({ ...formData, stateLicensures: newLicensures })
+  }
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const { register } = useAuth()
@@ -113,20 +138,34 @@ export default function SignupPage() {
       }
 
       // State Licensure required for all
-      if (!formData.licenseNumber || !formData.licenseFile) {
+      if (formData.stateLicensures.length === 0 || !formData.stateLicensures[0].licenseNumber || !formData.stateLicensures[0].state || !formData.stateLicensures[0].file) {
         setError(t('signup.stateLicensureRequired'))
         setIsLoading(false)
         return
       }
 
-      // Supervision required for SLPA only
-      if (formData.credentials === 'SLPA') {
-        if (!formData.supervisingSLPName || !formData.supervisingSLPLicenseNumber || !formData.supervisingState) {
-          setError('Supervising SLP information is required for SLPA')
+      // Validate banking info for therapists
+      if (userType === 'therapist') {
+        if (!formData.bankName || !formData.accountName || !formData.routingNumber || !formData.accountNumber) {
+          setError('Please provide all banking information')
+          setIsLoading(false)
+          return
+        }
+        if (!/^\d{9}$/.test(formData.routingNumber)) {
+          setError('Routing number must be exactly 9 digits')
           setIsLoading(false)
           return
         }
       }
+
+      // Supervision optional for SLPA now
+      // if (formData.credentials === 'SLPA') {
+      //   if (!formData.supervisingSLPName || !formData.supervisingSLPLicenseNumber || !formData.supervisingState) {
+      //     setError('Supervising SLP information is required for SLPA')
+      //     setIsLoading(false)
+      //     return
+      //   }
+      // }
 
       // Legacy validation for backward compatibility
       if (!formData.spaMembershipNumber || !formData.spaMembershipFile) {
@@ -149,17 +188,7 @@ export default function SignupPage() {
         return
       }
 
-      if (!formData.wwccNumber || !formData.wwccFile) {
-        setError(t('signup.wwccRequired'))
-        setIsLoading(false)
-        return
-      }
 
-      if (!formData.policeCheckNumber || !formData.policeCheckFile) {
-        setError(t('signup.policeCheckRequired'))
-        setIsLoading(false)
-        return
-      }
 
       // Validate hourly rate against credentials
       const maxRate = formData.credentials === 'SLP' ? 75 : 55
@@ -173,13 +202,13 @@ export default function SignupPage() {
     try {
       if (userType === 'therapist') {
         // First, register the user
-      const registrationData: any = {
-        email: formData.email,
-        password: formData.password,
+        const registrationData: any = {
+          email: formData.email,
+          password: formData.password,
           role: 'therapist',
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
           credentials: formData.credentials,
           hourlyRate: formData.hourlyRate,
           specializations: formData.specializations,
@@ -188,17 +217,30 @@ export default function SignupPage() {
             city: formData.practiceCity,
             postcode: formData.practicePostcode,
           },
+          // Banking details (Therapist only)
+          bankDetails: userType === 'therapist' ? {
+            accountName: formData.accountName,
+            bankName: formData.bankName,
+            routingNumber: formData.routingNumber,
+            accountNumber: formData.accountNumber
+          } : undefined,
           // ASHA Certification (SLP only)
           ashaCertification: formData.credentials === 'SLP' ? {
             certificationNumber: formData.ashaCertificationNumber,
             expirationDate: formData.ashaCertificationExpiration || null,
           } : null,
-          // State Licensure
+          // State Licensure - Primary (first one)
           stateLicensure: {
-            licenseNumber: formData.licenseNumber,
-            state: formData.licensingState,
-            expirationDate: formData.licenseExpirationDate || null,
+            licenseNumber: formData.stateLicensures[0]?.licenseNumber,
+            state: formData.stateLicensures[0]?.state,
+            expirationDate: formData.stateLicensures[0]?.expirationDate || null,
           },
+          // All State Licensures
+          stateLicensures: formData.stateLicensures.map(lic => ({
+            licenseNumber: lic.licenseNumber,
+            state: lic.state,
+            expirationDate: lic.expirationDate || null,
+          })),
           // Supervision (SLPA only)
           supervision: formData.credentials === 'SLPA' ? {
             supervisingSLPName: formData.supervisingSLPName,
@@ -233,15 +275,15 @@ export default function SignupPage() {
             issueDate: formData.policeCheckIssueDate || null,
             expirationDate: formData.policeCheckExpiration || null,
           },
-      }
+        }
 
-      await register(registrationData)
-      
+        await register(registrationData)
+
         // After registration, upload documents
         const token = localStorage.getItem('token')
         if (token) {
           const formDataToUpload = new FormData()
-          
+
           // ASHA Certification (SLP only)
           if (formData.credentials === 'SLP' && formData.ashaCertificationFile) {
             formDataToUpload.append('ashaCertification', formData.ashaCertificationFile)
@@ -259,13 +301,30 @@ export default function SignupPage() {
               formDataToUpload.append('spaMembershipExpirationDate', formData.spaMembershipExpiration)
             }
           }
-          // State License
-          if (formData.licenseFile) {
-            formDataToUpload.append('stateLicense', formData.licenseFile)
-            formDataToUpload.append('licenseNumber', formData.licenseNumber)
-            formDataToUpload.append('licensingState', formData.licensingState)
-            if (formData.licenseExpirationDate) {
-              formDataToUpload.append('licenseExpirationDate', formData.licenseExpirationDate)
+          // State Licensure (Multiple)
+          if (formData.stateLicensures.length > 0) {
+            // Add files to formData
+            formData.stateLicensures.forEach((lic, index) => {
+              if (lic.file) {
+                // We append files with the same key 'stateLicensures' so multer sees it as an array
+                formDataToUpload.append('stateLicensures', lic.file)
+              }
+            })
+            // Add metadata
+            formDataToUpload.append('stateLicensuresData', JSON.stringify(formData.stateLicensures.map(lic => ({
+              licenseNumber: lic.licenseNumber,
+              state: lic.state,
+              expirationDate: lic.expirationDate
+            }))))
+
+            // Legacy support for the first license
+            if (formData.stateLicensures[0].file) {
+              formDataToUpload.append('stateLicense', formData.stateLicensures[0].file)
+              formDataToUpload.append('licenseNumber', formData.stateLicensures[0].licenseNumber)
+              formDataToUpload.append('licensingState', formData.stateLicensures[0].state)
+              if (formData.stateLicensures[0].expirationDate) {
+                formDataToUpload.append('licenseExpirationDate', formData.stateLicensures[0].expirationDate)
+              }
             }
           }
           // Supervision (SLPA only)
@@ -385,22 +444,20 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setUserType('client')}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all duration-300 ${
-                    userType === 'client'
-                      ? 'border-black bg-black text-white'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
+                  className={`py-3 px-4 rounded-lg border-2 transition-all duration-300 ${userType === 'client'
+                    ? 'border-black bg-black text-white'
+                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                    }`}
                 >
                   {t('signup.client')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setUserType('therapist')}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all duration-300 ${
-                    userType === 'therapist'
-                      ? 'border-black bg-black text-white'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
+                  className={`py-3 px-4 rounded-lg border-2 transition-all duration-300 ${userType === 'therapist'
+                    ? 'border-black bg-black text-white'
+                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                    }`}
                 >
                   {t('signup.therapist')}
                 </button>
@@ -503,11 +560,10 @@ export default function SignupPage() {
                         onClick={() => {
                           setFormData({ ...formData, credentials: 'SLP', hourlyRate: 75 })
                         }}
-                        className={`py-3 px-4 rounded-lg border-2 transition-all ${
-                          formData.credentials === 'SLP'
-                            ? 'border-black bg-black text-white'
-                            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                        }`}
+                        className={`py-3 px-4 rounded-lg border-2 transition-all ${formData.credentials === 'SLP'
+                          ? 'border-black bg-black text-white'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                          }`}
                       >
                         <div className="font-semibold">SLP</div>
                         <div className="text-xs mt-1">{t('signup.slpFullyLicensed')}</div>
@@ -517,16 +573,15 @@ export default function SignupPage() {
                         onClick={() => {
                           setFormData({ ...formData, credentials: 'SLPA', hourlyRate: 55 })
                         }}
-                        className={`py-3 px-4 rounded-lg border-2 transition-all ${
-                          formData.credentials === 'SLPA'
-                            ? 'border-black bg-black text-white'
-                            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                        }`}
+                        className={`py-3 px-4 rounded-lg border-2 transition-all ${formData.credentials === 'SLPA'
+                          ? 'border-black bg-black text-white'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                          }`}
                       >
                         <div className="font-semibold">SLPA</div>
                         <div className="text-xs mt-1">{t('signup.slpaSupervised')}</div>
                       </button>
-                      </div>
+                    </div>
                   </div>
 
                   {/* Practice Location - U.S. States */}
@@ -609,7 +664,7 @@ export default function SignupPage() {
                         className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                         placeholder={t('signup.city')}
                       />
-                      </div>
+                    </div>
                     <div>
                       <label htmlFor="practicePostcode" className="block text-sm font-medium text-gray-700 mb-2">
                         {t('signup.postcode')} <span className="text-red-500">*</span>
@@ -709,121 +764,140 @@ export default function SignupPage() {
 
                   {/* State Licensure */}
                   <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.stateLicensure')}</h3>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900">{t('signup.stateLicensure')}</h3>
+                      <button
+                        type="button"
+                        onClick={addLicense}
+                        className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                      >
+                        + {t('signup.addLicense')}
+                      </button>
+                    </div>
+
+                    {formData.stateLicensures.map((license, index) => (
+                      <div key={index} className="space-y-4 mb-6 pb-6 border-b border-gray-100 last:border-0 last:pb-0 last:mb-0">
+                        {index > 0 && (
+                          <div className="flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => removeLicense(index)}
+                              className="text-sm text-red-600 hover:text-red-500 flex items-center gap-1"
+                            >
+                              <span className="text-lg">×</span> {t('signup.removeLicense')}
+                            </button>
+                          </div>
+                        )}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              {t('signup.licenseNumber')} <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={license.licenseNumber}
+                              onChange={(e) => handleLicenseChange(index, 'licenseNumber', e.target.value)}
+                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                              placeholder={t('signup.enterLicenseNumber')}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              {t('signup.licensingState')} <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              required
+                              value={license.state}
+                              onChange={(e) => handleLicenseChange(index, 'state', e.target.value)}
+                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                            >
+                              <option value="">Select State</option>
+                              <option value="AL">Alabama (AL)</option>
+                              <option value="AK">Alaska (AK)</option>
+                              <option value="AZ">Arizona (AZ)</option>
+                              <option value="AR">Arkansas (AR)</option>
+                              <option value="CA">California (CA)</option>
+                              <option value="CO">Colorado (CO)</option>
+                              <option value="CT">Connecticut (CT)</option>
+                              <option value="DE">Delaware (DE)</option>
+                              <option value="FL">Florida (FL)</option>
+                              <option value="GA">Georgia (GA)</option>
+                              <option value="HI">Hawaii (HI)</option>
+                              <option value="ID">Idaho (ID)</option>
+                              <option value="IL">Illinois (IL)</option>
+                              <option value="IN">Indiana (IN)</option>
+                              <option value="IA">Iowa (IA)</option>
+                              <option value="KS">Kansas (KS)</option>
+                              <option value="KY">Kentucky (KY)</option>
+                              <option value="LA">Louisiana (LA)</option>
+                              <option value="ME">Maine (ME)</option>
+                              <option value="MD">Maryland (MD)</option>
+                              <option value="MA">Massachusetts (MA)</option>
+                              <option value="MI">Michigan (MI)</option>
+                              <option value="MN">Minnesota (MN)</option>
+                              <option value="MS">Mississippi (MS)</option>
+                              <option value="MO">Missouri (MO)</option>
+                              <option value="MT">Montana (MT)</option>
+                              <option value="NE">Nebraska (NE)</option>
+                              <option value="NV">Nevada (NV)</option>
+                              <option value="NH">New Hampshire (NH)</option>
+                              <option value="NJ">New Jersey (NJ)</option>
+                              <option value="NM">New Mexico (NM)</option>
+                              <option value="NY">New York (NY)</option>
+                              <option value="NC">North Carolina (NC)</option>
+                              <option value="ND">North Dakota (ND)</option>
+                              <option value="OH">Ohio (OH)</option>
+                              <option value="OK">Oklahoma (OK)</option>
+                              <option value="OR">Oregon (OR)</option>
+                              <option value="PA">Pennsylvania (PA)</option>
+                              <option value="RI">Rhode Island (RI)</option>
+                              <option value="SC">South Carolina (SC)</option>
+                              <option value="SD">South Dakota (SD)</option>
+                              <option value="TN">Tennessee (TN)</option>
+                              <option value="TX">Texas (TX)</option>
+                              <option value="UT">Utah (UT)</option>
+                              <option value="VT">Vermont (VT)</option>
+                              <option value="VA">Virginia (VA)</option>
+                              <option value="WA">Washington (WA)</option>
+                              <option value="WV">West Virginia (WV)</option>
+                              <option value="WI">Wisconsin (WI)</option>
+                              <option value="WY">Wyoming (WY)</option>
+                              <option value="DC">District of Columbia (DC)</option>
+                            </select>
+                          </div>
+                        </div>
                         <div>
-                          <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.licenseNumber')} <span className="text-red-500">*</span>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.licenseExpirationDate')}
                           </label>
                           <input
-                            id="licenseNumber"
-                            type="text"
-                            required
-                            value={formData.licenseNumber}
-                            onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value, stateRegistrationNumber: e.target.value })}
+                            type="date"
+                            value={license.expirationDate}
+                            onChange={(e) => handleLicenseChange(index, 'expirationDate', e.target.value)}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                            placeholder={t('signup.enterLicenseNumber')}
                           />
                         </div>
                         <div>
-                          <label htmlFor="licensingState" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.licensingState')} <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                            id="licensingState"
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.uploadLicenseDocument')} <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
                             required
-                            value={formData.licensingState}
-                            onChange={(e) => setFormData({ ...formData, licensingState: e.target.value, stateRegistrationState: e.target.value })}
-                            className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                          >
-                            <option value="">Select State</option>
-                            <option value="AL">Alabama (AL)</option>
-                            <option value="AK">Alaska (AK)</option>
-                            <option value="AZ">Arizona (AZ)</option>
-                            <option value="AR">Arkansas (AR)</option>
-                            <option value="CA">California (CA)</option>
-                            <option value="CO">Colorado (CO)</option>
-                            <option value="CT">Connecticut (CT)</option>
-                            <option value="DE">Delaware (DE)</option>
-                            <option value="FL">Florida (FL)</option>
-                            <option value="GA">Georgia (GA)</option>
-                            <option value="HI">Hawaii (HI)</option>
-                            <option value="ID">Idaho (ID)</option>
-                            <option value="IL">Illinois (IL)</option>
-                            <option value="IN">Indiana (IN)</option>
-                            <option value="IA">Iowa (IA)</option>
-                            <option value="KS">Kansas (KS)</option>
-                            <option value="KY">Kentucky (KY)</option>
-                            <option value="LA">Louisiana (LA)</option>
-                            <option value="ME">Maine (ME)</option>
-                            <option value="MD">Maryland (MD)</option>
-                            <option value="MA">Massachusetts (MA)</option>
-                            <option value="MI">Michigan (MI)</option>
-                            <option value="MN">Minnesota (MN)</option>
-                            <option value="MS">Mississippi (MS)</option>
-                            <option value="MO">Missouri (MO)</option>
-                            <option value="MT">Montana (MT)</option>
-                            <option value="NE">Nebraska (NE)</option>
-                            <option value="NV">Nevada (NV)</option>
-                            <option value="NH">New Hampshire (NH)</option>
-                            <option value="NJ">New Jersey (NJ)</option>
-                            <option value="NM">New Mexico (NM)</option>
-                            <option value="NY">New York (NY)</option>
-                            <option value="NC">North Carolina (NC)</option>
-                            <option value="ND">North Dakota (ND)</option>
-                            <option value="OH">Ohio (OH)</option>
-                            <option value="OK">Oklahoma (OK)</option>
-                            <option value="OR">Oregon (OR)</option>
-                            <option value="PA">Pennsylvania (PA)</option>
-                            <option value="RI">Rhode Island (RI)</option>
-                            <option value="SC">South Carolina (SC)</option>
-                            <option value="SD">South Dakota (SD)</option>
-                            <option value="TN">Tennessee (TN)</option>
-                            <option value="TX">Texas (TX)</option>
-                            <option value="UT">Utah (UT)</option>
-                            <option value="VT">Vermont (VT)</option>
-                            <option value="VA">Virginia (VA)</option>
-                            <option value="WA">Washington (WA)</option>
-                            <option value="WV">West Virginia (WV)</option>
-                            <option value="WI">Wisconsin (WI)</option>
-                            <option value="WY">Wyoming (WY)</option>
-                            <option value="DC">District of Columbia (DC)</option>
-                    </select>
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null
+                              handleLicenseChange(index, 'file', file)
+                            }}
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                          />
+                          {license.file && (
+                            <p className="text-xs text-green-600 mt-1">✓ {license.file.name}</p>
+                          )}
                         </div>
                       </div>
-                      <div>
-                        <label htmlFor="licenseExpirationDate" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.licenseExpirationDate')}
-                        </label>
-                        <input
-                          id="licenseExpirationDate"
-                          type="date"
-                          value={formData.licenseExpirationDate}
-                          onChange={(e) => setFormData({ ...formData, licenseExpirationDate: e.target.value, stateRegistrationExpiration: e.target.value })}
-                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="licenseFile" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.uploadLicenseDocument')} <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="licenseFile"
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          required
-                          onChange={(e) => {
-                            const file = e.target.files?.[0] || null
-                            setFormData({ ...formData, licenseFile: file, stateRegistrationFile: file })
-                          }}
-                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-                        />
-                        {formData.licenseFile && (
-                          <p className="text-xs text-green-600 mt-1">✓ {formData.licenseFile.name}</p>
-                        )}
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
                   {/* Supervision (SLPA Only) */}
@@ -831,14 +905,14 @@ export default function SignupPage() {
                     <div className="border-t pt-4 mt-4">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.supervision')}</h3>
                       <div className="space-y-4">
-                  <div>
+                        <div>
                           <label htmlFor="supervisingSLPName" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.supervisingSLPName')} <span className="text-red-500">*</span>
+                            {t('signup.supervisingSLPName')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
                           </label>
                           <input
                             id="supervisingSLPName"
                             type="text"
-                            required={formData.credentials === 'SLPA'}
+                            required={false}
                             value={formData.supervisingSLPName}
                             onChange={(e) => setFormData({ ...formData, supervisingSLPName: e.target.value })}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
@@ -848,12 +922,12 @@ export default function SignupPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label htmlFor="supervisingSLPLicenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                              {t('signup.supervisingSLPLicenseNumber')} <span className="text-red-500">*</span>
+                              {t('signup.supervisingSLPLicenseNumber')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
                             </label>
                             <input
                               id="supervisingSLPLicenseNumber"
                               type="text"
-                              required={formData.credentials === 'SLPA'}
+                              required={false}
                               value={formData.supervisingSLPLicenseNumber}
                               onChange={(e) => setFormData({ ...formData, supervisingSLPLicenseNumber: e.target.value })}
                               className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
@@ -862,11 +936,11 @@ export default function SignupPage() {
                           </div>
                           <div>
                             <label htmlFor="supervisingState" className="block text-sm font-medium text-gray-700 mb-2">
-                              {t('signup.supervisingState')} <span className="text-red-500">*</span>
-                    </label>
-                    <select
+                              {t('signup.supervisingState')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
+                            </label>
+                            <select
                               id="supervisingState"
-                              required={formData.credentials === 'SLPA'}
+                              required={false}
                               value={formData.supervisingState}
                               onChange={(e) => setFormData({ ...formData, supervisingState: e.target.value })}
                               className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
@@ -928,7 +1002,7 @@ export default function SignupPage() {
                         </div>
                         <div>
                           <label htmlFor="supervisionAgreementFile" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.uploadSupervisionAgreement')}
+                            {t('signup.uploadSupervisionAgreement')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
                           </label>
                           <input
                             id="supervisionAgreementFile"
@@ -950,7 +1024,7 @@ export default function SignupPage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.professionalLiabilityInsurance')}</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
-                  <div>
+                        <div>
                           <label htmlFor="insuranceProvider" className="block text-sm font-medium text-gray-700 mb-2">
                             {t('signup.insuranceProvider')} <span className="text-red-500">*</span>
                           </label>
@@ -1032,12 +1106,11 @@ export default function SignupPage() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label htmlFor="wwccNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.wwccNumber')} <span className="text-red-500">*</span>
+                            {t('signup.wwccNumber')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
                           </label>
                           <input
                             id="wwccNumber"
                             type="text"
-                            required
                             value={formData.wwccNumber}
                             onChange={(e) => setFormData({ ...formData, wwccNumber: e.target.value })}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
@@ -1047,14 +1120,13 @@ export default function SignupPage() {
                         <div>
                           <label htmlFor="wwccState" className="block text-sm font-medium text-gray-700 mb-2">
                             {t('signup.wwccState')} <span className="text-red-500">*</span>
-                    </label>
-                    <select
+                          </label>
+                          <select
                             id="wwccState"
-                            required
                             value={formData.wwccState}
                             onChange={(e) => setFormData({ ...formData, wwccState: e.target.value })}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                    >
+                          >
                             <option value="">{t('signup.state')}</option>
                             <option value="NSW">NSW</option>
                             <option value="VIC">VIC</option>
@@ -1064,7 +1136,7 @@ export default function SignupPage() {
                             <option value="TAS">TAS</option>
                             <option value="NT">NT</option>
                             <option value="ACT">ACT</option>
-                    </select>
+                          </select>
                         </div>
                       </div>
                       <div>
@@ -1081,13 +1153,12 @@ export default function SignupPage() {
                       </div>
                       <div>
                         <label htmlFor="wwccFile" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.uploadWwccCertificate')} <span className="text-red-500">*</span>
+                          {t('signup.uploadWwccCertificate')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
                         </label>
                         <input
                           id="wwccFile"
                           type="file"
                           accept=".pdf,.jpg,.jpeg,.png"
-                          required
                           onChange={(e) => setFormData({ ...formData, wwccFile: e.target.files?.[0] || null })}
                           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
                         />
@@ -1104,12 +1175,11 @@ export default function SignupPage() {
                     <div className="space-y-4">
                       <div>
                         <label htmlFor="policeCheckNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.policeCheckNumber')} <span className="text-red-500">*</span>
+                          {t('signup.policeCheckNumber')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
                         </label>
                         <input
                           id="policeCheckNumber"
                           type="text"
-                          required
                           value={formData.policeCheckNumber}
                           onChange={(e) => setFormData({ ...formData, policeCheckNumber: e.target.value })}
                           className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
@@ -1142,15 +1212,14 @@ export default function SignupPage() {
                           />
                         </div>
                       </div>
-                  <div>
+                      <div>
                         <label htmlFor="policeCheckFile" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.uploadPoliceCheckCertificate')} <span className="text-red-500">*</span>
+                          {t('signup.uploadPoliceCheckCertificate')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
                         </label>
                         <input
                           id="policeCheckFile"
                           type="file"
                           accept=".pdf,.jpg,.jpeg,.png"
-                          required
                           onChange={(e) => setFormData({ ...formData, policeCheckFile: e.target.files?.[0] || null })}
                           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
                         />
@@ -1190,6 +1259,73 @@ export default function SignupPage() {
                       <option value="Gender-Affirming Voice">Gender-Affirming Voice</option>
                     </select>
                     <p className="text-xs text-gray-500 mt-1">{t('signup.selectMultiple')}</p>
+                  </div>
+
+
+                  {/* Banking Information */}
+                  <div className="border-t pt-4 mt-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.bankingInformation')}</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label htmlFor="bankName" className="block text-sm font-medium text-gray-700 mb-2">
+                          {t('signup.bankName')} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="bankName"
+                          type="text"
+                          required
+                          value={formData.bankName}
+                          onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                          placeholder={t('signup.enterBankName')}
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="accountName" className="block text-sm font-medium text-gray-700 mb-2">
+                          {t('signup.accountName')} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="accountName"
+                          type="text"
+                          required
+                          value={formData.accountName}
+                          onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
+                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                          placeholder={t('signup.enterAccountName')}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="routingNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.routingNumber')} <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            id="routingNumber"
+                            type="text"
+                            required
+                            maxLength={9}
+                            value={formData.routingNumber}
+                            onChange={(e) => setFormData({ ...formData, routingNumber: e.target.value.replace(/\D/g, '') })}
+                            className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                            placeholder={t('signup.enterRoutingNumber')}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('signup.accountNumber')} <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            id="accountNumber"
+                            type="text"
+                            required
+                            value={formData.accountNumber}
+                            onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value.replace(/\D/g, '') })}
+                            className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                            placeholder={t('signup.enterAccountNumber')}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
@@ -1291,17 +1427,17 @@ export default function SignupPage() {
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                   </svg>
                   <span className="ml-2">{t('signup.google')}</span>
                 </button>
 
                 <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                   <span className="ml-2">{t('signup.facebook')}</span>
                 </button>
@@ -1314,7 +1450,7 @@ export default function SignupPage() {
                 {t('signup.signIn')}
               </Link>
             </p>
-            
+
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-center text-sm text-gray-600 mb-4">{t('signup.demoAccess')}</p>
               <div className="flex space-x-3">
@@ -1345,7 +1481,7 @@ export default function SignupPage() {
             {userType === 'client' ? t('signup.findRightTherapist') : t('signup.growYourPractice')}
           </h2>
           <p className="text-gray-600 mb-8">
-            {userType === 'client' 
+            {userType === 'client'
               ? t('signup.clientDescription')
               : t('signup.therapistDescription')
             }
@@ -1385,6 +1521,6 @@ export default function SignupPage() {
           </div>
         </motion.div>
       </div>
-    </div>
+    </div >
   )
 }

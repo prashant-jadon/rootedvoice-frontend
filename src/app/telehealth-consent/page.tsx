@@ -2,12 +2,12 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { 
-  Shield, 
-  CheckCircle, 
-  AlertCircle, 
-  FileText, 
-  Lock, 
+import {
+  Shield,
+  CheckCircle,
+  AlertCircle,
+  FileText,
+  Lock,
   Video,
   Phone,
   Mail,
@@ -21,7 +21,7 @@ import {
 import Link from 'next/link'
 
 export default function TelehealthConsentPage() {
-  const [consentItems, setConsentItems] = useState<{[key: string]: boolean}>({})
+  const [consentItems, setConsentItems] = useState<{ [key: string]: boolean }>({})
 
   const toggleConsent = (item: string) => {
     setConsentItems(prev => ({
@@ -101,7 +101,7 @@ export default function TelehealthConsentPage() {
     }
   ]
 
-  const allConsentItems = consentSections.flatMap(section => 
+  const allConsentItems = consentSections.flatMap(section =>
     section.items.map((_, index) => `${section.id}-${index}`)
   )
 
@@ -118,7 +118,7 @@ export default function TelehealthConsentPage() {
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">Telehealth Consent</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/faq" className="text-gray-600 hover:text-black transition-colors">
                 FAQ
@@ -145,7 +145,7 @@ export default function TelehealthConsentPage() {
             <span className="gradient-text">Consent Form</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Please read and consent to the following information about our telehealth services. 
+            Please read and consent to the following information about our telehealth services.
             This consent is required before beginning teletherapy sessions.
           </p>
           <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
@@ -166,8 +166,8 @@ export default function TelehealthConsentPage() {
             <div>
               <h3 className="text-lg font-semibold text-blue-900 mb-2">Important Notice</h3>
               <p className="text-blue-800">
-                This consent form must be completed and signed before your first telehealth session. 
-                Please read each section carefully and check the boxes to indicate your understanding and consent. 
+                This consent form must be completed and signed before your first telehealth session.
+                Please read each section carefully and check the boxes to indicate your understanding and consent.
                 You may withdraw your consent at any time by contacting your therapist.
               </p>
             </div>
@@ -190,21 +190,20 @@ export default function TelehealthConsentPage() {
                 </div>
                 <h2 className="text-2xl font-bold text-black">{section.title}</h2>
               </div>
-              
+
               <div className="space-y-4">
                 {section.items.map((item, itemIndex) => {
                   const itemId = `${section.id}-${itemIndex}`
                   const isConsented = consentItems[itemId]
-                  
+
                   return (
                     <div key={itemIndex} className="flex items-start space-x-4">
                       <button
                         onClick={() => toggleConsent(itemId)}
-                        className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
-                          isConsented 
-                            ? 'bg-green-500 border-green-500 text-white' 
+                        className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${isConsented
+                            ? 'bg-green-500 border-green-500 text-white'
                             : 'border-gray-300 hover:border-gray-400'
-                        }`}
+                          }`}
                       >
                         {isConsented && <CheckCircle className="w-4 h-4" />}
                       </button>
@@ -243,7 +242,7 @@ export default function TelehealthConsentPage() {
                 ))}
               </ul>
             </div>
-            
+
             <div>
               <h3 className="text-lg font-semibold text-black mb-4">Recommended Setup</h3>
               <ul className="space-y-3">
@@ -274,29 +273,27 @@ export default function TelehealthConsentPage() {
           <h2 className="text-2xl font-bold text-black mb-6 text-center">Consent Summary</h2>
           <div className="text-center">
             <div className="mb-6">
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-                allConsented ? 'bg-green-100' : 'bg-gray-100'
-              }`}>
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${allConsented ? 'bg-green-100' : 'bg-gray-100'
+                }`}>
                 {allConsented ? (
                   <CheckCircle className="w-8 h-8 text-green-600" />
                 ) : (
                   <AlertCircle className="w-8 h-8 text-gray-400" />
                 )}
               </div>
-              <p className={`text-lg font-medium ${
-                allConsented ? 'text-green-600' : 'text-gray-600'
-              }`}>
-                {allConsented 
-                  ? 'All consent items have been acknowledged' 
+              <p className={`text-lg font-medium ${allConsented ? 'text-green-600' : 'text-gray-600'
+                }`}>
+                {allConsented
+                  ? 'All consent items have been acknowledged'
                   : `${Object.keys(consentItems).length} of ${allConsentItems.length} items consented`
                 }
               </p>
             </div>
-            
+
             {allConsented && (
               <div className="space-y-4">
                 <p className="text-gray-600">
-                  By providing your consent, you acknowledge that you have read, understood, 
+                  By providing your consent, you acknowledge that you have read, understood,
                   and agree to the terms outlined in this telehealth consent form.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -304,7 +301,7 @@ export default function TelehealthConsentPage() {
                     <Download className="w-4 h-4 mr-2" />
                     Download Consent Form
                   </button>
-                  <Link 
+                  <Link
                     href="/meet-our-therapists"
                     className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center"
                   >
@@ -326,20 +323,20 @@ export default function TelehealthConsentPage() {
         >
           <h2 className="text-2xl font-bold text-black mb-6">Questions About Telehealth?</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            If you have questions about our telehealth services or need technical support, 
+            If you have questions about our telehealth services or need technical support,
             please don't hesitate to contact us.
           </p>
-          
+
           <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Phone className="w-6 h-6 text-black" />
               </div>
               <h3 className="font-semibold text-black mb-1">Call Us</h3>
-              <p className="text-gray-600 text-sm">(555) 123-4567</p>
+              <p className="text-gray-600 text-sm">Contact Us</p>
               <p className="text-gray-500 text-xs">Mon-Fri, 8AM-6PM</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Mail className="w-6 h-6 text-black" />
@@ -348,7 +345,7 @@ export default function TelehealthConsentPage() {
               <p className="text-gray-600 text-sm">support@rootedvoices.com</p>
               <p className="text-gray-500 text-xs">24-hour response</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Video className="w-6 h-6 text-black" />
@@ -367,8 +364,8 @@ export default function TelehealthConsentPage() {
           transition={{ duration: 0.6 }}
           className="mt-12 text-center"
         >
-          <Link 
-            href="/faq" 
+          <Link
+            href="/faq"
             className="inline-flex items-center text-black hover:text-gray-600 transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />

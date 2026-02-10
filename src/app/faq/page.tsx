@@ -2,12 +2,12 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  HelpCircle, 
-  MessageCircle, 
-  Phone, 
+import {
+  ChevronDown,
+  ChevronUp,
+  HelpCircle,
+  MessageCircle,
+  Phone,
   Mail,
   Clock,
   Shield,
@@ -24,8 +24,8 @@ export default function FAQPage() {
   const [openItems, setOpenItems] = useState<number[]>([])
 
   const toggleItem = (index: number) => {
-    setOpenItems(prev => 
-      prev.includes(index) 
+    setOpenItems(prev =>
+      prev.includes(index)
         ? prev.filter(i => i !== index)
         : [...prev, index]
     )
@@ -181,7 +181,7 @@ export default function FAQPage() {
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">FAQ</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/services" className="text-gray-600 hover:text-black transition-colors">
                 Services
@@ -231,12 +231,12 @@ export default function FAQPage() {
                 </div>
                 <h2 className="text-2xl font-bold text-black">{category.title}</h2>
               </div>
-              
+
               <div className="space-y-4">
                 {category.questions.map((item, itemIndex) => {
                   const globalIndex = categoryIndex * 100 + itemIndex
                   const isOpen = openItems.includes(globalIndex)
-                  
+
                   return (
                     <div key={itemIndex} className="border border-gray-200 rounded-lg">
                       <button
@@ -252,7 +252,7 @@ export default function FAQPage() {
                           <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
                         )}
                       </button>
-                      
+
                       {isOpen && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
@@ -285,16 +285,16 @@ export default function FAQPage() {
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             We're here to help! Contact us directly and we'll get back to you within 24 hours.
           </p>
-          
+
           <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Phone className="w-6 h-6 text-black" />
               </div>
               <h3 className="font-semibold text-black mb-1">Call Us</h3>
-              <p className="text-gray-600 text-sm">(555) 123-4567</p>
+              <p className="text-gray-600 text-sm">Contact Us</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Mail className="w-6 h-6 text-black" />
@@ -302,7 +302,7 @@ export default function FAQPage() {
               <h3 className="font-semibold text-black mb-1">Email Us</h3>
               <p className="text-gray-600 text-sm">info@rootedvoices.com</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <MessageCircle className="w-6 h-6 text-black" />

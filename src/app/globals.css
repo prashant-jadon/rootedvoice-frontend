@@ -6,7 +6,7 @@
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply bg-white text-black font-sans;
   }
@@ -56,11 +56,11 @@
   .glass-effect {
     @apply backdrop-blur-md bg-white/10 border border-white/20;
   }
-  
+
   .gradient-text {
     @apply bg-gradient-to-r from-black to-gray-600 bg-clip-text text-transparent;
   }
-  
+
   .premium-shadow {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
@@ -69,70 +69,70 @@
   .palette-primary {
     background-color: var(--primary);
   }
-  
+
   .palette-primary-dark {
     background-color: var(--primary-dark);
   }
-  
+
   .palette-accent {
     background-color: var(--accent);
   }
-  
+
   .palette-secondary {
     background-color: var(--secondary);
   }
-  
+
   .palette-light {
     background-color: var(--light);
   }
-  
+
   .palette-background {
     background-color: var(--background);
   }
-  
+
   .text-palette-primary {
     color: var(--primary);
   }
-  
+
   .text-palette-primary-dark {
     color: var(--primary-dark);
   }
-  
+
   .text-palette-accent {
     color: var(--accent);
   }
-  
+
   .text-palette-secondary {
     color: var(--secondary);
   }
-  
+
   .text-palette-light {
     color: var(--light);
   }
-  
+
   .border-palette-primary {
     border-color: var(--primary);
   }
-  
+
   .border-palette-accent {
     border-color: var(--accent);
   }
-  
+
   .gradient-palette {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   }
-  
+
   .gradient-palette-accent {
     background: linear-gradient(135deg, var(--accent), var(--secondary));
   }
-  
+
   .parallax-container {
     perspective: 1px;
     height: 100vh;
     overflow-x: hidden;
     overflow-y: auto;
   }
-  
+
   .parallax-element {
     position: absolute;
     top: 0;
@@ -140,11 +140,11 @@
     bottom: 0;
     left: 0;
   }
-  
+
   .parallax-back {
     transform: translateZ(-1px) scale(2);
   }
-  
+
   .parallax-base {
     transform: translateZ(0);
   }
@@ -154,22 +154,252 @@
   .text-shadow {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
-  
+
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out;
   }
-  
+
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Google Translate Widget Styling - Premium Redesign */
+  .google-translate-widget {
+    position: fixed;
+    top: 120px;
+    right: 24px;
+    z-index: 1000;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    padding: 16px;
+    border-radius: 20px;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 200px;
+  }
+
+  .google-translate-widget:hover {
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.12),
+      0 4px 16px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(32, 57, 54, 0.2);
+  }
+
+  .translate-widget-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .translate-icon {
+    width: 20px;
+    height: 20px;
+    color: #203936;
+    animation: rotate-globe 20s linear infinite;
+  }
+
+  @keyframes rotate-globe {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .translate-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #203936;
+    letter-spacing: 0.3px;
+  }
+
+  /* Style the Google Translate dropdown */
+  #google_translate_element {
+    margin-top: 4px;
+  }
+
+  #google_translate_element select {
+    border: 1px solid rgba(32, 57, 54, 0.15);
+    background: rgba(247, 235, 211, 0.3);
+    font-size: 13px;
+    font-weight: 500;
+    color: #203936;
+    cursor: pointer;
+    outline: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    width: 100%;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  #google_translate_element select:hover {
+    background: rgba(247, 235, 211, 0.5);
+    border-color: rgba(32, 57, 54, 0.3);
+    box-shadow: 0 2px 8px rgba(32, 57, 54, 0.1);
+  }
+
+  #google_translate_element select:focus {
+    outline: none;
+    border-color: #203936;
+    background: rgba(247, 235, 211, 0.6);
+    box-shadow: 0 0 0 3px rgba(32, 57, 54, 0.1);
+  }
+
+  /* Hide Google branding */
+  .goog-te-banner-frame {
+    display: none !important;
+  }
+
+  .goog-te-gadget {
+    color: transparent !important;
+    font-size: 0 !important;
+  }
+
+  .goog-te-gadget img {
+    display: none !important;
+  }
+
+  .goog-te-gadget-simple {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .goog-te-gadget-simple .goog-te-menu-value {
+    color: #203936 !important;
+    font-family: inherit !important;
+    font-weight: 500 !important;
+  }
+
+  .goog-te-gadget-simple .goog-te-menu-value span {
+    color: #203936 !important;
+  }
+
+  .goog-te-gadget-simple .goog-te-menu-value span:first-child {
+    display: none;
+  }
+
+  /* Style the dropdown arrow */
+  .goog-te-gadget-simple .goog-te-menu-value span[style] {
+    border-left-color: #203936 !important;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .google-translate-widget {
+      top: 90px;
+      right: 12px;
+      padding: 12px;
+      min-width: 160px;
+      border-radius: 16px;
+    }
+
+    .translate-widget-header {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+    }
+
+    .translate-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    .translate-label {
+      font-size: 13px;
+    }
+
+    #google_translate_element select {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+  }
+
+  /* Dark palette support */
+  [data-palette="2"] .google-translate-widget,
+  [data-palette="1"] .google-translate-widget {
+    background: linear-gradient(135deg, rgba(247, 235, 211, 0.98), rgba(247, 235, 211, 0.92));
+  }
+
+  [data-palette="3"] .google-translate-widget {
+    background: linear-gradient(135deg, rgba(245, 237, 224, 0.98), rgba(245, 237, 224, 0.92));
+  }
+
+  [data-palette="3"] .translate-icon,
+  [data-palette="3"] .translate-label {
+    color: #202D3E;
+  }
+
+  [data-palette="3"] #google_translate_element select {
+    background: rgba(77, 125, 125, 0.1);
+    border-color: rgba(77, 125, 125, 0.2);
+    color: #202D3E;
+  }
+
+  [data-palette="3"] #google_translate_element select:hover {
+    background: rgba(77, 125, 125, 0.2);
+    border-color: rgba(77, 125, 125, 0.3);
+  }
+
+  /* Fix for body margin added by Google Translate */
+  body {
+    top: 0 !important;
+  }
+
+  .skiptranslate {
+    display: none !important;
+  }
+
+  /* Smooth entrance animation */
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(100px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .google-translate-widget {
+    animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
   }
 }

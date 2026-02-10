@@ -1,12 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { 
-  Heart, 
-  Users, 
-  Award, 
-  Shield, 
-  Target, 
+import {
+  Heart,
+  Users,
+  Award,
+  Shield,
+  Target,
   Lightbulb,
   CheckCircle,
   Star,
@@ -29,7 +29,7 @@ export default function WhoWeArePage() {
     { number: '10,000+', label: t('whoWeAre.sessions'), context: 'Total therapy sessions completed on our platform' },
     { number: '95%', label: t('whoWeAre.satisfaction'), context: t('whoWeAre.satisfactionContext') }
   ])
-  
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -66,7 +66,7 @@ export default function WhoWeArePage() {
     }
     fetchStats()
   }, [])
-  
+
   const values = [
     {
       icon: <Users className="w-8 h-8" />,
@@ -108,9 +108,9 @@ export default function WhoWeArePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center">
-                <img 
-                  src="/logorooted 1.png" 
-                  alt="Rooted Voices Speech & Language Therapy" 
+                <img
+                  src="/logorooted 1.png"
+                  alt="Rooted Voices Speech & Language Therapy"
                   className="w-18 h-20 mr-2"
                 />
                 <span className="text-2xl font-bold text-black">Rooted Voices</span>
@@ -118,7 +118,7 @@ export default function WhoWeArePage() {
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">Who We Are</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/services" className="text-gray-600 hover:text-black transition-colors">
                 Services
@@ -135,12 +135,12 @@ export default function WhoWeArePage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Hero Section */}
+        {/* 1. Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
             🌱 Who We Are
@@ -157,12 +157,12 @@ export default function WhoWeArePage() {
           </p>
         </motion.div>
 
-        {/* A Note From Our Founder */}
+        {/* 2. A Note From Our Founder */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-white rounded-2xl premium-shadow p-8 mb-16"
+          className="bg-white rounded-2xl premium-shadow p-8 mb-20"
         >
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-black mb-6 text-center">🌱 A Note From Our Founder</h2>
@@ -193,86 +193,12 @@ export default function WhoWeArePage() {
           </div>
         </motion.div>
 
-        {/* Mission & Vision */}
+        {/* 3. Who Is a Speech-Language Pathologist? */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="grid md:grid-cols-2 gap-8 mb-16"
-        >
-          <div className="bg-white rounded-2xl premium-shadow p-8">
-            <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-              <Target className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-black mb-4 text-center">🌿 Mission Statement</h2>
-            <p className="text-gray-600 leading-relaxed text-center">
-              Our mission is to provide safe, evidence-based, and culturally inclusive speech-language care that empowers individuals to communicate with confidence. We honor each voice and build care plans rooted in strengths, identity, and lived experience.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl premium-shadow p-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lightbulb className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-black mb-4 text-center">🌿 Vision Statement</h2>
-            <p className="text-gray-600 leading-relaxed text-center">
-              Our vision is a world where no voice is overlooked and communication differences are met with understanding, not judgment. We are building a platform where clinical expertise, humanity, and technology come together to help voices grow freely and confidently.
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Team Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <h2 className="text-3xl font-bold text-black text-center mb-8">{t('whoWeAre.statsTitle')}</h2>
-          <div className="grid md:grid-cols-4 gap-8">
-          {teamStats.map((stat, index) => (
-              <div key={index} className="text-center bg-white rounded-2xl premium-shadow p-6">
-              <div className="text-4xl font-bold text-black mb-2">{stat.number}</div>
-                <div className="text-gray-700 font-semibold mb-2">{stat.label}</div>
-                {stat.context && (
-                  <div className="text-sm text-gray-500 mt-2">{stat.context}</div>
-                )}
-            </div>
-          ))}
-          </div>
-        </motion.div>
-
-        {/* Our Values */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <h2 className="text-3xl font-bold text-black text-center mb-12">Our Values</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            {values.map((value, index) => (
-              <div key={index} className="bg-white rounded-2xl premium-shadow p-8">
-                <div className="flex items-start space-x-4">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-black flex-shrink-0">
-                    {value.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-black mb-3">{value.title}</h3>
-                    <p className="text-gray-600 leading-relaxed">{value.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Who Is a Speech-Language Pathologist? */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="bg-white rounded-2xl premium-shadow p-8 mb-16"
+          className="bg-white rounded-2xl premium-shadow p-8 mb-20"
         >
           <h2 className="text-3xl font-bold text-black text-center mb-8">🌱 Who Is a Speech-Language Pathologist?</h2>
           <div className="max-w-4xl mx-auto space-y-6">
@@ -330,12 +256,12 @@ export default function WhoWeArePage() {
           </div>
         </motion.div>
 
-        {/* Certifications & Credentials */}
+        {/* 4. Certifications & Credentials */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-white rounded-2xl premium-shadow p-8 mb-16"
+          className="bg-white rounded-2xl premium-shadow p-8 mb-20"
         >
           <h2 className="text-3xl font-bold text-black text-center mb-8">Certifications & Credentials</h2>
           <div className="grid md:grid-cols-2 gap-6">
@@ -348,12 +274,65 @@ export default function WhoWeArePage() {
           </div>
         </motion.div>
 
-        {/* Why Choose Us */}
+        {/* 5. Mission & Vision */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-white rounded-2xl premium-shadow p-8 mb-16"
+          className="grid md:grid-cols-2 gap-8 mb-20"
+        >
+          <div className="bg-white rounded-2xl premium-shadow p-8">
+            <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+              <Target className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-black mb-4 text-center">🌿 Mission Statement</h2>
+            <p className="text-gray-600 leading-relaxed text-center">
+              Our mission is to provide safe, evidence-based, and culturally inclusive speech-language care that empowers individuals to communicate with confidence. We honor each voice and build care plans rooted in strengths, identity, and lived experience.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl premium-shadow p-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lightbulb className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-black mb-4 text-center">🌿 Vision Statement</h2>
+            <p className="text-gray-600 leading-relaxed text-center">
+              Our vision is a world where no voice is overlooked and communication differences are met with understanding, not judgment. We are building a platform where clinical expertise, humanity, and technology come together to help voices grow freely and confidently.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* 6. Our Values */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <h2 className="text-3xl font-bold text-black text-center mb-12">Our Values</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            {values.map((value, index) => (
+              <div key={index} className="bg-white rounded-2xl premium-shadow p-8">
+                <div className="flex items-start space-x-4">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-black flex-shrink-0">
+                    {value.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-black mb-3">{value.title}</h3>
+                    <p className="text-gray-600 leading-relaxed">{value.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* 7. Why Choose Rooted Voices? */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white rounded-2xl premium-shadow p-8 mb-20"
         >
           <h2 className="text-3xl font-bold text-black text-center mb-8">Why Choose Rooted Voices?</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -390,7 +369,28 @@ export default function WhoWeArePage() {
           </div>
         </motion.div>
 
-        {/* CTA Section */}
+        {/* 8. Impact / Commitment (Stats) */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <h2 className="text-3xl font-bold text-black text-center mb-8">{t('whoWeAre.statsTitle')}</h2>
+          <div className="grid md:grid-cols-4 gap-8">
+            {teamStats.map((stat, index) => (
+              <div key={index} className="text-center bg-white rounded-2xl premium-shadow p-6">
+                <div className="text-4xl font-bold text-black mb-2">{stat.number}</div>
+                <div className="text-gray-700 font-semibold mb-2">{stat.label}</div>
+                {stat.context && (
+                  <div className="text-sm text-gray-500 mt-2">{stat.context}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* 9. CTA Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -399,8 +399,7 @@ export default function WhoWeArePage() {
         >
           <h2 className="text-3xl font-bold text-black mb-4">Ready to Start Your Journey?</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of clients who have improved their communication skills with Rooted Voices. 
-            Take the first step towards better communication today.
+            Take the first step toward better communication.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/meet-our-therapists" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">

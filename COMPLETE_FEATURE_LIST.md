@@ -664,7 +664,7 @@ While credentialing is processing, we offer:
 
 ### Demo Questions
 - **Email**: demo@rootedvoices.com
-- **Phone**: (555) 123-4567
+- **Phone**: Contact us via email
 - **Live Chat**: Available on all pages
 
 ### Technical Support

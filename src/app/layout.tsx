@@ -4,6 +4,7 @@ import './globals.css'
 import LiveChatWidget from '../components/LiveChatWidget'
 import Footer from '../components/Footer'
 import AccessibilityFeatures from '../components/AccessibilityFeatures'
+import GoogleTranslateWidget from '../components/GoogleTranslateWidget'
 import { AuthProvider } from '../contexts/AuthContext'
 import { LanguageProvider } from '../contexts/LanguageContext'
 
@@ -23,12 +24,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <LanguageProvider>
-        <AuthProvider>
-          {children}
-          <Footer />
-          <LiveChatWidget />
-          <AccessibilityFeatures />
-        </AuthProvider>
+          <AuthProvider>
+            {children}
+            <Footer />
+            <LiveChatWidget />
+            <AccessibilityFeatures />
+            <GoogleTranslateWidget />
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

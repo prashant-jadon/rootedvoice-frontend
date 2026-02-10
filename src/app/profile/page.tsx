@@ -1,27 +1,27 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Edit, 
-  Save, 
-  Camera, 
-  Upload, 
-  Award, 
-  GraduationCap, 
-  Briefcase, 
-  Star, 
-  MessageCircle, 
-  Settings, 
-  Shield, 
-  Bell, 
-  CreditCard, 
-  FileText, 
-  Globe, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Edit,
+  Save,
+  Camera,
+  Upload,
+  Award,
+  GraduationCap,
+  Briefcase,
+  Star,
+  MessageCircle,
+  Settings,
+  Shield,
+  Bell,
+  CreditCard,
+  FileText,
+  Globe,
   Languages,
   Clock,
   DollarSign,
@@ -76,6 +76,7 @@ export default function ProfilePage() {
     education: [],
     certifications: [],
     workExperience: [],
+    stateLicensures: [],
   })
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function ProfilePage() {
       const response = await therapistAPI.getMyProfile()
       const therapistData = response.data.data
       setTherapist(therapistData)
-      
+
       // Populate form data
       setFormData({
         phone: therapistData.userId?.phone || '',
@@ -103,6 +104,8 @@ export default function ProfilePage() {
         education: therapistData.education || [],
         certifications: therapistData.certifications || [],
         workExperience: therapistData.workExperience || [],
+        stateLicensures: therapistData.complianceDocuments?.stateLicensures ||
+          (therapistData.complianceDocuments?.stateLicensure?.licenseNumber ? [therapistData.complianceDocuments.stateLicensure] : []),
       })
     } catch (error: any) {
       console.error('Failed to fetch profile:', error)
@@ -151,6 +154,8 @@ export default function ProfilePage() {
         education: therapist.education || [],
         certifications: therapist.certifications || [],
         workExperience: therapist.workExperience || [],
+        stateLicensures: therapist.complianceDocuments?.stateLicensures ||
+          (therapist.complianceDocuments?.stateLicensure?.licenseNumber ? [therapist.complianceDocuments.stateLicensure] : []),
       })
     }
     setIsEditing(false)
@@ -199,13 +204,13 @@ export default function ProfilePage() {
   const addWorkExperience = () => {
     setFormData({
       ...formData,
-      workExperience: [...formData.workExperience, { 
-        position: '', 
-        company: '', 
-        startDate: '', 
-        endDate: '', 
+      workExperience: [...formData.workExperience, {
+        position: '',
+        company: '',
+        startDate: '',
+        endDate: '',
         isCurrent: false,
-        description: '' 
+        description: ''
       }]
     })
   }
@@ -221,6 +226,26 @@ export default function ProfilePage() {
     const updated = [...formData.workExperience]
     updated[index] = { ...updated[index], [field]: value }
     setFormData({ ...formData, workExperience: updated })
+  }
+
+  const addLicense = () => {
+    setFormData({
+      ...formData,
+      stateLicensures: [...(formData.stateLicensures || []), { licenseNumber: '', state: '', expirationDate: '' }]
+    })
+  }
+
+  const removeLicense = (index: number) => {
+    setFormData({
+      ...formData,
+      stateLicensures: formData.stateLicensures.filter((_: any, i: number) => i !== index)
+    })
+  }
+
+  const updateLicense = (index: number, field: string, value: any) => {
+    const updated = [...(formData.stateLicensures || [])]
+    updated[index] = { ...updated[index], [field]: value }
+    setFormData({ ...formData, stateLicensures: updated })
   }
 
   if (isLoading) {
@@ -244,7 +269,7 @@ export default function ProfilePage() {
     )
   }
 
-  const userName = therapist.userId 
+  const userName = therapist.userId
     ? `${therapist.userId.firstName} ${therapist.userId.lastName}`
     : 'Unknown User'
   const userEmail = therapist.userId?.email || ''
@@ -256,6 +281,8 @@ export default function ProfilePage() {
   const education = formData.education || therapist.education || []
   const certifications = formData.certifications || therapist.certifications || []
   const workExperience = formData.workExperience || therapist.workExperience || []
+  const stateLicensures = formData.stateLicensures || therapist.complianceDocuments?.stateLicensures ||
+    (therapist.complianceDocuments?.stateLicensure?.licenseNumber ? [therapist.complianceDocuments.stateLicensure] : [])
 
   const stats = [
     { label: 'Total Sessions', value: therapist.totalSessions || 0, icon: <Video className="w-5 h-5" /> },
@@ -296,17 +323,17 @@ export default function ProfilePage() {
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">Profile</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {isEditing ? (
                 <>
-                  <button 
+                  <button
                     onClick={handleCancel}
                     className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     onClick={handleSave}
                     disabled={isSaving}
                     className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2 disabled:opacity-50"
@@ -325,13 +352,13 @@ export default function ProfilePage() {
                   </button>
                 </>
               ) : (
-              <button 
+                <button
                   onClick={() => setIsEditing(true)}
-                className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
-              >
+                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
+                >
                   <Edit className="w-4 h-4" />
                   <span>Edit Profile</span>
-              </button>
+                </button>
               )}
             </div>
           </div>
@@ -369,23 +396,23 @@ export default function ProfilePage() {
                   <p className="text-lg text-gray-600 mb-4">
                     {therapist.credentials ? `${therapist.credentials}-SLP` : 'Licensed Speech-Language Pathologist'}
                   </p>
-                  
+
                   <div className="flex items-center space-x-6 text-sm text-gray-600 mb-4">
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4" />
                       <span>{userEmail}</span>
                     </div>
                     {userPhone && (
-                    <div className="flex items-center space-x-2">
-                      <Phone className="w-4 h-4" />
+                      <div className="flex items-center space-x-2">
+                        <Phone className="w-4 h-4" />
                         <span>{userPhone}</span>
-                    </div>
+                      </div>
                     )}
                     {location && (
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="w-4 h-4" />
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="w-4 h-4" />
                         <span>{location}</span>
-                    </div>
+                      </div>
                     )}
                   </div>
 
@@ -436,11 +463,10 @@ export default function ProfilePage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                      activeTab === tab.id
-                        ? 'bg-black text-white'
-                        : 'text-gray-600 hover:text-black hover:bg-gray-100'
-                    }`}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
+                      ? 'bg-black text-white'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                      }`}
                   >
                     {tab.icon}
                     <span>{tab.label}</span>
@@ -458,43 +484,43 @@ export default function ProfilePage() {
                 className="bg-white rounded-2xl premium-shadow p-6"
               >
                 <h2 className="text-xl font-bold text-black mb-6">Personal Information</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={userName}
                       disabled
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       value={userEmail}
                       disabled
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                    <input 
-                      type="tel" 
+                    <input
+                      type="tel"
                       value={userPhone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                       disabled={!isEditing}
@@ -503,10 +529,10 @@ export default function ProfilePage() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="mt-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
-                  <textarea 
+                  <textarea
                     rows={4}
                     value={bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
@@ -549,17 +575,17 @@ export default function ProfilePage() {
                       ))}
                     </div>
                   ) : (
-                  <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {specialties.length > 0 ? (
                         specialties.map((specialty: string, index: number) => (
-                      <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                        {specialty}
-                      </span>
+                          <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                            {specialty}
+                          </span>
                         ))
                       ) : (
                         <p className="text-gray-500 text-sm">No specialties added yet</p>
                       )}
-                  </div>
+                    </div>
                   )}
                 </div>
 
@@ -587,17 +613,17 @@ export default function ProfilePage() {
                       ))}
                     </div>
                   ) : (
-                  <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {languages.length > 0 ? (
                         languages.map((lang: string, index: number) => (
-                      <span key={index} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                          <span key={index} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
                             {languageMap[lang] || lang}
-                      </span>
+                          </span>
                         ))
                       ) : (
                         <p className="text-gray-500 text-sm">No languages added yet</p>
                       )}
-                  </div>
+                    </div>
                   )}
                 </div>
 
@@ -809,13 +835,13 @@ export default function ProfilePage() {
                               <h3 className="font-semibold text-black">{exp.position || 'Position'}</h3>
                               <p className="text-gray-600">{exp.company || 'Company'}</p>
                               <p className="text-sm text-gray-500">
-                                {exp.startDate 
+                                {exp.startDate
                                   ? `${new Date(exp.startDate).toLocaleDateString()} - ${exp.isCurrent ? 'Present' : exp.endDate ? new Date(exp.endDate).toLocaleDateString() : 'Present'}`
                                   : 'Duration not specified'
                                 }
                               </p>
                               {exp.description && (
-                          <p className="text-sm text-gray-700 mt-1">{exp.description}</p>
+                                <p className="text-sm text-gray-700 mt-1">{exp.description}</p>
                               )}
                             </div>
                           )}
@@ -843,7 +869,7 @@ export default function ProfilePage() {
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="w-5 h-5 text-green-500" />
                       <span className="text-gray-700">
-                        {therapist.credentials === 'SLP' 
+                        {therapist.credentials === 'SLP'
                           ? 'Speech-Language Pathologist (SLP – Fully Licensed)'
                           : 'Speech-Language Pathology Assistant (SLPA – Supervised Role)'}
                       </span>
@@ -890,38 +916,149 @@ export default function ProfilePage() {
                 )}
 
                 {/* State Licensure */}
-                {therapist.complianceDocuments?.stateLicensure && (
+                {(stateLicensures.length > 0 || isEditing) && (
                   <div className="bg-white rounded-2xl premium-shadow p-6">
-                    <h2 className="text-xl font-bold text-black mb-4">State Licensure</h2>
-                    <div className="space-y-3">
-                      {therapist.complianceDocuments.stateLicensure.licenseNumber && (
-                        <div>
-                          <span className="text-sm font-medium text-gray-600">License Number:</span>
-                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.stateLicensure.licenseNumber}</p>
-                        </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-bold text-black">State Licensure</h2>
+                      {isEditing && (
+                        <button
+                          onClick={addLicense}
+                          className="flex items-center space-x-2 text-sm text-black hover:text-gray-600"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Add License</span>
+                        </button>
                       )}
-                      {therapist.complianceDocuments.stateLicensure.state && (
-                        <div>
-                          <span className="text-sm font-medium text-gray-600">Licensing State:</span>
-                          <p className="text-gray-900 mt-1">{therapist.complianceDocuments.stateLicensure.state}</p>
-                        </div>
-                      )}
-                      {therapist.complianceDocuments.stateLicensure.expirationDate && (
-                        <div>
-                          <span className="text-sm font-medium text-gray-600">Expiration Date:</span>
-                          <p className="text-gray-900 mt-1">{new Date(therapist.complianceDocuments.stateLicensure.expirationDate).toLocaleDateString()}</p>
-                        </div>
-                      )}
-                      {therapist.complianceDocuments.stateLicensure.verified ? (
-                        <div className="flex items-center space-x-2 text-green-600">
-                          <CheckCircle className="w-5 h-5" />
-                          <span className="text-sm font-medium">Verified</span>
-                        </div>
+                    </div>
+                    <div className="space-y-6">
+                      {stateLicensures.length > 0 ? (
+                        stateLicensures.map((license: any, index: number) => (
+                          <div key={index} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0 mb-6 last:mb-0">
+                            {isEditing ? (
+                              <div className="space-y-4">
+                                <div className="flex justify-end">
+                                  <button
+                                    onClick={() => removeLicense(index)}
+                                    className="text-red-600 hover:text-red-800 text-sm"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">License Number</label>
+                                    <input
+                                      type="text"
+                                      value={license.licenseNumber || ''}
+                                      onChange={(e) => updateLicense(index, 'licenseNumber', e.target.value)}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                    <select
+                                      value={license.state || ''}
+                                      onChange={(e) => updateLicense(index, 'state', e.target.value)}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                                    >
+                                      <option value="">Select State</option>
+                                      <option value="AL">Alabama (AL)</option>
+                                      <option value="AK">Alaska (AK)</option>
+                                      <option value="AZ">Arizona (AZ)</option>
+                                      <option value="AR">Arkansas (AR)</option>
+                                      <option value="CA">California (CA)</option>
+                                      <option value="CO">Colorado (CO)</option>
+                                      <option value="CT">Connecticut (CT)</option>
+                                      <option value="DE">Delaware (DE)</option>
+                                      <option value="FL">Florida (FL)</option>
+                                      <option value="GA">Georgia (GA)</option>
+                                      <option value="HI">Hawaii (HI)</option>
+                                      <option value="ID">Idaho (ID)</option>
+                                      <option value="IL">Illinois (IL)</option>
+                                      <option value="IN">Indiana (IN)</option>
+                                      <option value="IA">Iowa (IA)</option>
+                                      <option value="KS">Kansas (KS)</option>
+                                      <option value="KY">Kentucky (KY)</option>
+                                      <option value="LA">Louisiana (LA)</option>
+                                      <option value="ME">Maine (ME)</option>
+                                      <option value="MD">Maryland (MD)</option>
+                                      <option value="MA">Massachusetts (MA)</option>
+                                      <option value="MI">Michigan (MI)</option>
+                                      <option value="MN">Minnesota (MN)</option>
+                                      <option value="MS">Mississippi (MS)</option>
+                                      <option value="MO">Missouri (MO)</option>
+                                      <option value="MT">Montana (MT)</option>
+                                      <option value="NE">Nebraska (NE)</option>
+                                      <option value="NV">Nevada (NV)</option>
+                                      <option value="NH">New Hampshire (NH)</option>
+                                      <option value="NJ">New Jersey (NJ)</option>
+                                      <option value="NM">New Mexico (NM)</option>
+                                      <option value="NY">New York (NY)</option>
+                                      <option value="NC">North Carolina (NC)</option>
+                                      <option value="ND">North Dakota (ND)</option>
+                                      <option value="OH">Ohio (OH)</option>
+                                      <option value="OK">Oklahoma (OK)</option>
+                                      <option value="OR">Oregon (OR)</option>
+                                      <option value="PA">Pennsylvania (PA)</option>
+                                      <option value="RI">Rhode Island (RI)</option>
+                                      <option value="SC">South Carolina (SC)</option>
+                                      <option value="SD">South Dakota (SD)</option>
+                                      <option value="TN">Tennessee (TN)</option>
+                                      <option value="TX">Texas (TX)</option>
+                                      <option value="UT">Utah (UT)</option>
+                                      <option value="VT">Vermont (VT)</option>
+                                      <option value="VA">Virginia (VA)</option>
+                                      <option value="WA">Washington (WA)</option>
+                                      <option value="WV">West Virginia (WV)</option>
+                                      <option value="WI">Wisconsin (WI)</option>
+                                      <option value="WY">Wyoming (WY)</option>
+                                      <option value="DC">District of Columbia (DC)</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Date</label>
+                                  <input
+                                    type="date"
+                                    value={license.expirationDate ? new Date(license.expirationDate).toISOString().split('T')[0] : ''}
+                                    onChange={(e) => updateLicense(index, 'expirationDate', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                <div>
+                                  <span className="text-sm font-medium text-gray-600">License Number:</span>
+                                  <p className="text-gray-900 mt-1">{license.licenseNumber}</p>
+                                </div>
+                                <div>
+                                  <span className="text-sm font-medium text-gray-600">Licensing State:</span>
+                                  <p className="text-gray-900 mt-1">{license.state}</p>
+                                </div>
+                                {license.expirationDate && (
+                                  <div>
+                                    <span className="text-sm font-medium text-gray-600">Expiration Date:</span>
+                                    <p className="text-gray-900 mt-1">{new Date(license.expirationDate).toLocaleDateString()}</p>
+                                  </div>
+                                )}
+                                {license.verified ? (
+                                  <div className="flex items-center space-x-2 text-green-600">
+                                    <CheckCircle className="w-5 h-5" />
+                                    <span className="text-sm font-medium">Verified</span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center space-x-2 text-yellow-600">
+                                    <Clock className="w-5 h-5" />
+                                    <span className="text-sm font-medium">Pending Verification</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))
                       ) : (
-                        <div className="flex items-center space-x-2 text-yellow-600">
-                          <Clock className="w-5 h-5" />
-                          <span className="text-sm font-medium">Pending Verification</span>
-                        </div>
+                        <p className="text-gray-500 text-sm">No state licenses added yet</p>
                       )}
                     </div>
                   </div>

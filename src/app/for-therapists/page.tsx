@@ -1,12 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { 
-  DollarSign, 
-  Heart, 
-  Users, 
-  Clock, 
-  Shield, 
+import {
+  DollarSign,
+  Heart,
+  Users,
+  Clock,
+  Shield,
   TrendingUp,
   CheckCircle,
   Star,
@@ -32,12 +32,12 @@ export default function ForTherapistsPage() {
   const compensationRanges = [
     {
       credential: 'SLP (Speech-Language Pathologist)',
-      startingRate: '$35',
+      startingRate: '$40',
       maxRate: '$75',
-      description: 'Fully licensed Speech-Language Pathologists start at $35/hour and can progress up to $75/hour through our tiered compensation model',
+      description: 'Fully licensed Speech-Language Pathologists start at $40/hour and can progress up to $75/hour through our tiered compensation model',
       benefits: [
         'Fixed hourly rate compensation - no percentage splits',
-        'Starting rate: $35/hour, maximum rate: $75/hour',
+        'Starting rate: $40/hour, maximum rate: $75/hour',
         '$5 rate increase every 5 hours worked',
         'Transparent hour-based progression with clear milestones',
         'You are paid your current hourly rate for each session',
@@ -48,12 +48,12 @@ export default function ForTherapistsPage() {
     },
     {
       credential: 'SLPA (Speech-Language Pathology Assistant)',
-      startingRate: '$30',
+      startingRate: '$25',
       maxRate: '$55',
-      description: 'Speech-Language Pathology Assistants start at $30/hour and can progress up to $55/hour through our tiered compensation model',
+      description: 'Speech-Language Pathology Assistants start at $25/hour and can progress up to $55/hour through our tiered compensation model',
       benefits: [
         'Fixed hourly rate compensation - no percentage splits',
-        'Starting rate: $30/hour, maximum rate: $55/hour',
+        'Starting rate: $25/hour, maximum rate: $55/hour',
         '$5 rate increase every 5 hours worked',
         'Transparent hour-based progression with clear milestones',
         'You are paid your current hourly rate for each session',
@@ -69,7 +69,7 @@ export default function ForTherapistsPage() {
     {
       icon: <DollarSign className="w-8 h-8" />,
       title: 'Fixed Hourly Rate Compensation',
-      description: 'Earn your way to higher rates through hours worked. You are paid a fixed hourly rate based on your tier - no percentage splits, no revenue sharing. SLPs start at $35/hour (up to $75/hour). SLPAs start at $30/hour (up to $55/hour).',
+      description: 'Earn your way to higher rates through hours worked. You are paid a fixed hourly rate based on your tier - no percentage splits, no revenue sharing. SLPs start at $40/hour (up to $75/hour). SLPAs start at $25/hour (up to $55/hour).',
       details: [
         'Fixed hourly rate - you are paid your current rate per hour',
         'Tiered, hour-based progression model',
@@ -168,31 +168,28 @@ export default function ForTherapistsPage() {
     }
   ]
 
-  const testimonials = [
+  const clinicianExpectations = [
     {
-      name: 'Dr. Sarah Johnson, SLP',
-      location: 'California',
-      quote: 'Rooted Voices has transformed how I practice. The platform is intuitive, the compensation is fair, and I love the flexibility.',
-      rating: 5
+      title: 'Community',
+      description: 'Join a growing network of clinicians dedicated to changing how speech therapy is delivered. Connect, share resources, and grow together.',
+      icon: <Users className="w-8 h-8 text-blue-600" />
     },
     {
-      name: 'Michael Chen, SLPA',
-      location: 'Texas',
-      quote: 'As an SLPA, I appreciate the supportive environment and clear guidelines. The cancellation fee protection gives me peace of mind.',
-      rating: 5
+      title: 'Support',
+      description: 'From clinical questions to technical help, you’re never alone. Our team and community are here to support your practice every step of the way.',
+      icon: <Heart className="w-8 h-8 text-blue-600" />
     },
     {
-      name: 'Dr. Emily Rodriguez, SLP',
-      location: 'New York',
-      quote: 'The AI tools save me hours each week on documentation. I can focus on what matters - my clients.',
-      rating: 5
+      title: 'Growth',
+      description: 'Whether you’re just starting or are an experienced clinician, our tiered model and resource library support your professional development.',
+      icon: <TrendingUp className="w-8 h-8 text-blue-600" />
     }
   ]
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -297,7 +294,7 @@ export default function ForTherapistsPage() {
               <div className="grid md:grid-cols-2 gap-4 mt-6">
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="text-sm text-blue-200 mb-2">SLP Starting Rate</div>
-                  <div className="text-2xl font-bold">$35/hour</div>
+                  <div className="text-2xl font-bold">$40/hour</div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="text-sm text-blue-200 mb-2">SLP Maximum Rate</div>
@@ -305,7 +302,7 @@ export default function ForTherapistsPage() {
                 </div>
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="text-sm text-blue-200 mb-2">SLPA Starting Rate</div>
-                  <div className="text-2xl font-bold">$30/hour</div>
+                  <div className="text-2xl font-bold">$25/hour</div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="text-sm text-blue-200 mb-2">SLPA Maximum Rate</div>
@@ -411,7 +408,7 @@ export default function ForTherapistsPage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Clinician Expectations Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -427,25 +424,20 @@ export default function ForTherapistsPage() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {clinicianExpectations.map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white p-6 rounded-xl shadow-lg"
+                className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 flex flex-col items-center text-center"
               >
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
+                <div className="mb-6 bg-blue-50 p-4 rounded-full">
+                  {item.icon}
                 </div>
-                <p className="text-gray-700 mb-4 italic">"{testimonial.quote}"</p>
-                <div className="border-t pt-4">
-                  <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                  <p className="text-sm text-gray-600">{testimonial.location}</p>
-                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+                <p className="text-gray-600">{item.description}</p>
               </motion.div>
             ))}
           </div>
