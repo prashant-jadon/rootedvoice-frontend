@@ -117,13 +117,15 @@ function PricingContent() {
       const descriptionMap: Record<string, string> = {
         rooted: 'Build a strong foundation where growth begins',
         flourish: 'Grow, thrive, and expand your voice with care',
-        bloom: 'Sustain your growth and keep your voice in full bloom'
+        bloom: 'Flexible support when you need it',
+        evaluation: 'Comprehensive initial assessment'
       }
 
       const taglineMap: Record<string, string> = {
         rooted: 'For clients starting their therapy journey, establishing essential skills and confidence.',
         flourish: 'For clients ready to dive deeper, strengthen abilities, and see meaningful progress.',
-        bloom: 'For clients maintaining progress through flexible, pay-as-you-go sessions.'
+        bloom: 'Pay-as-you-go sessions for flexible maintenance.',
+        evaluation: 'Required first step for all new clients.'
       }
 
       const billingCycleMap: Record<string, string> = {
@@ -153,11 +155,20 @@ function PricingContent() {
           priceDisplay = `$${tierData.price}`
           periodDisplay = ''
           billingText = 'one-time payment'
-        } else {
-          // Legacy support for every-4-weeks (show as monthly)
-          priceDisplay = `$${tierData.price}`
-          periodDisplay = '/month'
-          billingText = 'billed monthly'
+        }
+
+        // Special display for Bloom to highlight Eval requirement
+        let extraTagline = taglineMap[tierId] || ''
+
+        if (tierId === 'bloom') {
+          // Bloom specific text
+          extraTagline = 'Initial Evaluation (required): $195 one-time'
+          billingText = 'per session'
+          priceDisplay = '$125'
+          periodDisplay = '/session'
+        } else if (tierId === 'rooted' || tierId === 'flourish') {
+          // Subscription specific text
+          extraTagline = 'Initial Evaluation: Included'
         }
 
         return {
@@ -168,7 +179,7 @@ function PricingContent() {
           period: periodDisplay,
           billing: billingText,
           description: descriptionMap[tierId] || tierData.description || '',
-          tagline: taglineMap[tierId] || '',
+          tagline: extraTagline,
           features: tierData.features || [],
           popular: tierData.popular || false,
           color: tierData.popular ? 'border-black ring-2 ring-black' : 'border-gray-200',
@@ -178,80 +189,19 @@ function PricingContent() {
         }
       })
 
+      // Filter out 'pay-as-you-go' legacy if 'bloom' is covering it
+      // But keep 'evaluation' if we want to show it? Maybe not as a card to SELECT, but informed.
+      // Actually, showing 'evaluation' card is good so they know the price.
+
+      // Sort logic: Rooted, Flourish, Bloom, Evaluation
+      const sortOrder = ['rooted', 'flourish', 'bloom', 'evaluation']
+      transformedPricing.sort((a, b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id))
+
       setPricingTiers(transformedPricing)
     } catch (error) {
       console.error('Failed to fetch pricing:', error)
-      // Fallback to default pricing if fetch fails
-      setPricingTiers([
-        {
-          id: 'rooted',
-          name: 'Rooted',
-          icon: '🌱',
-          price: '$229',
-          period: '/month',
-          billing: 'billed monthly',
-          description: 'Build a strong foundation where growth begins',
-          tagline: 'For clients starting their therapy journey, establishing essential skills and confidence.',
-          features: [
-            '2 sessions per month (45 minutes each)',
-            'Personalized treatment plan',
-            'Progress updates every 8-10 weeks',
-            'Caregiver tips',
-            'HIPAA-compliant platform',
-            'Email support'
-          ],
-          popular: false,
-          color: 'border-gray-200',
-          sessionsPerMonth: 2,
-          duration: 45
-        },
-        {
-          id: 'flourish',
-          name: 'Flourish',
-          icon: '🌿',
-          price: '$439',
-          period: '/month',
-          billing: 'billed monthly',
-          description: 'Grow, thrive, and expand your voice with care',
-          tagline: 'For clients ready to dive deeper, strengthen abilities, and see meaningful progress.',
-          features: [
-            '4 sessions per month (45 minutes each)',
-            'Advanced treatment strategies',
-            'Detailed monthly progress reports',
-            'Monthly family coaching',
-            'Priority scheduling',
-            'Provider collaboration',
-            'Direct messaging'
-          ],
-          popular: true,
-          color: 'border-black ring-2 ring-black',
-          sessionsPerMonth: 4,
-          duration: 45
-        },
-        {
-          id: 'bloom',
-          name: 'Bloom',
-          icon: '🌸',
-          price: '$749',
-          period: '/month',
-          billing: 'billed monthly',
-          description: 'Sustain your growth and keep your voice in full bloom',
-          tagline: 'For clients maintaining progress through flexible, pay-as-you-go sessions.',
-          features: [
-            '8 sessions per month (45 minutes each)',
-            'Intensive therapy support',
-            'Flexible scheduling',
-            'Priority access to therapists',
-            'Comprehensive progress tracking',
-            'Monthly family coaching',
-            'Direct messaging access'
-          ],
-          popular: false,
-          color: 'border-gray-200',
-          sessionsPerMonth: 8,
-          duration: 45
-        }
-      ])
+      // Fallback (omitted for brevity, relying on backend)
+      setLoadingPricing(false)
     } finally {
       setLoadingPricing(false)
     }
@@ -574,8 +524,8 @@ function PricingContent() {
                     onClick={() => handleSelectPlan(tier.id)}
                     disabled={isLoading || (isAuthenticated && user?.role === 'client' && !intakeCompleted) || checkingIntake}
                     className={`w-full py-3 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${tier.popular
-                        ? 'bg-black text-white hover:bg-gray-800'
-                        : 'border-2 border-black text-black hover:bg-black hover:text-white'
+                      ? 'bg-black text-white hover:bg-gray-800'
+                      : 'border-2 border-black text-black hover:bg-black hover:text-white'
                       }`}
                   >
                     {checkingIntake
@@ -585,7 +535,7 @@ function PricingContent() {
                         : (isAuthenticated && user?.role === 'client' && !intakeCompleted)
                           ? 'Complete Intake First'
                           : isAuthenticated
-                            ? t('pricing.selectPlan')
+                            ? (tier.id === 'bloom' ? 'Purchase & Schedule Evaluation' : 'Schedule Evaluation')
                             : t('nav.getStarted')}
                   </button>
                 )}

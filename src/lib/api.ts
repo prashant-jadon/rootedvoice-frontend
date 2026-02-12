@@ -116,6 +116,12 @@ export const sessionAPI = {
     api.get(`/sessions/${id}/transcript/${language}`),
 };
 
+export const evaluationAPI = {
+  getMyEvaluation: () => api.get('/evaluations/my-evaluation'),
+  submit: (id: string, answers: any) => api.post(`/evaluations/${id}/submit`, { answers }),
+  get: (id: string) => api.get(`/evaluations/${id}`)
+};
+
 export const subscriptionAPI = {
   getPricing: () => api.get('/subscriptions/pricing'),
   subscribe: (tier: string) => api.post('/subscriptions/subscribe', { tier }),
@@ -134,7 +140,7 @@ export const stripeAPI = {
   confirmPayment: (paymentIntentId: string) => api.post('/stripe/confirm-payment', { paymentIntentId }),
   processSessionPayment: (sessionId: string) => api.post('/stripe/process-session-payment', { sessionId }),
   verifyCheckoutSession: (sessionId: string) => api.post('/stripe/verify-checkout', { sessionId }),
-  refundPayment: (paymentId: string, amount?: number, reason?: string) => 
+  refundPayment: (paymentId: string, amount?: number, reason?: string) =>
     api.post('/stripe/refund', { paymentId, amount, reason }),
 };
 
@@ -182,7 +188,7 @@ export const messageAPI = {
 
 export const resourceAPI = {
   getAll: (params?: any) => api.get('/resources', { params }),
-  aiSearch: (query: string, params?: any) => 
+  aiSearch: (query: string, params?: any) =>
     api.get('/resources/ai-search', { params: { query, ...params } }),
   getById: (id: string) => api.get(`/resources/${id}`),
   create: (data: any) => api.post('/resources', data),
@@ -212,17 +218,17 @@ export const calendarAPI = {
   getEvents: (params?: { startDate?: string; endDate?: string; limit?: number }) =>
     api.get('/calendar/events', { params }),
   getEvent: (eventId: string) => api.get(`/calendar/events/${eventId}`),
-  
+
   // Calendar integration status
   getStatus: () => api.get('/calendar/status'),
-  
+
   // External calendar sync (optional)
   connectGoogle: (data: { accessToken: string; refreshToken?: string; calendarId?: string }) =>
     api.post('/calendar/connect/google', data),
   connectOutlook: (data: { accessToken: string; refreshToken?: string; calendarId?: string }) =>
     api.post('/calendar/connect/outlook', data),
   disconnect: () => api.post('/calendar/disconnect'),
-  
+
   // Calendar event URLs for manual add
   getEventUrl: (sessionId: string, provider?: string) =>
     api.get(`/calendar/event-url/${sessionId}`, { params: { provider } }),

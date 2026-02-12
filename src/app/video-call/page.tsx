@@ -35,7 +35,7 @@ function VideoCallContent() {
     }
 
     fetchLanguagePreferences()
-    
+
     if (sessionId) {
       fetchSession()
     }
@@ -87,7 +87,7 @@ function VideoCallContent() {
   const initializeJitsi = async () => {
     // Get session data to retrieve proper room name
     let roomName = `RootedVoices${sessionId || Date.now()}`
-    
+
     if (session && session.jitsiRoomName) {
       roomName = session.jitsiRoomName
     } else if (sessionId) {
@@ -101,10 +101,10 @@ function VideoCallContent() {
         console.error('Failed to fetch session for room name:', error)
       }
     }
-    
+
     const displayName = user ? `${user.firstName} ${user.lastName}` : 'Guest'
     const isModerator = user?.role === 'therapist'
-    
+
     // Build Jitsi URL with improved configuration
     const configParams = [
       `userInfo.displayName="${encodeURIComponent(displayName)}"`,
@@ -140,7 +140,7 @@ function VideoCallContent() {
     }
 
     const jitsiUrl = `https://meet.jit.si/${roomName}#${configParams.join('&')}`
-    
+
     if (jitsiContainerRef.current) {
       const iframe = document.createElement('iframe')
       iframe.src = jitsiUrl
@@ -148,11 +148,11 @@ function VideoCallContent() {
       iframe.style.width = '100%'
       iframe.style.height = '100%'
       iframe.style.border = 'none'
-      
+
       jitsiContainerRef.current.innerHTML = ''
       jitsiContainerRef.current.appendChild(iframe)
     }
-    
+
     /* ORIGINAL EXTERNAL API CODE (DISABLED DUE TO AUTH ISSUES)
     if (!jitsiContainerRef.current || !window.JitsiMeetExternalAPI) return
 
@@ -220,7 +220,7 @@ function VideoCallContent() {
   }
 
   if (isLoading && sessionId) {
-  return (
+    return (
       <div className="h-screen flex items-center justify-center bg-gray-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -240,8 +240,8 @@ function VideoCallContent() {
             <h1 className="font-semibold">Therapy Session</h1>
             {session && (
               <p className="text-sm text-gray-400">
-                {session.clientId?.userId ? 
-                  `${session.clientId.userId.firstName} ${session.clientId.userId.lastName}` : 
+                {session.clientId?.userId ?
+                  `${session.clientId.userId.firstName} ${session.clientId.userId.lastName}` :
                   'Loading...'}
               </p>
             )}
@@ -259,7 +259,7 @@ function VideoCallContent() {
               translationEnabled={translationEnabled}
             />
           </div>
-          <button 
+          <button
             onClick={endCall}
             className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors"
           >

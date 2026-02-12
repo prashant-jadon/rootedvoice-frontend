@@ -21,7 +21,7 @@ function BookSessionContent() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [remainingSessions, setRemainingSessions] = useState<any>(null)
-  
+
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -134,9 +134,18 @@ function BookSessionContent() {
       // Calculate session price
       // Rate caps: SLP = $75, SLPA = $55
       let sessionPrice = 0
+
       if (sessionType === 'initial') {
-        sessionPrice = 0 // Initial consultations are free
+        // Checking subscription plan for Initial Evaluation pricing
+        // Rooted/Flourish: Included (Free)
+        // Bloom/None: $195
+        if (subscription && (subscription.tier === 'rooted' || subscription.tier === 'flourish')) {
+          sessionPrice = 0;
+        } else {
+          sessionPrice = 195; // Standard Evaluation Price
+        }
       } else {
+        // Regular Session Logic
         // Get therapist data if not already loaded
         let therapistData = therapist
         if (!therapistData && therapistId) {
@@ -147,25 +156,26 @@ function BookSessionContent() {
             console.error('Failed to fetch therapist for price calculation:', error)
           }
         }
-        
+
         // Determine max rate based on therapist credentials
         const maxRate = therapistData?.credentials === 'SLPA' ? 55 : 75
-        
+
         if (therapistData) {
           // Use therapist's hourly rate if available, but ALWAYS cap it
           if (therapistData.hourlyRate && therapistData.hourlyRate > 0) {
             sessionPrice = Math.min(therapistData.hourlyRate, maxRate) // Cap at max rate
           } else {
             // Fallback: use subscription price or default, but cap it at therapist's max rate
-            const subscriptionPrice = subscription?.price || 85
+            // For Bloom ($125 pay-as-you-go), we should check the plan price
+            const subscriptionPrice = subscription?.price || 125 // Default to Pay-as-you-go rate
             sessionPrice = Math.min(subscriptionPrice, maxRate)
           }
         } else {
           // No therapist data: use subscription price capped at SLP rate
-          const subscriptionPrice = subscription?.price || 85
+          const subscriptionPrice = subscription?.price || 125
           sessionPrice = Math.min(subscriptionPrice, 75) // Default to SLP cap
         }
-        
+
         // Final safety check - ensure price never exceeds cap
         sessionPrice = Math.min(sessionPrice, maxRate)
       }
@@ -185,14 +195,14 @@ function BookSessionContent() {
       console.log('Therapist ID:', therapistIdToUse)
       console.log('Client ID:', clientId)
       const response = await sessionAPI.create(sessionData)
-      
+
       // Get remaining sessions from response
       const remainingSessionsData = response.data.remainingSessions
       setRemainingSessions(remainingSessionsData)
-      
+
       // Show success message with remaining sessions
       setSuccess(true)
-      
+
       // Redirect to dashboard after 3 seconds (give time to see remaining sessions)
       setTimeout(() => {
         router.push('/client-dashboard')
@@ -202,13 +212,21 @@ function BookSessionContent() {
       console.error('Booking error:', error)
       console.error('Error response:', error.response?.data)
       console.error('Error status:', error.response?.status)
-      
+
+      // Handle specific "Requires Evaluation" error
+      if (error.response?.status === 403 && error.response?.data?.requiresEvaluation) {
+        setError('You must complete an Initial Evaluation before booking regular sessions. Please select "Initial Consultation" above to book your evaluation.')
+        // Optionally force switch to 'initial' type?
+        // setSessionType('initial')
+        return;
+      }
+
       // Get detailed error message
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.error || 
-                          error.message || 
-                          'Failed to book session. Please try again.'
-      
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        'Failed to book session. Please try again.'
+
       setError(errorMessage)
       alert(`Booking failed: ${errorMessage}`)
     } finally {
@@ -269,11 +287,11 @@ function BookSessionContent() {
             className="mb-8 p-6 bg-green-50 border border-green-200 rounded-lg"
           >
             <div className="text-center mb-4">
-            <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-green-800 mb-2">Session Booked!</h2>
-            <p className="text-green-600">Your session has been scheduled successfully.</p>
+              <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-green-800 mb-2">Session Booked!</h2>
+              <p className="text-green-600">Your session has been scheduled successfully.</p>
             </div>
-            
+
             {/* Remaining Sessions Info */}
             {remainingSessions && (
               <div className="mt-4 p-4 bg-white rounded-lg border border-green-200">
@@ -291,23 +309,22 @@ function BookSessionContent() {
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                     <span className="text-gray-900 font-semibold">Remaining Sessions:</span>
-                    <span className={`font-bold text-lg ${
-                      remainingSessions.hasUnlimited 
-                        ? 'text-green-600' 
-                        : remainingSessions.remainingSessions > 0 
-                          ? 'text-green-600' 
-                          : 'text-red-600'
-                    }`}>
-                      {remainingSessions.hasUnlimited 
-                        ? 'Unlimited' 
+                    <span className={`font-bold text-lg ${remainingSessions.hasUnlimited
+                      ? 'text-green-600'
+                      : remainingSessions.remainingSessions > 0
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                      }`}>
+                      {remainingSessions.hasUnlimited
+                        ? 'Unlimited'
                         : remainingSessions.remainingSessions}
                     </span>
                   </div>
                   {!remainingSessions.hasUnlimited && remainingSessions.remainingSessions === 0 && (
                     <div className="mt-3 space-y-2">
                       <p className="text-sm text-red-600 text-center">
-                      You've used all your sessions for this billing period.
-                    </p>
+                        You've used all your sessions for this billing period.
+                      </p>
                       <Link
                         href="/pricing"
                         className="block w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors font-semibold text-center text-sm shadow-md"
@@ -324,7 +341,7 @@ function BookSessionContent() {
                 </div>
               </div>
             )}
-            
+
             <p className="text-sm text-green-500 mt-4 text-center">Redirecting to your dashboard...</p>
           </motion.div>
         )}
@@ -375,22 +392,24 @@ function BookSessionContent() {
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setSessionType('initial')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  sessionType === 'initial'
-                    ? 'border-black bg-black text-white'
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
+                className={`p-4 rounded-lg border-2 transition-all ${sessionType === 'initial'
+                  ? 'border-black bg-black text-white'
+                  : 'border-gray-300 hover:border-gray-400'
+                  }`}
               >
                 <p className="font-semibold">Initial Consultation</p>
-                <p className="text-sm opacity-80">First session - 15 min free</p>
+                <p className="text-sm opacity-80">
+                  {subscription && (subscription.tier === 'rooted' || subscription.tier === 'flourish')
+                    ? 'Included in Plan'
+                    : 'Pre-paid Evaluation'}
+                </p>
               </button>
               <button
                 onClick={() => setSessionType('follow-up')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  sessionType === 'follow-up'
-                    ? 'border-black bg-black text-white'
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
+                className={`p-4 rounded-lg border-2 transition-all ${sessionType === 'follow-up'
+                  ? 'border-black bg-black text-white'
+                  : 'border-gray-300 hover:border-gray-400'
+                  }`}
               >
                 <p className="font-semibold">Regular Session</p>
                 <p className="text-sm opacity-80">Follow-up therapy session</p>
@@ -427,10 +446,10 @@ function BookSessionContent() {
               <option value="">Choose a date...</option>
               {getNextDays(14).map((date) => (
                 <option key={date} value={date}>
-                  {new Date(date).toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    month: 'long', 
-                    day: 'numeric' 
+                  {new Date(date).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric'
                   })}
                 </option>
               ))}
@@ -447,11 +466,10 @@ function BookSessionContent() {
                 <button
                   key={time}
                   onClick={() => setSelectedTime(time)}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    selectedTime === time
-                      ? 'border-black bg-black text-white'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
+                  className={`p-3 rounded-lg border-2 transition-all ${selectedTime === time
+                    ? 'border-black bg-black text-white'
+                    : 'border-gray-300 hover:border-gray-400'
+                    }`}
                 >
                   {time}
                 </button>
@@ -475,8 +493,8 @@ function BookSessionContent() {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Date:</span>
                   <span className="font-medium text-black">
-                    {new Date(selectedDate).toLocaleDateString('en-US', { 
-                      month: 'long', 
+                    {new Date(selectedDate).toLocaleDateString('en-US', {
+                      month: 'long',
                       day: 'numeric',
                       year: 'numeric'
                     })}
@@ -497,7 +515,13 @@ function BookSessionContent() {
                 <div className="flex justify-between pt-4 border-t border-purple-200">
                   <span className="text-gray-600">Price:</span>
                   <span className="font-bold text-black text-lg">
-                    {sessionType === 'initial' ? 'Free' : `$${therapist?.hourlyRate || subscription?.price || 85}`}
+                    {sessionType === 'initial'
+                      ? (subscription && (subscription.tier === 'rooted' || subscription.tier === 'flourish')
+                        ? 'Included (Free)'
+                        : '$195'
+                      )
+                      : `$${Math.min(therapist?.hourlyRate || subscription?.price || 125, therapist?.credentials === 'SLPA' ? 55 : 75)}`
+                    }
                   </span>
                 </div>
               </div>
