@@ -6,7 +6,7 @@ import { Calendar, Clock, DollarSign, ArrowLeft, CheckCircle, User } from 'lucid
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { subscriptionAPI, sessionAPI, therapistAPI, clientAPI } from '@/lib/api'
+import { subscriptionAPI, sessionAPI, therapistAPI, clientAPI, evaluationAPI, stripeAPI } from '@/lib/api'
 import CalendarSync from '@/components/CalendarSync'
 
 function BookSessionContent() {
@@ -21,6 +21,8 @@ function BookSessionContent() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [remainingSessions, setRemainingSessions] = useState<any>(null)
+  const [evaluationBlocked, setEvaluationBlocked] = useState(false)
+  const [evaluationStatus, setEvaluationStatus] = useState<string | null>(null)
 
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
@@ -41,9 +43,59 @@ function BookSessionContent() {
     fetchData()
   }, [isAuthenticated, user, therapistId])
 
+  useEffect(() => {
+    // Check for payment success from Stripe redirect
+    const paymentSuccess = searchParams.get('payment_success')
+    const sessionId = searchParams.get('session_id')
+
+    if (paymentSuccess === 'true' && sessionId) {
+      verifyPaymentAndCreateSession(sessionId)
+    }
+  }, [searchParams])
+
+  const verifyPaymentAndCreateSession = async (sessionId: string) => {
+    try {
+      setIsBooking(true)
+      const response = await stripeAPI.verifySessionPayment(sessionId)
+
+      if (response.data.success) {
+        setSuccess(true)
+        // Redirect to dashboard after 3 seconds
+        setTimeout(() => {
+          router.push('/client-dashboard')
+        }, 3000)
+      }
+    } catch (error) {
+      console.error('Payment verification failed:', error)
+      setError('Payment verification failed. Please contact support.')
+    } finally {
+      setIsBooking(false)
+    }
+  }
+
   const fetchData = async () => {
     try {
       setIsLoading(true)
+
+      // Check evaluation status — must be 'reviewed' by admin to book
+      try {
+        const evalRes = await evaluationAPI.getMyEvaluation()
+        const evalData = evalRes.data.data
+        if (evalData) {
+          setEvaluationStatus(evalData.status)
+          if (evalData.status !== 'reviewed') {
+            setEvaluationBlocked(true)
+          }
+        } else {
+          // No evaluation at all — block booking
+          setEvaluationBlocked(true)
+          setEvaluationStatus('none')
+        }
+      } catch (err) {
+        // If evaluation API fails, assume no evaluation
+        setEvaluationBlocked(true)
+        setEvaluationStatus('none')
+      }
 
       // Get therapist info
       if (therapistId) {
@@ -180,7 +232,35 @@ function BookSessionContent() {
         sessionPrice = Math.min(sessionPrice, maxRate)
       }
 
-      // Create session in database
+      // Check if payment is required (Bloom tier or passed session limit)
+      if (sessionPrice > 0) {
+        // Redirect to Stripe Checkout for payment
+        try {
+          console.log('Initiating payment for session:', { sessionPrice, therapistId: therapistIdToUse })
+
+          const checkoutRes = await stripeAPI.createSessionPaymentCheckout({
+            therapistId: therapistIdToUse,
+            date: selectedDate,
+            time: selectedTime,
+            duration: duration,
+            sessionType: sessionType,
+            amount: sessionPrice
+          })
+
+          if (checkoutRes.data.success) {
+            // Redirect to Stripe
+            window.location.href = checkoutRes.data.data.url
+            return // Stop execution here
+          }
+        } catch (paymentError: any) {
+          console.error('Payment initiation failed:', paymentError)
+          setError(paymentError.response?.data?.message || 'Failed to initiate payment')
+          setIsBooking(false)
+          return
+        }
+      }
+
+      // Create session in database (Direct creation for $0 sessions)
       const sessionData = {
         therapistId: therapistIdToUse, // Use therapist's _id from database
         clientId: clientId,
@@ -230,7 +310,14 @@ function BookSessionContent() {
       setError(errorMessage)
       alert(`Booking failed: ${errorMessage}`)
     } finally {
-      setIsBooking(false)
+      // Only set isBooking false if we didn't redirect (if verified, it handles its own loading state)
+      // But actually, we returned early for redirect.
+      // Checking checking... verifyPaymentAndCreateSession sets isBooking(true) then false.
+      // Here, if we redirect, we returned.
+      // If we didn't redirect, we fall through here.
+      if (typeof window !== 'undefined' && !window.location.href.includes('checkout.stripe.com')) {
+        setIsBooking(false)
+      }
     }
   }
 
@@ -241,6 +328,52 @@ function BookSessionContent() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
           <p className="text-gray-600">Loading booking information...</p>
         </div>
+      </div>
+    )
+  }
+
+  if (evaluationBlocked) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center"
+        >
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Calendar className="w-8 h-8 text-amber-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Evaluation Required</h2>
+          {evaluationStatus === 'none' || evaluationStatus === 'pending_creation' ? (
+            <p className="text-gray-600 mb-6">
+              You need to complete your initial evaluation questionnaire before booking sessions.
+            </p>
+          ) : evaluationStatus === 'completed' ? (
+            <p className="text-gray-600 mb-6">
+              Your evaluation has been submitted and is being reviewed by our admin team. You'll be able to book sessions once it's approved.
+            </p>
+          ) : (
+            <p className="text-gray-600 mb-6">
+              Please complete your evaluation questionnaire first. It helps us match you with the right therapy approach.
+            </p>
+          )}
+          <div className="space-y-3">
+            {evaluationStatus !== 'completed' && (
+              <Link
+                href="/client-evaluation"
+                className="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+              >
+                Go to Evaluation
+              </Link>
+            )}
+            <Link
+              href="/client-dashboard"
+              className="block w-full py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            >
+              Back to Dashboard
+            </Link>
+          </div>
+        </motion.div>
       </div>
     )
   }

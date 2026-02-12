@@ -140,6 +140,8 @@ export const stripeAPI = {
   confirmPayment: (paymentIntentId: string) => api.post('/stripe/confirm-payment', { paymentIntentId }),
   processSessionPayment: (sessionId: string) => api.post('/stripe/process-session-payment', { sessionId }),
   verifyCheckoutSession: (sessionId: string) => api.post('/stripe/verify-checkout', { sessionId }),
+  createSessionPaymentCheckout: (data: any) => api.post('/stripe/create-session-payment', data),
+  verifySessionPayment: (sessionId: string) => api.post('/stripe/verify-session-payment', { sessionId }),
   refundPayment: (paymentId: string, amount?: number, reason?: string) =>
     api.post('/stripe/refund', { paymentId, amount, reason }),
 };

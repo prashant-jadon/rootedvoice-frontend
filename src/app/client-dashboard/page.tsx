@@ -19,7 +19,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from '@/hooks/useTranslation'
-import { sessionAPI, clientAPI, subscriptionAPI, assignmentAPI } from '@/lib/api'
+import { sessionAPI, clientAPI, subscriptionAPI, assignmentAPI, evaluationAPI } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -34,6 +34,7 @@ export default function ClientDashboardPage() {
   const [assignments, setAssignments] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showConversionModal, setShowConversionModal] = useState(false)
+  const [pendingEvaluation, setPendingEvaluation] = useState<any>(null)
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const t = useTranslation()
@@ -54,6 +55,17 @@ export default function ClientDashboardPage() {
 
   const fetchClientData = async () => {
     try {
+      // Fetch pending evaluation
+      try {
+        const evalRes = await evaluationAPI.getMyEvaluation()
+        const evalData = evalRes.data.data
+        if (evalData && evalData.status !== 'completed' && evalData.status !== 'reviewed') {
+          setPendingEvaluation(evalData)
+        }
+      } catch (error) {
+        console.log('Could not fetch evaluation status')
+      }
+
       // Fetch assignments
       try {
         const assignmentsRes = await assignmentAPI.getAll({ completed: false });
@@ -269,6 +281,35 @@ export default function ClientDashboardPage() {
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Pending Evaluation Banner */}
+          {pendingEvaluation && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-amber-900">Complete Your Evaluation</h3>
+                    <p className="text-amber-700 text-sm">
+                      Please fill out your initial evaluation questionnaire before booking sessions.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href="/client-evaluation"
+                  className="px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm whitespace-nowrap"
+                >
+                  Fill Evaluation →
+                </Link>
+              </div>
+            </motion.div>
+          )}
+
           {/* Welcome Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -362,10 +403,10 @@ export default function ClientDashboardPage() {
                     <div>
                       <p className="text-sm text-gray-600">Remaining Sessions</p>
                       <p className={`text-4xl font-bold ${remainingSessions.hasUnlimited
+                        ? 'text-green-600'
+                        : remainingSessions.remainingSessions > 0
                           ? 'text-green-600'
-                          : remainingSessions.remainingSessions > 0
-                            ? 'text-green-600'
-                            : 'text-red-600'
+                          : 'text-red-600'
                         }`}>
                         {remainingSessions.hasUnlimited
                           ? '∞'
@@ -577,10 +618,10 @@ export default function ClientDashboardPage() {
                         <div
                           key={assignment._id}
                           className={`flex items-start space-x-3 p-3 rounded-lg ${assignment.completed
-                              ? 'bg-green-50'
-                              : isOverdue
-                                ? 'bg-red-50'
-                                : 'bg-gray-50'
+                            ? 'bg-green-50'
+                            : isOverdue
+                              ? 'bg-red-50'
+                              : 'bg-gray-50'
                             }`}
                         >
                           {assignment.completed ? (

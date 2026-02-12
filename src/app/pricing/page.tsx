@@ -54,6 +54,20 @@ function PricingContent() {
     if (success === 'true') {
       setSuccessMessage('Payment successful! Your subscription is being activated...')
 
+      // Immediately attempt to verify the checkout session
+      // This ensures the subscription + evaluation records are created
+      // even if Stripe webhooks aren't configured (e.g., local dev)
+      const storedSessionId = localStorage.getItem('lastCheckoutSessionId')
+      if (storedSessionId) {
+        stripeAPI.verifyCheckoutSession(storedSessionId)
+          .then((res: any) => {
+            console.log('Auto-verify result:', res.data)
+          })
+          .catch((err: any) => {
+            console.warn('Auto-verify failed (may already be processed):', err?.response?.data?.message || err.message)
+          })
+      }
+
       // Poll for subscription status (webhook might take a moment)
       let attempts = 0
       const maxAttempts = 20
