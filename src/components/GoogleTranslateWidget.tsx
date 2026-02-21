@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Globe } from 'lucide-react'
+import { useEffect, useState, useRef } from 'react'
+import { Globe, X } from 'lucide-react'
 
 declare global {
     interface Window {
@@ -12,6 +12,8 @@ declare global {
 
 export default function GoogleTranslateWidget() {
     const [isLoaded, setIsLoaded] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
+    const widgetRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         // Load Google Translate script
@@ -57,13 +59,38 @@ export default function GoogleTranslateWidget() {
         }
     }, [])
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
+                setIsOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
     return (
-        <div className="google-translate-widget">
-            <div className="translate-widget-header">
+        <div
+            ref={widgetRef}
+            className={`google-translate-widget ${isOpen ? 'is-open' : 'is-closed'}`}
+            onClick={() => !isOpen && setIsOpen(true)}
+        >
+            <div className="translate-widget-header" onClick={() => isOpen && setIsOpen(false)}>
                 <Globe className="translate-icon" />
-                <span className="translate-label">Translate</span>
+                {isOpen && (
+                    <>
+                        <span className="translate-label">Translate</span>
+                        <button
+                            className="ml-auto p-1 text-gray-400 hover:text-black hover:bg-gray-100 rounded-full transition-colors"
+                            onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    </>
+                )}
             </div>
-            <div id="google_translate_element"></div>
+            <div id="google_translate_element" className={isOpen ? 'block' : 'hidden'}></div>
         </div>
     )
 }

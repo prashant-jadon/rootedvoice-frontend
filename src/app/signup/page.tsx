@@ -25,6 +25,8 @@ export default function SignupPage() {
     practiceState: '',
     practiceCity: '',
     practicePostcode: '',
+    // Support for multiple practice locations
+    practiceLocations: [{ state: '', city: '', postcode: '' }],
     // ASHA Certification (SLP only)
     ashaCertificationNumber: '',
     ashaCertificationExpiration: '',
@@ -77,7 +79,23 @@ export default function SignupPage() {
     const newLicensures = [...formData.stateLicensures]
     // @ts-ignore
     newLicensures[index] = { ...newLicensures[index], [field]: value }
-    setFormData({ ...formData, stateLicensures: newLicensures })
+
+    // Sync the first license with legacy fields for backward compatibility
+    if (index === 0) {
+      if (field === 'licenseNumber') {
+        setFormData({ ...formData, stateLicensures: newLicensures, licenseNumber: value, stateRegistrationNumber: value })
+      } else if (field === 'state') {
+        setFormData({ ...formData, stateLicensures: newLicensures, licensingState: value, stateRegistrationState: value })
+      } else if (field === 'expirationDate') {
+        setFormData({ ...formData, stateLicensures: newLicensures, licenseExpirationDate: value, stateRegistrationExpiration: value })
+      } else if (field === 'file') {
+        setFormData({ ...formData, stateLicensures: newLicensures, licenseFile: value, stateRegistrationFile: value })
+      } else {
+        setFormData({ ...formData, stateLicensures: newLicensures })
+      }
+    } else {
+      setFormData({ ...formData, stateLicensures: newLicensures })
+    }
   }
 
   const addLicense = () => {
@@ -90,6 +108,59 @@ export default function SignupPage() {
   const removeLicense = (index: number) => {
     const newLicensures = formData.stateLicensures.filter((_, i) => i !== index)
     setFormData({ ...formData, stateLicensures: newLicensures })
+  }
+
+  // Practice Location Handlers
+  const handleLocationChange = (index: number, field: string, value: string) => {
+    const newLocations = [...formData.practiceLocations]
+    // @ts-ignore
+    newLocations[index] = { ...newLocations[index], [field]: value }
+
+    // Sync the first location with the legacy fields for backward compatibility
+    if (index === 0) {
+      const legacyField = field === 'state' ? 'practiceState' : field === 'city' ? 'practiceCity' : 'practicePostcode'
+      setFormData({
+        ...formData,
+        practiceLocations: newLocations,
+        [legacyField]: value
+      })
+    } else {
+      setFormData({ ...formData, practiceLocations: newLocations })
+    }
+  }
+
+  const addLocation = () => {
+    setFormData({
+      ...formData,
+      practiceLocations: [...formData.practiceLocations, { state: '', city: '', postcode: '' }]
+    })
+  }
+
+  const removeLocation = (index: number) => {
+    const newLocations = formData.practiceLocations.filter((_, i) => i !== index)
+
+    // If we removed the first one, we need to sync legacy fields with the new first one (if it exists)
+    if (index === 0 && newLocations.length > 0) {
+      setFormData({
+        ...formData,
+        practiceLocations: newLocations,
+        practiceState: newLocations[0].state,
+        practiceCity: newLocations[0].city,
+        practicePostcode: newLocations[0].postcode
+      })
+    } else if (newLocations.length === 0) {
+      // Don't allow removing the last one, or reset legacy fields if empty
+      // But typically we should enforce at least one location
+      setFormData({
+        ...formData,
+        practiceLocations: newLocations,
+        practiceState: '',
+        practiceCity: '',
+        practicePostcode: ''
+      })
+    } else {
+      setFormData({ ...formData, practiceLocations: newLocations })
+    }
   }
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -122,7 +193,7 @@ export default function SignupPage() {
         return
       }
 
-      if (!formData.practiceState || !formData.practiceCity || !formData.practicePostcode) {
+      if (formData.practiceLocations.length === 0 || !formData.practiceLocations[0].state || !formData.practiceLocations[0].city || !formData.practiceLocations[0].postcode) {
         setError(t('signup.completePracticeLocation'))
         setIsLoading(false)
         return
@@ -167,21 +238,7 @@ export default function SignupPage() {
       //   }
       // }
 
-      // Legacy validation for backward compatibility
-      if (!formData.spaMembershipNumber || !formData.spaMembershipFile) {
-        if (formData.credentials === 'SLP') {
-          setError(t('signup.spaMembershipRequired'))
-          setIsLoading(false)
-          return
-        }
-      }
-
-      if (!formData.stateRegistrationNumber || !formData.stateRegistrationFile) {
-        setError(t('signup.stateRegistrationRequired'))
-        setIsLoading(false)
-        return
-      }
-
+      // Ensure insurance is provided
       if (!formData.insuranceProvider || !formData.insurancePolicyNumber || !formData.insuranceFile) {
         setError(t('signup.insuranceRequired'))
         setIsLoading(false)
@@ -217,6 +274,7 @@ export default function SignupPage() {
             city: formData.practiceCity,
             postcode: formData.practicePostcode,
           },
+          practiceLocations: formData.practiceLocations,
           // Banking details (Therapist only)
           bankDetails: userType === 'therapist' ? {
             accountName: formData.accountName,
@@ -400,7 +458,7 @@ export default function SignupPage() {
         }
 
         await register(registrationData)
-        router.push('/client-intake')
+        router.push('/client-evaluation')
       }
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || t('signup.registrationFailed'))
@@ -584,101 +642,126 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {/* Practice Location - U.S. States */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label htmlFor="practiceState" className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('signup.state')} <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        id="practiceState"
-                        required
-                        value={formData.practiceState}
-                        onChange={(e) => setFormData({ ...formData, practiceState: e.target.value })}
-                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  {/* Practice Locations */}
+                  <div className="border-t pt-4 mt-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900">Practice Locations <span className="text-red-500">*</span></h3>
+                      <button
+                        type="button"
+                        onClick={addLocation}
+                        className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
                       >
-                        <option value="">{t('signup.state')}</option>
-                        <option value="AL">Alabama (AL)</option>
-                        <option value="AK">Alaska (AK)</option>
-                        <option value="AZ">Arizona (AZ)</option>
-                        <option value="AR">Arkansas (AR)</option>
-                        <option value="CA">California (CA)</option>
-                        <option value="CO">Colorado (CO)</option>
-                        <option value="CT">Connecticut (CT)</option>
-                        <option value="DE">Delaware (DE)</option>
-                        <option value="FL">Florida (FL)</option>
-                        <option value="GA">Georgia (GA)</option>
-                        <option value="HI">Hawaii (HI)</option>
-                        <option value="ID">Idaho (ID)</option>
-                        <option value="IL">Illinois (IL)</option>
-                        <option value="IN">Indiana (IN)</option>
-                        <option value="IA">Iowa (IA)</option>
-                        <option value="KS">Kansas (KS)</option>
-                        <option value="KY">Kentucky (KY)</option>
-                        <option value="LA">Louisiana (LA)</option>
-                        <option value="ME">Maine (ME)</option>
-                        <option value="MD">Maryland (MD)</option>
-                        <option value="MA">Massachusetts (MA)</option>
-                        <option value="MI">Michigan (MI)</option>
-                        <option value="MN">Minnesota (MN)</option>
-                        <option value="MS">Mississippi (MS)</option>
-                        <option value="MO">Missouri (MO)</option>
-                        <option value="MT">Montana (MT)</option>
-                        <option value="NE">Nebraska (NE)</option>
-                        <option value="NV">Nevada (NV)</option>
-                        <option value="NH">New Hampshire (NH)</option>
-                        <option value="NJ">New Jersey (NJ)</option>
-                        <option value="NM">New Mexico (NM)</option>
-                        <option value="NY">New York (NY)</option>
-                        <option value="NC">North Carolina (NC)</option>
-                        <option value="ND">North Dakota (ND)</option>
-                        <option value="OH">Ohio (OH)</option>
-                        <option value="OK">Oklahoma (OK)</option>
-                        <option value="OR">Oregon (OR)</option>
-                        <option value="PA">Pennsylvania (PA)</option>
-                        <option value="RI">Rhode Island (RI)</option>
-                        <option value="SC">South Carolina (SC)</option>
-                        <option value="SD">South Dakota (SD)</option>
-                        <option value="TN">Tennessee (TN)</option>
-                        <option value="TX">Texas (TX)</option>
-                        <option value="UT">Utah (UT)</option>
-                        <option value="VT">Vermont (VT)</option>
-                        <option value="VA">Virginia (VA)</option>
-                        <option value="WA">Washington (WA)</option>
-                        <option value="WV">West Virginia (WV)</option>
-                        <option value="WI">Wisconsin (WI)</option>
-                        <option value="WY">Wyoming (WY)</option>
-                        <option value="DC">District of Columbia (DC)</option>
-                      </select>
+                        + Add Location
+                      </button>
                     </div>
-                    <div>
-                      <label htmlFor="practiceCity" className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('signup.city')} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="practiceCity"
-                        type="text"
-                        required
-                        value={formData.practiceCity}
-                        onChange={(e) => setFormData({ ...formData, practiceCity: e.target.value })}
-                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                        placeholder={t('signup.city')}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="practicePostcode" className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('signup.postcode')} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="practicePostcode"
-                        type="text"
-                        required
-                        value={formData.practicePostcode}
-                        onChange={(e) => setFormData({ ...formData, practicePostcode: e.target.value })}
-                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                        placeholder={t('signup.postcode')}
-                      />
-                    </div>
+
+                    {formData.practiceLocations.map((location, index) => (
+                      <div key={index} className="space-y-4 mb-6 pb-6 border-b border-gray-100 last:border-0 last:pb-0 last:mb-0">
+                        {index > 0 && (
+                          <div className="flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => removeLocation(index)}
+                              className="text-sm text-red-600 hover:text-red-500 flex items-center gap-1"
+                            >
+                              <span className="text-lg">×</span> Remove Location
+                            </button>
+                          </div>
+                        )}
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              {t('signup.state')} <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              required
+                              value={location.state}
+                              onChange={(e) => handleLocationChange(index, 'state', e.target.value)}
+                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                            >
+                              <option value="">Select State</option>
+                              <option value="AL">Alabama (AL)</option>
+                              <option value="AK">Alaska (AK)</option>
+                              <option value="AZ">Arizona (AZ)</option>
+                              <option value="AR">Arkansas (AR)</option>
+                              <option value="CA">California (CA)</option>
+                              <option value="CO">Colorado (CO)</option>
+                              <option value="CT">Connecticut (CT)</option>
+                              <option value="DE">Delaware (DE)</option>
+                              <option value="FL">Florida (FL)</option>
+                              <option value="GA">Georgia (GA)</option>
+                              <option value="HI">Hawaii (HI)</option>
+                              <option value="ID">Idaho (ID)</option>
+                              <option value="IL">Illinois (IL)</option>
+                              <option value="IN">Indiana (IN)</option>
+                              <option value="IA">Iowa (IA)</option>
+                              <option value="KS">Kansas (KS)</option>
+                              <option value="KY">Kentucky (KY)</option>
+                              <option value="LA">Louisiana (LA)</option>
+                              <option value="ME">Maine (ME)</option>
+                              <option value="MD">Maryland (MD)</option>
+                              <option value="MA">Massachusetts (MA)</option>
+                              <option value="MI">Michigan (MI)</option>
+                              <option value="MN">Minnesota (MN)</option>
+                              <option value="MS">Mississippi (MS)</option>
+                              <option value="MO">Missouri (MO)</option>
+                              <option value="MT">Montana (MT)</option>
+                              <option value="NE">Nebraska (NE)</option>
+                              <option value="NV">Nevada (NV)</option>
+                              <option value="NH">New Hampshire (NH)</option>
+                              <option value="NJ">New Jersey (NJ)</option>
+                              <option value="NM">New Mexico (NM)</option>
+                              <option value="NY">New York (NY)</option>
+                              <option value="NC">North Carolina (NC)</option>
+                              <option value="ND">North Dakota (ND)</option>
+                              <option value="OH">Ohio (OH)</option>
+                              <option value="OK">Oklahoma (OK)</option>
+                              <option value="OR">Oregon (OR)</option>
+                              <option value="PA">Pennsylvania (PA)</option>
+                              <option value="RI">Rhode Island (RI)</option>
+                              <option value="SC">South Carolina (SC)</option>
+                              <option value="SD">South Dakota (SD)</option>
+                              <option value="TN">Tennessee (TN)</option>
+                              <option value="TX">Texas (TX)</option>
+                              <option value="UT">Utah (UT)</option>
+                              <option value="VT">Vermont (VT)</option>
+                              <option value="VA">Virginia (VA)</option>
+                              <option value="WA">Washington (WA)</option>
+                              <option value="WV">West Virginia (WV)</option>
+                              <option value="WI">Wisconsin (WI)</option>
+                              <option value="WY">Wyoming (WY)</option>
+                              <option value="DC">District of Columbia (DC)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              {t('signup.city')} <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={location.city}
+                              onChange={(e) => handleLocationChange(index, 'city', e.target.value)}
+                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                              placeholder={t('signup.city')}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              {t('signup.postcode')} <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={location.postcode}
+                              onChange={(e) => handleLocationChange(index, 'postcode', e.target.value)}
+                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                              placeholder={t('signup.postcode')}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Hourly Rate */}

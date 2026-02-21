@@ -5,8 +5,6 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Bell, Settings, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import LanguageSelector from './LanguageSelector'
-import LanguageSwitcher from './LanguageSwitcher'
 import CredentialsBadge from './CredentialsBadge'
 import { translationAPI, therapistAPI } from '@/lib/api'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -59,13 +57,13 @@ export default function Header() {
 
   const handleLanguageChange = async (language: string) => {
     await changeLanguage(language)
-      // Reload page to apply interface translation
-      window.location.reload()
+    // Reload page to apply interface translation
+    window.location.reload()
   }
 
   const detectLanguageFromText = async (text: string) => {
     if (!text || text.trim().length < 10) return
-    
+
     setIsDetectingLanguage(true)
     try {
       const response = await translationAPI.detectLanguage(text)
@@ -120,14 +118,14 @@ export default function Header() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <Link href="/" className="flex items-center">
-                <img 
-                  src="/logorooted 1.png" 
-                  alt="Rooted Voices" 
+                <img
+                  src="/logorooted 1.png"
+                  alt="Rooted Voices"
                   className="w-18 h-20 mr-2"
                 />
                 <span className="text-2xl font-bold text-black">Rooted Voices</span>
               </Link>
-              
+
               {/* Navigation Links for Unauthenticated Users */}
               <nav className="hidden md:flex items-center space-x-6">
                 <Link href="/services" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
@@ -147,7 +145,7 @@ export default function Header() {
                 </Link>
               </nav>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/login" className="text-gray-600 hover:text-black transition-colors">
                 {t('nav.signIn')}
@@ -168,9 +166,9 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center">
-              <img 
-                src="/logorooted 1.png" 
-                alt="Rooted Voices" 
+              <img
+                src="/logorooted 1.png"
+                alt="Rooted Voices"
                 className="w-18 h-20 mr-2"
               />
               <span className="text-2xl font-bold text-black">Rooted Voices</span>
@@ -188,21 +186,18 @@ export default function Header() {
               ))}
             </nav>
           </div>
-          
+
           <div className="flex items-center space-x-4">
-            {/* Language Switcher */}
-            <LanguageSwitcher variant="default" />
-            
             {/* Credentials Badge for Therapists */}
             {user?.role === 'therapist' && therapistCredentials && (
               <CredentialsBadge credentials={therapistCredentials} canSupervise={canSupervise} size="sm" />
             )}
-            
+
             <button className="relative p-2 text-gray-600 hover:text-black transition-colors">
               <Bell className="w-6 h-6" />
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
             </button>
-            
+
             <div className="flex items-center space-x-3">
               <div className={`w-8 h-8 ${getUserColor()} rounded-full flex items-center justify-center`}>
                 <span className="text-white text-sm font-semibold">{getInitials()}</span>
@@ -212,8 +207,8 @@ export default function Header() {
                 <p className="text-xs text-gray-600 capitalize">{user?.role}</p>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={handleLogout}
               className="p-2 text-gray-600 hover:text-black transition-colors"
               title="Logout"

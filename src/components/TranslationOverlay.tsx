@@ -1,8 +1,57 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Languages, X, Volume2, Mic, MicOff } from 'lucide-react'
-import { translationAPI } from '@/lib/api'
+
+// In-memory translation cache to avoid repeated API calls
+const translationCache = new Map<string, string>()
+const MAX_CACHE_SIZE = 200
+
+function getCacheKey(text: string, source: string, target: string): string {
+  return `${source}:${target}:${text.toLowerCase().trim()}`
+}
+
+/**
+ * Translate text using Google Translate free endpoint.
+ * Falls back gracefully on errors.
+ */
+async function translateWithGoogle(
+  text: string,
+  sourceLanguage: string,
+  targetLanguage: string
+): Promise<string> {
+  if (!text || text.trim().length === 0) return text
+  if (sourceLanguage === targetLanguage) return text
+
+  // Check cache first
+  const cacheKey = getCacheKey(text, sourceLanguage, targetLanguage)
+  const cached = translationCache.get(cacheKey)
+  if (cached) return cached
+
+  const sl = sourceLanguage === 'auto' ? 'auto' : sourceLanguage
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${targetLanguage}&dt=t&q=${encodeURIComponent(text)}`
+
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`Google Translate HTTP ${response.status}`)
+  }
+
+  const data = await response.json()
+  // Google returns [[["translated","original",...], ...], ...]
+  const translated = data[0]
+    ?.map((segment: any[]) => segment[0])
+    .filter(Boolean)
+    .join('') || text
+
+  // Store in cache (evict oldest if full)
+  if (translationCache.size >= MAX_CACHE_SIZE) {
+    const firstKey = translationCache.keys().next().value
+    if (firstKey) translationCache.delete(firstKey)
+  }
+  translationCache.set(cacheKey, translated)
+
+  return translated
+}
 
 interface TranslationOverlayProps {
   enabled: boolean
@@ -60,7 +109,7 @@ export default function TranslationOverlay({
 
     const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
     const recognition = new SpeechRecognition()
-    
+
     recognition.continuous = true
     recognition.interimResults = true
     recognition.lang = sourceLanguage === 'auto' ? 'en-US' : getLanguageCode(sourceLanguage)
@@ -98,12 +147,12 @@ export default function TranslationOverlay({
       // Handle final transcript
       if (finalTranscript.trim()) {
         const finalText = finalTranscript.trim()
-        
+
         // Only process if it's different from the last final text
         if (finalText !== lastFinalTextRef.current) {
           lastFinalTextRef.current = finalText
           setCurrentInterim('') // Clear interim when we get final
-          
+
           // Translate the final text
           await translateAndDisplay(finalText)
         }
@@ -113,7 +162,7 @@ export default function TranslationOverlay({
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current)
         }
-        
+
         silenceTimerRef.current = setTimeout(async () => {
           if (interimTranscript.trim() && interimTranscript.trim() !== lastFinalTextRef.current) {
             const textToTranslate = interimTranscript.trim()
@@ -165,7 +214,7 @@ export default function TranslationOverlay({
       clearTimeout(silenceTimerRef.current)
       silenceTimerRef.current = null
     }
-    
+
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop()
@@ -174,7 +223,7 @@ export default function TranslationOverlay({
       }
       recognitionRef.current = null
     }
-    
+
     setIsListening(false)
     setCurrentInterim('')
   }
@@ -184,15 +233,14 @@ export default function TranslationOverlay({
 
     setIsProcessing(true)
     try {
-      const response = await translationAPI.realtime(text, sourceLanguage, targetLanguage)
-      const translation = response.data.data
+      const translated = await translateWithGoogle(text, sourceLanguage, targetLanguage)
 
       setTranslations(prev => [
         ...prev.slice(-19), // Keep last 20 translations
         {
-          original: translation.original || text,
-          translated: translation.translated || translation,
-          timestamp: new Date(translation.timestamp || Date.now()),
+          original: text,
+          translated,
+          timestamp: new Date(),
         },
       ])
     } catch (error) {
@@ -252,9 +300,9 @@ export default function TranslationOverlay({
               <span className="text-xs text-green-600">Listening</span>
             </div>
           )}
-        {isProcessing && (
-          <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
-        )}
+          {isProcessing && (
+            <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
+          )}
         </div>
       </div>
 
@@ -274,24 +322,24 @@ export default function TranslationOverlay({
                 <div className="space-y-1">
                   <div className="text-xs text-gray-500 font-medium uppercase">Original</div>
                   <div className="text-sm text-gray-700 bg-white p-2 rounded border border-gray-200">
-                {translation.original}
-              </div>
+                    {translation.original}
+                  </div>
                 </div>
-                
+
                 {/* Translated Text */}
                 <div className="space-y-1">
                   <div className="text-xs text-indigo-600 font-medium uppercase">Translated</div>
                   <div className="text-sm font-medium text-gray-900 bg-indigo-50 p-2 rounded border border-indigo-200">
-                {translation.translated}
+                    {translation.translated}
                   </div>
                 </div>
-                
+
                 <div className="text-xs text-gray-400 pt-1 border-t border-gray-200">
                   {translation.timestamp.toLocaleTimeString()}
                 </div>
               </div>
             ))}
-            
+
             {/* Current Interim Result (Real-time speech-to-text) */}
             {currentInterim && (
               <div className="space-y-2 p-2 bg-yellow-50 rounded-lg border border-yellow-200 animate-pulse">

@@ -33,16 +33,19 @@ function PricingContent() {
   const [loadingPricing, setLoadingPricing] = useState(true)
   const [intakeCompleted, setIntakeCompleted] = useState(false)
   const [checkingIntake, setCheckingIntake] = useState(true)
+  const [evaluationCredit, setEvaluationCredit] = useState<any>(null)
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslation()
+  const recommendedTier = searchParams.get('recommended') || ''
 
   useEffect(() => {
     fetchPricing()
     if (isAuthenticated && user?.role === 'client') {
       checkIntakeStatus()
       fetchCurrentSubscription()
+      fetchEvaluationCredit()
     } else {
       setCheckingIntake(false)
     }
@@ -106,7 +109,16 @@ function PricingContent() {
       return () => clearInterval(pollInterval)
     } else if (canceled === 'true') {
       setSuccessMessage('Payment was canceled. You can try again anytime.')
-      // Remove canceled parameter from URL after showing message
+      setTimeout(() => {
+        router.replace('/pricing', { scroll: false })
+      }, 3000)
+    }
+
+    // Handle upgrade success
+    const upgradeSuccess = searchParams.get('upgrade_success')
+    if (upgradeSuccess === 'true') {
+      setSuccessMessage('Upgrade successful! Your new subscription is being activated...')
+      fetchCurrentSubscription()
       setTimeout(() => {
         router.replace('/pricing', { scroll: false })
       }, 3000)
@@ -265,6 +277,15 @@ function PricingContent() {
     }
   }
 
+  const fetchEvaluationCredit = async () => {
+    try {
+      const response = await subscriptionAPI.getEvaluationCredit()
+      setEvaluationCredit(response.data.data)
+    } catch (error) {
+      console.error('Failed to fetch evaluation credit:', error)
+    }
+  }
+
   const handleSelectPlan = async (tierId: string) => {
     if (!isAuthenticated) {
       // Redirect to signup with selected plan
@@ -283,30 +304,28 @@ function PricingContent() {
     setSuccessMessage('')
 
     try {
-      // Create Stripe checkout session
-      const stripeResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/stripe/create-checkout-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ tier: tierId }),
-      })
+      let stripeData: any;
 
-      const stripeData = await stripeResponse.json()
+      // If user already has an active subscription, use upgrade flow
+      if (currentSubscription && currentSubscription.tier !== tierId) {
+        const upgradeResponse = await stripeAPI.createUpgradeCheckout(tierId)
+        stripeData = upgradeResponse.data
+      } else {
+        // Create Stripe checkout session
+        const stripeResponse = await stripeAPI.createCheckoutSession(tierId)
+        stripeData = stripeResponse.data
+      }
 
       if (stripeData.success && stripeData.data.url) {
-        // Store session ID for later verification
         if (stripeData.data.sessionId) {
           localStorage.setItem('lastCheckoutSessionId', stripeData.data.sessionId)
         }
-        // Redirect to Stripe checkout
         window.location.href = stripeData.data.url
       } else {
         throw new Error(stripeData.message || 'Failed to create checkout session')
       }
     } catch (error: any) {
-      alert(error.message || 'Failed to start payment process')
+      alert(error.response?.data?.message || error.message || 'Failed to start payment process')
       setIsLoading(false)
     }
   }
@@ -455,7 +474,50 @@ function PricingContent() {
             <span className="text-blue-800 font-medium">
               You're currently on the <strong>{currentSubscription.tierName}</strong>
             </span>
-            <p className="text-sm text-blue-600 mt-1">Select a different plan below to switch</p>
+            <p className="text-sm text-blue-600 mt-1">Select a different plan below to upgrade</p>
+          </motion.div>
+        )}
+
+        {/* Recommended Tier Banner */}
+        {recommendedTier && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-6 bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-xl text-center"
+          >
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Star className="w-6 h-6 text-emerald-600" />
+              <span className="text-xl font-bold text-emerald-800">Therapist Recommendation</span>
+            </div>
+            <p className="text-emerald-700">
+              Based on your evaluation, your therapist recommends the <strong className="capitalize">{recommendedTier}</strong> tier.
+            </p>
+          </motion.div>
+        )}
+
+        {/* Evaluation Credit Banner */}
+        {evaluationCredit && evaluationCredit.status === 'available' && evaluationCredit.amount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-5 bg-yellow-50 border-2 border-yellow-300 rounded-xl text-center"
+          >
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="text-2xl">🎁</span>
+              <span className="text-lg font-bold text-yellow-900">${evaluationCredit.amount} Evaluation Credit Available!</span>
+            </div>
+            <p className="text-sm text-yellow-700">Your evaluation fee will be automatically deducted from your first subscription payment.</p>
+          </motion.div>
+        )}
+        {evaluationCredit && evaluationCredit.status === 'applied' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg text-center"
+          >
+            <span className="text-green-800 font-medium">
+              ✅ Your ${evaluationCredit.amount} evaluation credit has been applied to your subscription.
+            </span>
           </motion.div>
         )}
 
@@ -492,10 +554,18 @@ function PricingContent() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`bg-white p-8 rounded-2xl premium-shadow relative ${tier.color} ${tier.popular ? 'ring-2 ring-black' : ''
+                className={`bg-white p-8 rounded-2xl premium-shadow relative ${tier.color} ${recommendedTier === tier.id ? 'ring-2 ring-emerald-500 border-emerald-500' :
+                    tier.popular ? 'ring-2 ring-black' : ''
                   }`}
               >
-                {tier.popular && (
+                {recommendedTier === tier.id && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-emerald-600 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                      <Star className="w-3 h-3" /> Recommended for You
+                    </span>
+                  </div>
+                )}
+                {tier.popular && !recommendedTier && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-semibold">
                       {t('pricing.mostPopular')}
@@ -511,6 +581,11 @@ function PricingContent() {
                     <span className="text-lg text-gray-600">{tier.period}</span>
                   </div>
                   <p className="text-sm text-gray-500 mb-2">{tier.billing}</p>
+                  {evaluationCredit && evaluationCredit.status === 'available' && evaluationCredit.amount > 0 && tier.id !== 'evaluation' && tier.id !== 'bloom' && (
+                    <p className="text-sm font-semibold text-green-600">
+                      After credit: ${Math.max(0, parseInt(tier.price.replace('$', '')) - evaluationCredit.amount)}{tier.period} first month
+                    </p>
+                  )}
                   {tier.sessionsPerMonth > 0 && (
                     <p className="text-sm font-semibold text-black mb-2">
                       {tier.sessionsPerMonth} {tier.sessionsPerMonth === 1 ? 'session' : 'sessions'} per month ({tier.duration} min each)
@@ -549,7 +624,9 @@ function PricingContent() {
                         : (isAuthenticated && user?.role === 'client' && !intakeCompleted)
                           ? 'Complete Intake First'
                           : isAuthenticated
-                            ? (tier.id === 'bloom' ? 'Purchase & Schedule Evaluation' : 'Schedule Evaluation')
+                            ? currentSubscription
+                              ? `Upgrade to ${tier.name}`
+                              : (tier.id === 'bloom' ? 'Purchase & Schedule Evaluation' : 'Subscribe')
                             : t('nav.getStarted')}
                   </button>
                 )}

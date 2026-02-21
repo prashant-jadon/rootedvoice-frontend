@@ -118,8 +118,26 @@ export const sessionAPI = {
 
 export const evaluationAPI = {
   getMyEvaluation: () => api.get('/evaluations/my-evaluation'),
-  submit: (id: string, answers: any) => api.post(`/evaluations/${id}/submit`, { answers }),
-  get: (id: string) => api.get(`/evaluations/${id}`)
+  book: () => api.post('/evaluations/book'),
+  paymentComplete: (data: { evaluationId: string; stripeCheckoutSessionId: string; stripePaymentIntentId?: string }) =>
+    api.post('/evaluations/payment-complete', data),
+  getAvailableTherapists: () => api.get('/evaluations/available-therapists'),
+  selectTherapist: (data: { evaluationId: string; therapistId: string; scheduledDate: string; scheduledTime: string }) =>
+    api.post('/evaluations/select-therapist', data),
+  startReview: (id: string) => api.post(`/evaluations/${id}/start-review`),
+  therapistReady: (id: string, data?: { therapistNotes?: string }) =>
+    api.post(`/evaluations/${id}/therapist-ready`, data),
+  startMeeting: (id: string) => api.post(`/evaluations/${id}/start-meeting`),
+  complete: (id: string, data: { subscriptionTier?: string; notes?: string; resourceIds?: string[]; grantResourceAccess?: boolean }) =>
+    api.post(`/evaluations/${id}/complete`, data),
+  cancel: (id: string, reason?: string) =>
+    api.post(`/evaluations/${id}/cancel`, { reason }),
+  get: (id: string) => api.get(`/evaluations/${id}`),
+  getDetails: (id: string) => api.get(`/evaluations/${id}/details`),
+  getAll: (params?: any) => api.get('/evaluations', { params }),
+  getTherapistAssignments: () => api.get('/evaluations/my-assignments'),
+  adminAssignTherapist: (id: string, therapistId: string) =>
+    api.put(`/evaluations/${id}/assign-therapist`, { therapistId }),
 };
 
 export const subscriptionAPI = {
@@ -130,11 +148,16 @@ export const subscriptionAPI = {
   cancel: (reason?: string) =>
     api.delete('/subscriptions/cancel', { data: { reason } }),
   getHistory: () => api.get('/subscriptions/history'),
+  getEvaluationCredit: () => api.get('/subscriptions/evaluation-credit'),
 };
 
 export const stripeAPI = {
   getConfig: () => api.get('/stripe/config'),
   createCheckoutSession: (tier: string) => api.post('/stripe/create-checkout-session', { tier }),
+  createEvaluationCheckout: (evaluationId: string) => api.post('/stripe/create-evaluation-checkout', { evaluationId }),
+  verifyEvaluationPayment: (sessionId: string, evaluationId: string) =>
+    api.post('/stripe/verify-evaluation-payment', { sessionId, evaluationId }),
+  createUpgradeCheckout: (newTier: string) => api.post('/stripe/create-upgrade-checkout', { newTier }),
   createPaymentIntent: (sessionId: string) => api.post('/stripe/create-payment-intent', { sessionId }),
   createCancellationPayment: (sessionId: string) => api.post('/stripe/create-cancellation-payment', { sessionId }),
   confirmPayment: (paymentIntentId: string) => api.post('/stripe/confirm-payment', { paymentIntentId }),

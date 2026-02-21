@@ -13,7 +13,10 @@ import {
   MessageCircle,
   FileText,
   Target,
-  Activity
+  Activity,
+  CreditCard,
+  DollarSign,
+  Star
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
@@ -35,6 +38,7 @@ export default function ClientDashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [showConversionModal, setShowConversionModal] = useState(false)
   const [pendingEvaluation, setPendingEvaluation] = useState<any>(null)
+  const [evaluationCredit, setEvaluationCredit] = useState<any>(null)
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const t = useTranslation()
@@ -55,15 +59,34 @@ export default function ClientDashboardPage() {
 
   const fetchClientData = async () => {
     try {
-      // Fetch pending evaluation
+      // Fetch pending evaluation and force redirect if not completed
       try {
         const evalRes = await evaluationAPI.getMyEvaluation()
         const evalData = evalRes.data.data
-        if (evalData && evalData.status !== 'completed' && evalData.status !== 'reviewed') {
-          setPendingEvaluation(evalData)
+        const doneStatuses = ['completed', 'recommendations_sent']
+
+        if (!evalData || !doneStatuses.includes(evalData.status)) {
+          // Force users to evaluation page until completely finished
+          router.push('/client-evaluation')
+          return
+        }
+
+        // Save the evaluation data to state so we can display a link to recommendations
+        setPendingEvaluation(evalData)
+      } catch (error) {
+        console.log('Could not fetch evaluation status - redirecting to evaluation')
+        router.push('/client-evaluation')
+        return
+      }
+
+      // Fetch evaluation credit
+      try {
+        const creditRes = await subscriptionAPI.getEvaluationCredit()
+        if (creditRes.data.data) {
+          setEvaluationCredit(creditRes.data.data)
         }
       } catch (error) {
-        console.log('Could not fetch evaluation status')
+        console.log('Could not fetch evaluation credit')
       }
 
       // Fetch assignments
@@ -282,7 +305,7 @@ export default function ClientDashboardPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Pending Evaluation Banner */}
-          {pendingEvaluation && (
+          {pendingEvaluation && !['completed', 'recommendations_sent'].includes(pendingEvaluation.status) && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -294,17 +317,86 @@ export default function ClientDashboardPage() {
                     <FileText className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-amber-900">Complete Your Evaluation</h3>
+                    <h3 className="text-lg font-semibold text-amber-900">
+                      {pendingEvaluation.status === 'pending_payment' ? 'Complete Your Evaluation Payment' :
+                        pendingEvaluation.status === 'paid' ? 'Select a Therapist' :
+                          ['therapist_assigned', 'therapist_reviewing'].includes(pendingEvaluation.status) ? 'Therapist Reviewing' :
+                            ['ready_for_meeting', 'meeting_scheduled'].includes(pendingEvaluation.status) ? 'Evaluation Meeting Ready' :
+                              pendingEvaluation.status === 'in_progress' ? 'Evaluation In Progress' :
+                                'Complete Your Evaluation'}
+                    </h3>
                     <p className="text-amber-700 text-sm">
-                      Please fill out your initial evaluation questionnaire before booking sessions.
+                      {pendingEvaluation.status === 'pending_payment' ? 'Pay the $195 evaluation fee to continue your diagnostic assessment.' :
+                        pendingEvaluation.status === 'paid' ? 'Choose a speech-language pathologist and schedule your evaluation meeting.' :
+                          ['therapist_assigned', 'therapist_reviewing'].includes(pendingEvaluation.status) ? 'Your therapist is reviewing your intake information. You\'ll hear back shortly.' :
+                            ['ready_for_meeting', 'meeting_scheduled'].includes(pendingEvaluation.status) ? 'Your evaluation meeting is ready. Join at the scheduled time.' :
+                              pendingEvaluation.status === 'in_progress' ? 'Your evaluation is in progress. Recommendations will follow.' :
+                                'Continue setting up your diagnostic evaluation.'}
                     </p>
                   </div>
                 </div>
                 <Link
-                  href="/client-evaluation"
+                  href={pendingEvaluation.status === 'pending_payment' ? '/evaluation-booking' : '/client-evaluation'}
                   className="px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm whitespace-nowrap"
                 >
-                  Fill Evaluation →
+                  {pendingEvaluation.status === 'pending_payment' ? 'Complete Payment →' :
+                    pendingEvaluation.status === 'paid' ? 'Select Therapist →' :
+                      ['ready_for_meeting', 'meeting_scheduled'].includes(pendingEvaluation.status) ? 'Join Meeting →' :
+                        'View Status →'}
+                </Link>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Evaluation Credit Banner */}
+          {evaluationCredit && evaluationCredit.status === 'available' && evaluationCredit.amount > 0 && !subscription && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <DollarSign className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-green-800">${evaluationCredit.amount} Evaluation Credit Available</p>
+                    <p className="text-green-600 text-xs">Applied automatically to your first subscription purchase or upgrade</p>
+                  </div>
+                </div>
+                <Link
+                  href="/pricing"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+                >
+                  View Plans
+                </Link>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Evaluation Recommendations Banner */}
+          {pendingEvaluation && ['completed', 'recommendations_sent'].includes(pendingEvaluation.status) && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-blue-900">Your Evaluation is Complete!</p>
+                    <p className="text-blue-700 text-sm">Your therapist has written feedback and recommendations for your therapy journey.</p>
+                  </div>
+                </div>
+                <Link
+                  href="/client-evaluation"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm flex items-center gap-2 whitespace-nowrap"
+                >
+                  <Star className="w-4 h-4" /> View Feedback
                 </Link>
               </div>
             </motion.div>

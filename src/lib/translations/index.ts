@@ -364,6 +364,16 @@ export const translations = {
       clientManagementTools: 'Client management tools',
       automatedBilling: 'Automated billing',
       resourceLibrary: 'Resource library',
+      // Banking Information
+      bankingInformation: 'Banking Information',
+      bankName: 'Bank Name',
+      enterBankName: 'Enter bank name',
+      accountName: 'Account Name',
+      enterAccountName: 'Enter account name',
+      routingNumber: 'Routing Number',
+      enterRoutingNumber: 'Enter routing number',
+      accountNumber: 'Account Number',
+      enterAccountNumber: 'Enter account number',
       // Validation errors
       passwordsDoNotMatch: 'Passwords do not match',
       passwordMinLength: 'Password must be at least 6 characters',

@@ -77,13 +77,14 @@ function BookSessionContent() {
     try {
       setIsLoading(true)
 
-      // Check evaluation status — must be 'reviewed' by admin to book
+      // Check evaluation status — must be completed/recommendations_sent to book
       try {
         const evalRes = await evaluationAPI.getMyEvaluation()
         const evalData = evalRes.data.data
         if (evalData) {
           setEvaluationStatus(evalData.status)
-          if (evalData.status !== 'reviewed') {
+          const allowedStatuses = ['completed', 'recommendations_sent']
+          if (!allowedStatuses.includes(evalData.status)) {
             setEvaluationBlocked(true)
           }
         } else {
@@ -333,6 +334,34 @@ function BookSessionContent() {
   }
 
   if (evaluationBlocked) {
+    const getEvalMessage = () => {
+      switch (evaluationStatus) {
+        case 'none':
+          return 'You need to book and complete a diagnostic evaluation before booking ongoing sessions.'
+        case 'pending_payment':
+          return 'Please complete the $195 evaluation payment to proceed with your diagnostic evaluation.'
+        case 'paid':
+          return 'Your evaluation payment is confirmed. Please select a therapist and schedule your evaluation meeting.'
+        case 'therapist_assigned':
+        case 'therapist_reviewing':
+          return 'Your therapist is currently reviewing your intake information. You\'ll be able to schedule your evaluation meeting soon.'
+        case 'ready_for_meeting':
+        case 'meeting_scheduled':
+          return 'Your evaluation meeting is scheduled. Please complete your evaluation before booking regular sessions.'
+        case 'in_progress':
+          return 'Your evaluation is currently in progress. You\'ll be able to book sessions once the evaluation is complete.'
+        default:
+          return 'Please complete your diagnostic evaluation before booking regular sessions.'
+      }
+    }
+
+    const getEvalCTA = () => {
+      if (evaluationStatus === 'none') return { href: '/evaluation-booking', label: 'Book Evaluation' }
+      return { href: '/client-evaluation', label: 'View Evaluation Status' }
+    }
+
+    const cta = getEvalCTA()
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <motion.div
@@ -344,28 +373,14 @@ function BookSessionContent() {
             <Calendar className="w-8 h-8 text-amber-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Evaluation Required</h2>
-          {evaluationStatus === 'none' || evaluationStatus === 'pending_creation' ? (
-            <p className="text-gray-600 mb-6">
-              You need to complete your initial evaluation questionnaire before booking sessions.
-            </p>
-          ) : evaluationStatus === 'completed' ? (
-            <p className="text-gray-600 mb-6">
-              Your evaluation has been submitted and is being reviewed by our admin team. You'll be able to book sessions once it's approved.
-            </p>
-          ) : (
-            <p className="text-gray-600 mb-6">
-              Please complete your evaluation questionnaire first. It helps us match you with the right therapy approach.
-            </p>
-          )}
+          <p className="text-gray-600 mb-6">{getEvalMessage()}</p>
           <div className="space-y-3">
-            {evaluationStatus !== 'completed' && (
-              <Link
-                href="/client-evaluation"
-                className="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
-              >
-                Go to Evaluation
-              </Link>
-            )}
+            <Link
+              href={cta.href}
+              className="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+            >
+              {cta.label}
+            </Link>
             <Link
               href="/client-dashboard"
               className="block w-full py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"

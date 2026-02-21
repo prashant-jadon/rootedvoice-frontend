@@ -2,12 +2,12 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { 
-  User, 
-  FileText, 
-  MapPin, 
-  Shield, 
-  CheckCircle, 
+import {
+  User,
+  FileText,
+  MapPin,
+  Shield,
+  CheckCircle,
   AlertCircle,
   ArrowRight,
   ArrowLeft
@@ -55,13 +55,13 @@ export default function ClientIntakePage() {
       const response = await clientAPI.getIntakeStatus()
       const status = response.data.data
       setIntakeStatus(status)
-      
+
       if (status.intakeCompleted) {
         // Intake already completed, redirect to dashboard
-        router.push('/client-dashboard')
+        router.push('/client-evaluation')
         return
       }
-      
+
       // If intake exists but not completed, populate form
       if (status.intake) {
         setFormData({
@@ -138,7 +138,7 @@ export default function ClientIntakePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
@@ -146,7 +146,7 @@ export default function ClientIntakePage() {
     setIsLoading(true)
     try {
       await clientAPI.submitIntake(formData)
-      router.push('/client-dashboard')
+      router.push('/client-evaluation')
     } catch (error: any) {
       console.error('Failed to submit intake:', error)
       setErrors({
@@ -175,9 +175,9 @@ export default function ClientIntakePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center">
-              <img 
-                src="/logorooted 1.png" 
-                alt="Rooted Voices" 
+              <img
+                src="/logorooted 1.png"
+                alt="Rooted Voices"
                 className="h-12"
               />
             </Link>
@@ -221,11 +221,10 @@ export default function ClientIntakePage() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, clientType: 'child' })}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    formData.clientType === 'child'
+                  className={`p-4 rounded-lg border-2 transition-all ${formData.clientType === 'child'
                       ? 'border-black bg-black text-white'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
+                    }`}
                 >
                   <div className="text-2xl mb-2">👶</div>
                   <div className="font-semibold">Child</div>
@@ -234,11 +233,10 @@ export default function ClientIntakePage() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, clientType: 'adult' })}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    formData.clientType === 'adult'
+                  className={`p-4 rounded-lg border-2 transition-all ${formData.clientType === 'adult'
                       ? 'border-black bg-black text-white'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
+                    }`}
                 >
                   <div className="text-2xl mb-2">👤</div>
                   <div className="font-semibold">Adult</div>
@@ -260,9 +258,8 @@ export default function ClientIntakePage() {
                 rows={5}
                 value={formData.primaryConcerns}
                 onChange={(e) => setFormData({ ...formData, primaryConcerns: e.target.value })}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black ${
-                  errors.primaryConcerns ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black ${errors.primaryConcerns ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 placeholder="Please describe your main concerns, what you hope to achieve, and any specific challenges you or your child are experiencing..."
               />
               {errors.primaryConcerns && (
@@ -297,9 +294,8 @@ export default function ClientIntakePage() {
                 id="stateOfResidence"
                 value={formData.stateOfResidence}
                 onChange={(e) => setFormData({ ...formData, stateOfResidence: e.target.value })}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black ${
-                  errors.stateOfResidence ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black ${errors.stateOfResidence ? 'border-red-500' : 'border-gray-300'
+                  }`}
               >
                 <option value="">Select State</option>
                 <option value="AL">Alabama (AL)</option>
@@ -462,9 +458,8 @@ export default function ClientIntakePage() {
                       ...formData,
                       telehealthConsent: { ...formData.telehealthConsent, relationshipToClient: e.target.value }
                     })}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black ${
-                      errors.relationshipToClient ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black ${errors.relationshipToClient ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select Relationship</option>
                     <option value="Self">Self</option>
@@ -490,9 +485,8 @@ export default function ClientIntakePage() {
                       ...formData,
                       telehealthConsent: { ...formData.telehealthConsent, consentSignature: e.target.value }
                     })}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black ${
-                      errors.consentSignature ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black ${errors.consentSignature ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Enter your full name"
                   />
                   {errors.consentSignature && (
