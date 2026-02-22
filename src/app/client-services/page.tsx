@@ -2,16 +2,18 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { 
-  Baby, 
-  User, 
-  ArrowRight, 
+import {
+  Baby,
+  User,
+  ArrowRight,
   CheckCircle,
   Calendar,
   MessageCircle,
   Heart,
   Award,
-  Shield
+  Shield,
+  Globe,
+  Target
 } from 'lucide-react'
 import Link from 'next/link'
 import { useTranslation } from '@/hooks/useTranslation'
@@ -95,7 +97,7 @@ export default function ClientServicesPage() {
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">{t('clientServices.title')}</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/services" className="text-gray-600 hover:text-black transition-colors">
                 All Services
@@ -193,23 +195,38 @@ export default function ClientServicesPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mt-16 bg-white rounded-2xl premium-shadow p-8"
             >
-              <h2 className="text-2xl font-bold text-black text-center mb-8">Why Choose Rooted Voices?</h2>
-              <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-black mb-6">Why Choose Rooted Voices?</h2>
+                <div className="max-w-3xl mx-auto space-y-4 text-lg text-gray-600">
+                  <p>
+                    Rooted Voices was founded by a practicing Speech-Language Pathologist who understands firsthand the gaps in access, representation, and quality care within our field.
+                  </p>
+                  <p>
+                    We combine evidence-based practice with culturally responsive, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized and clinically sound therapy.
+                  </p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {[
                   {
-                    icon: <Shield className="w-8 h-8" />,
-                    title: t('clientServices.hipaaCompliant'),
-                    description: t('clientServices.secureConfidential')
-                  },
-                  {
                     icon: <Award className="w-8 h-8" />,
-                    title: t('clientServices.licensedProfessionals'),
-                    description: t('clientServices.certifiedExperienced')
+                    title: 'Clinician-Founded & Led',
+                    description: 'Built by licensed SLPs who actively practice in clinical settings. Our structure prioritizes clinical integrity over volume-driven care.'
                   },
                   {
-                    icon: <Heart className="w-8 h-8" />,
-                    title: t('clientServices.personalizedCare'),
-                    description: t('clientServices.tailoredTreatment')
+                    icon: <Globe className="w-8 h-8" />,
+                    title: 'Multilingual & Accessible',
+                    description: 'Support for bilingual providers, real-time transcription during sessions, and a language-responsive platform designed to serve diverse populations.'
+                  },
+                  {
+                    icon: <Target className="w-8 h-8" />,
+                    title: 'Evaluation-First Care Model',
+                    description: 'Therapy begins with appropriate diagnostic evaluation and clearly defined goals to ensure measurable progress.'
+                  },
+                  {
+                    icon: <Shield className="w-8 h-8" />,
+                    title: 'HIPAA Compliant',
+                    description: 'Secure, encrypted sessions that meet healthcare privacy standards.'
                   }
                 ].map((feature, index) => (
                   <div key={index} className="text-center">
@@ -217,7 +234,7 @@ export default function ClientServicesPage() {
                       {feature.icon}
                     </div>
                     <h3 className="text-lg font-semibold text-black mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 text-sm">{feature.description}</p>
+                    <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
                   </div>
                 ))}
               </div>
@@ -227,7 +244,7 @@ export default function ClientServicesPage() {
           /* Services Detail Screen */
           <div>
             <div className="mb-8 flex items-center justify-between">
-              <button 
+              <button
                 onClick={() => setSelectedType(null)}
                 className="inline-flex items-center text-gray-600 hover:text-black transition-colors group"
               >
@@ -258,7 +275,7 @@ export default function ClientServicesPage() {
                 {selectedType === 'pediatric' ? 'Pediatric' : 'Adult'} Services
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {selectedType === 'pediatric' 
+                {selectedType === 'pediatric'
                   ? 'Comprehensive speech and language therapy services for pediatric patients at every developmental stage'
                   : 'Specialized therapy services for adults addressing communication, voice, and swallowing needs'
                 }
@@ -294,20 +311,27 @@ export default function ClientServicesPage() {
               transition={{ duration: 0.6 }}
               className="mt-12 text-center"
             >
-              <h2 className="text-2xl font-bold text-black mb-4">Ready to Get Started?</h2>
-              <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                Find a therapist specializing in {selectedType === 'pediatric' ? 'pediatric' : 'adult'} services 
-                and schedule your free consultation today.
-              </p>
+              <h2 className="text-3xl font-bold text-black mb-6">Start with Care That's Built Differently</h2>
+              <div className="max-w-3xl mx-auto space-y-4 text-lg text-gray-600 mb-8">
+                <p>
+                  At Rooted Voices, therapy is structured, intentional, and led by licensed clinicians who prioritize clinical integrity over volume.
+                </p>
+                <p>
+                  Whether you're seeking services for yourself or a loved one, every plan of care begins with an appropriate evaluation, clearly defined goals, and measurable outcomes.
+                </p>
+                <p className="font-medium text-black pt-4">
+                  This is not quick-access therapy.<br />
+                  This is care designed to create lasting communication change.
+                </p>
+              </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/meet-our-therapists" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group justify-center">
-                  <MessageCircle className="w-5 h-5 mr-2" />
                   Find a Therapist
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link href="/pricing" className="border border-gray-300 text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 mr-2" />
-                  View Pricing
+                <Link href="/pricing" className="border border-gray-300 text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300 flex items-center group justify-center">
+                  View Services & Pricing
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </motion.div>

@@ -334,28 +334,38 @@ export default function WhoWeArePage() {
           transition={{ duration: 0.6 }}
           className="bg-white rounded-2xl premium-shadow p-8 mb-20"
         >
-          <h2 className="text-3xl font-bold text-black text-center mb-8">Why Choose Rooted Voices?</h2>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-black mb-6">Why Choose Rooted Voices?</h2>
+            <div className="max-w-3xl mx-auto space-y-4 text-lg text-gray-600">
+              <p>
+                Rooted Voices was founded by a practicing Speech-Language Pathologist who understands firsthand the gaps in access, representation, and quality care within our field.
+              </p>
+              <p>
+                We combine evidence-based practice with culturally responsive, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized and clinically sound therapy.
+              </p>
+            </div>
+          </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                icon: <Shield className="w-8 h-8" />,
-                title: 'HIPAA Compliant',
-                description: 'Your privacy and data security are our top priorities.'
+                icon: <Award className="w-8 h-8" />,
+                title: 'Clinician-Founded & Led',
+                description: 'Built by licensed SLPs who actively practice in clinical settings. Our structure prioritizes clinical integrity over volume-driven care.'
               },
               {
                 icon: <Globe className="w-8 h-8" />,
-                title: 'Accessible Anywhere',
-                description: 'Receive therapy from the comfort of your own home.'
+                title: 'Multilingual & Accessible',
+                description: 'Support for bilingual providers, real-time transcription during sessions, and a language-responsive platform designed to serve diverse populations.'
               },
               {
-                icon: <Clock className="w-8 h-8" />,
-                title: 'Flexible Scheduling',
-                description: 'Appointments that fit your busy lifestyle.'
+                icon: <Target className="w-8 h-8" />,
+                title: 'Evaluation-First Care Model',
+                description: 'Therapy begins with appropriate diagnostic evaluation and clearly defined goals to ensure measurable progress.'
               },
               {
-                icon: <Star className="w-8 h-8" />,
-                title: 'Proven Results',
-                description: 'Evidence-based approaches with measurable outcomes.'
+                icon: <Shield className="w-8 h-8" />,
+                title: 'HIPAA Compliant',
+                description: 'Secure, encrypted sessions that meet healthcare privacy standards.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center">
@@ -363,7 +373,7 @@ export default function WhoWeArePage() {
                   {feature.icon}
                 </div>
                 <h3 className="text-lg font-semibold text-black mb-2">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -395,21 +405,29 @@ export default function WhoWeArePage() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center"
+          className="mt-16 text-center"
         >
-          <h2 className="text-3xl font-bold text-black mb-4">Ready to Start Your Journey?</h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Take the first step toward better communication.
-          </p>
+          <h2 className="text-3xl font-bold text-black mb-6">Start with Care That's Built Differently</h2>
+          <div className="max-w-3xl mx-auto space-y-4 text-lg text-gray-600 mb-8">
+            <p>
+              At Rooted Voices, therapy is structured, intentional, and led by licensed clinicians who prioritize clinical integrity over volume.
+            </p>
+            <p>
+              Whether you're seeking services for yourself or a loved one, every plan of care begins with an appropriate evaluation, clearly defined goals, and measurable outcomes.
+            </p>
+            <p className="font-medium text-black pt-4">
+              This is not quick-access therapy.<br />
+              This is care designed to create lasting communication change.
+            </p>
+          </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/meet-our-therapists" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Meet Our Therapists
+              Find a Therapist
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link href="/services" className="border border-gray-300 text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300 flex items-center">
-              <Calendar className="w-5 h-5 mr-2" />
-              View Our Services
+            <Link href="/pricing" className="border border-gray-300 text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300 flex items-center group">
+              View Services & Pricing
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </motion.div>

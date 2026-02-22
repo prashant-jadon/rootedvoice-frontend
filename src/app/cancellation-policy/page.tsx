@@ -1,12 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { 
-  Clock, 
-  AlertCircle, 
-  CheckCircle, 
-  Phone, 
-  Mail, 
+import {
+  Clock,
+  AlertCircle,
+  CheckCircle,
+  Phone,
+  Mail,
   Calendar,
   DollarSign,
   Shield,
@@ -101,7 +101,7 @@ export default function CancellationPolicyPage() {
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">Cancellation Policy</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/faq" className="text-gray-600 hover:text-black transition-colors">
                 FAQ
@@ -126,12 +126,12 @@ export default function CancellationPolicyPage() {
             {t('cancellationPolicy.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            We understand that life can be unpredictable. Our cancellation policy is designed 
+            We understand that life can be unpredictable. Our cancellation policy is designed
             to be fair to both our clients and therapists while maintaining consistent care.
           </p>
           <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
             <Shield className="w-4 h-4" />
-            <span>Last updated: December 2024</span>
+            <span>Last updated: December 2026</span>
           </div>
         </motion.div>
 
@@ -184,7 +184,7 @@ export default function CancellationPolicyPage() {
                 </div>
                 <h2 className="text-2xl font-bold text-black">{section.title}</h2>
               </div>
-              
+
               <ul className="space-y-3">
                 {section.content.map((item, itemIndex) => (
                   <li key={itemIndex} className="flex items-start space-x-3">
@@ -226,7 +226,7 @@ export default function CancellationPolicyPage() {
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             {t('cancellationPolicy.questionsDesc')}
           </p>
-          
+
           <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
@@ -236,7 +236,7 @@ export default function CancellationPolicyPage() {
               <p className="text-gray-600 text-sm">{t('cancellationPolicy.phoneNumber')}</p>
               <p className="text-gray-500 text-xs">{t('cancellationPolicy.officeHours')}</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Mail className="w-6 h-6 text-black" />
@@ -245,7 +245,7 @@ export default function CancellationPolicyPage() {
               <p className="text-gray-600 text-sm">{t('cancellationPolicy.emailAddress')}</p>
               <p className="text-gray-500 text-xs">{t('cancellationPolicy.responseTime')}</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Calendar className="w-6 h-6 text-black" />
@@ -264,8 +264,8 @@ export default function CancellationPolicyPage() {
           transition={{ duration: 0.6 }}
           className="mt-12 text-center"
         >
-          <Link 
-            href="/faq" 
+          <Link
+            href="/faq"
             className="inline-flex items-center text-black hover:text-gray-600 transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />

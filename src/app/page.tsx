@@ -779,7 +779,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div className="border-t border-[#F7EBD3]/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-[#F7EBD3]/30">
-            <span>© 2024 Rooted Voices. All rights reserved.</span>
+            <span>© 2026 Rooted Voices. All rights reserved.</span>
             <span>Secure · HIPAA Compliant · Clinician-Trusted</span>
           </div>
         </div>

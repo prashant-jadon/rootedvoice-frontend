@@ -5,11 +5,11 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { forumAPI } from '@/lib/api'
-import { 
-  Users, 
-  MessageCircle, 
-  Heart, 
-  Share, 
+import {
+  Users,
+  MessageCircle,
+  Heart,
+  Share,
   Bookmark,
   TrendingUp,
   Award,
@@ -59,7 +59,7 @@ export default function CommunityPage() {
       const params: any = {}
       if (selectedCategory !== 'all') params.category = selectedCategory
       if (searchQuery) params.search = searchQuery
-      
+
       const response = await forumAPI.getPosts(params)
       setPosts(response.data.data || [])
     } catch (error) {
@@ -143,14 +143,14 @@ export default function CommunityPage() {
   const upcomingTraining = [
     {
       title: 'Advanced AAC Strategies',
-      date: 'Jan 25, 2024',
+      date: 'Jan 25, 2026',
       time: '2:00 PM EST',
       instructor: 'Dr. Sarah Chen',
       attendees: 45
     },
     {
       title: 'Teletherapy Best Practices',
-      date: 'Feb 1, 2024',
+      date: 'Feb 1, 2026',
       time: '1:00 PM EST',
       instructor: 'Michael Rodriguez',
       attendees: 67
@@ -165,9 +165,9 @@ export default function CommunityPage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard" className="flex items-center">
-                <img 
-                  src="/logorooted 1.png" 
-                  alt="Rooted Voices Speech & Language Therapy" 
+                <img
+                  src="/logorooted 1.png"
+                  alt="Rooted Voices Speech & Language Therapy"
                   className="w-18 h-20 mr-2"
                 />
                 <span className="text-2xl font-bold text-black">Rooted Voices</span>
@@ -175,7 +175,7 @@ export default function CommunityPage() {
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">Community</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <button
@@ -211,11 +211,10 @@ export default function CommunityPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-black text-white'
-                    : 'text-gray-600 hover:text-black hover:bg-gray-100'
-                }`}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
+                  ? 'bg-black text-white'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                  }`}
               >
                 {tab.icon}
                 <span>{tab.label}</span>
@@ -250,11 +249,10 @@ export default function CommunityPage() {
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
-                        selectedCategory === category.id
-                          ? 'bg-black text-white'
-                          : 'text-gray-600 hover:bg-gray-100'
-                      }`}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${selectedCategory === category.id
+                        ? 'bg-black text-white'
+                        : 'text-gray-600 hover:bg-gray-100'
+                        }`}
                     >
                       <span className="text-sm">{category.name}</span>
                     </button>
@@ -310,7 +308,7 @@ export default function CommunityPage() {
                           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                             <Users className="w-5 h-5 text-blue-600" />
                           </div>
-                          
+
                           <div className="flex-1">
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex-1">
@@ -333,7 +331,7 @@ export default function CommunityPage() {
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
                               <div className="flex items-center space-x-4 text-sm text-gray-600">
                                 <button
