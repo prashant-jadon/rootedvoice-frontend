@@ -117,6 +117,9 @@ function BookSessionContent() {
       try {
         const subRes = await subscriptionAPI.getCurrent()
         setSubscription(subRes.data.data)
+
+        const remRes = await subscriptionAPI.getRemainingSessions()
+        setRemainingSessions(remRes.data.data)
       } catch (error) {
         // No subscription - redirect to pricing
         router.push('/pricing')
@@ -200,38 +203,43 @@ function BookSessionContent() {
         }
       } else {
         // Regular Session Logic
-        // Get therapist data if not already loaded
-        let therapistData = therapist
-        if (!therapistData && therapistId) {
-          try {
-            const therapistRes = await therapistAPI.getById(therapistId)
-            therapistData = therapistRes.data.data.therapist || therapistRes.data.data
-          } catch (error) {
-            console.error('Failed to fetch therapist for price calculation:', error)
-          }
-        }
 
-        // Determine max rate based on therapist credentials
-        const maxRate = therapistData?.credentials === 'SLPA' ? 55 : 75
-
-        if (therapistData) {
-          // Use therapist's hourly rate if available, but ALWAYS cap it
-          if (therapistData.hourlyRate && therapistData.hourlyRate > 0) {
-            sessionPrice = Math.min(therapistData.hourlyRate, maxRate) // Cap at max rate
-          } else {
-            // Fallback: use subscription price or default, but cap it at therapist's max rate
-            // For Bloom ($125 pay-as-you-go), we should check the plan price
-            const subscriptionPrice = subscription?.price || 125 // Default to Pay-as-you-go rate
-            sessionPrice = Math.min(subscriptionPrice, maxRate)
-          }
+        // If user has available sessions from their subscription bucket, it is free
+        if (remainingSessions && (remainingSessions.hasUnlimited || remainingSessions.remainingSessions > 0)) {
+          sessionPrice = 0;
         } else {
-          // No therapist data: use subscription price capped at SLP rate
-          const subscriptionPrice = subscription?.price || 125
-          sessionPrice = Math.min(subscriptionPrice, 75) // Default to SLP cap
-        }
+          // Extra sessions or pay-as-you-go handling
+          let therapistData = therapist
+          if (!therapistData && therapistId) {
+            try {
+              const therapistRes = await therapistAPI.getById(therapistId)
+              therapistData = therapistRes.data.data.therapist || therapistRes.data.data
+            } catch (error) {
+              console.error('Failed to fetch therapist for price calculation:', error)
+            }
+          }
 
-        // Final safety check - ensure price never exceeds cap
-        sessionPrice = Math.min(sessionPrice, maxRate)
+          // Determine max rate based on therapist credentials
+          const maxRate = therapistData?.credentials === 'SLPA' ? 55 : 75
+
+          if (therapistData) {
+            // Use therapist's hourly rate if available, but ALWAYS cap it
+            if (therapistData.hourlyRate && therapistData.hourlyRate > 0) {
+              sessionPrice = Math.min(therapistData.hourlyRate, maxRate) // Cap at max rate
+            } else {
+              // Fallback: use subscription price or default, but cap it at therapist's max rate
+              const subscriptionPrice = subscription?.price || 125 // Default to Pay-as-you-go rate
+              sessionPrice = Math.min(subscriptionPrice, maxRate)
+            }
+          } else {
+            // No therapist data: use subscription price capped at SLP rate
+            const subscriptionPrice = subscription?.price || 125
+            sessionPrice = Math.min(subscriptionPrice, 75) // Default to SLP cap
+          }
+
+          // Final safety check - ensure price never exceeds cap
+          sessionPrice = Math.min(sessionPrice, maxRate)
+        }
       }
 
       // Check if payment is required (Bloom tier or passed session limit)
@@ -669,7 +677,10 @@ function BookSessionContent() {
                         ? 'Included (Free)'
                         : '$195'
                       )
-                      : `$${Math.min(therapist?.hourlyRate || subscription?.price || 125, therapist?.credentials === 'SLPA' ? 55 : 75)}`
+                      : (remainingSessions && (remainingSessions.hasUnlimited || remainingSessions.remainingSessions > 0)
+                        ? 'Included (Free)'
+                        : `$${Math.min(therapist?.hourlyRate || subscription?.price || 125, therapist?.credentials === 'SLPA' ? 55 : 75)}`
+                      )
                     }
                   </span>
                 </div>

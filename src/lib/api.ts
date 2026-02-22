@@ -275,6 +275,10 @@ export const familyCoachingAPI = {
     api.delete(`/family-coaching/${id}`, { data: { cancellationReason } }),
 };
 
+export const notificationsAPI = {
+  getAll: () => api.get('/notifications'),
+};
+
 export const healthCheck = () => api.get('/health');
 
 export const publicAPI = {

@@ -8,7 +8,6 @@ import {
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import DemoModal from '../components/DemoModal'
-import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useTranslation } from '@/hooks/useTranslation'
 import { subscriptionAPI, publicAPI } from '@/lib/api'
 
@@ -270,9 +269,7 @@ export default function LandingPage() {
 
             {/* Right actions */}
             <div className="flex items-center gap-3">
-              <div className="hidden md:block">
-                <LanguageSwitcher variant="compact" />
-              </div>
+
               <Link
                 href="/login"
                 className="hidden sm:block text-sm font-semibold text-[#203936]/70 hover:text-[#203936] transition-colors px-3 py-2"

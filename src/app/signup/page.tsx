@@ -199,14 +199,7 @@ export default function SignupPage() {
         return
       }
 
-      // ASHA Certification required for SLP only
-      if (formData.credentials === 'SLP') {
-        if (!formData.ashaCertificationNumber || !formData.ashaCertificationFile) {
-          setError(t('signup.ashaCertificationRequired'))
-          setIsLoading(false)
-          return
-        }
-      }
+      // ASHA Certification is optional for SLP (can be submitted later)
 
       // State Licensure required for all
       if (formData.stateLicensures.length === 0 || !formData.stateLicensures[0].licenseNumber || !formData.stateLicensures[0].state || !formData.stateLicensures[0].file) {
@@ -770,12 +763,12 @@ export default function SignupPage() {
                       <div className="space-y-4">
                         <div>
                           <label htmlFor="ashaCertificationNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.ashaCertificationNumber')} <span className="text-red-500">*</span>
+                            {t('signup.ashaCertificationNumber')} <span className="text-gray-400 text-xs">(optional)</span>
                           </label>
                           <input
                             id="ashaCertificationNumber"
                             type="text"
-                            required={formData.credentials === 'SLP'}
+                            required={false}
                             value={formData.ashaCertificationNumber}
                             onChange={(e) => setFormData({ ...formData, ashaCertificationNumber: e.target.value, spaMembershipNumber: e.target.value })}
                             className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
@@ -796,7 +789,7 @@ export default function SignupPage() {
                         </div>
                         <div>
                           <label htmlFor="ashaCertificationFile" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.uploadAshaCertification')} <span className="text-red-500">*</span>
+                            {t('signup.uploadAshaCertification')} <span className="text-gray-400 text-xs">(optional)</span>
                           </label>
                           <div className="flex items-center gap-2">
                             <input

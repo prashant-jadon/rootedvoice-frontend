@@ -1,11 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { 
-  Calendar, 
-  Clock, 
-  Video, 
-  Plus, 
+import {
+  Calendar,
+  Clock,
+  Video,
+  Plus,
   User,
   CheckCircle,
   XCircle,
@@ -49,7 +49,7 @@ export default function SessionsPage() {
     clientId: '',
     scheduledDate: '',
     scheduledTime: '10:00 AM',
-      duration: 45,
+    duration: 45,
     sessionType: 'follow-up',
     price: 85
   })
@@ -93,7 +93,7 @@ export default function SessionsPage() {
       const today = new Date()
       const startDate = new Date(today.getFullYear(), today.getMonth(), 1)
       const endDate = new Date(today.getFullYear(), today.getMonth() + 2, 0)
-      
+
       const response = await calendarAPI.getEvents({
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
@@ -134,13 +134,13 @@ export default function SessionsPage() {
       alert('Session created successfully!')
       setShowCreateModal(false)
       fetchSessions()
-      
+
       // Reset form
       setNewSession({
         clientId: '',
         scheduledDate: '',
         scheduledTime: '10:00 AM',
-      duration: 45,
+        duration: 45,
         sessionType: 'follow-up',
         price: 85
       })
@@ -176,7 +176,7 @@ export default function SessionsPage() {
           paymentIntentId: response.data.data.paymentIntentId,
           sessionId: sessionId,
           title: isCancellation ? 'Pay Cancellation Fee' : 'Pay for Session',
-          description: isCancellation 
+          description: isCancellation
             ? 'This is the cancellation fee for the cancelled session.'
             : 'Complete payment for your therapy session.',
         })
@@ -222,9 +222,9 @@ export default function SessionsPage() {
   }
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', { 
+    return new Date(dateStr).toLocaleDateString('en-US', {
       weekday: 'short',
-      month: 'short', 
+      month: 'short',
       day: 'numeric',
       year: 'numeric'
     })
@@ -232,12 +232,12 @@ export default function SessionsPage() {
 
   const getClientName = (session: any) => {
     if (user?.role === 'therapist') {
-      return session.clientId?.userId ? 
-        `${session.clientId.userId.firstName} ${session.clientId.userId.lastName}` : 
+      return session.clientId?.userId ?
+        `${session.clientId.userId.firstName} ${session.clientId.userId.lastName}` :
         'Unknown Client'
     } else {
-      return session.therapistId?.userId ? 
-        `Dr. ${session.therapistId.userId.firstName} ${session.therapistId.userId.lastName}` : 
+      return session.therapistId?.userId ?
+        `Dr. ${session.therapistId.userId.firstName} ${session.therapistId.userId.lastName}` :
         'Unknown Therapist'
     }
   }
@@ -247,12 +247,17 @@ export default function SessionsPage() {
     return session.status === filterStatus
   })
 
-  const upcomingSessions = filteredSessions.filter((s: any) => 
-    ['scheduled', 'confirmed'].includes(s.status) && new Date(s.scheduledDate) >= new Date()
+  const upcomingSessions = filteredSessions.filter((s: any) =>
+    ['scheduled', 'confirmed', 'in-progress'].includes(s.status) && new Date(s.scheduledDate) >= new Date()
   )
-  
-  const pastSessions = filteredSessions.filter((s: any) => 
-    s.status === 'completed' || new Date(s.scheduledDate) < new Date()
+
+  const pastSessions = filteredSessions.filter((s: any) =>
+    s.status === 'completed' || s.status === 'cancelled' || s.status === 'no-show' || new Date(s.scheduledDate) < new Date()
+  )
+
+  // All sessions that aren't in either category (edge case safety net)
+  const otherSessions = filteredSessions.filter((s: any) =>
+    !upcomingSessions.includes(s) && !pastSessions.includes(s)
   )
 
   if (isLoading) {
@@ -268,7 +273,7 @@ export default function SessionsPage() {
 
   return (
     <ProtectedRoute>
-    <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50">
         <Header />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -279,21 +284,21 @@ export default function SessionsPage() {
                 {user?.role === 'therapist' ? 'Session Management' : 'My Sessions'}
               </h1>
               <p className="text-gray-600">
-                {user?.role === 'therapist' 
+                {user?.role === 'therapist'
                   ? 'Manage your therapy sessions and client appointments'
                   : 'View and manage your therapy sessions'}
               </p>
             </div>
-            
+
             {/* Only show create button for therapists */}
             {user?.role === 'therapist' && (
-                <button
+              <button
                 onClick={() => setShowCreateModal(true)}
                 className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 New Session
-                </button>
+              </button>
             )}
           </div>
 
@@ -304,36 +309,33 @@ export default function SessionsPage() {
                 <button
                   key={status}
                   onClick={() => setFilterStatus(status)}
-                  className={`px-4 py-2 rounded-lg capitalize transition-colors ${
-                    filterStatus === status
-                      ? 'bg-black text-white' 
-                      : 'bg-white text-gray-600 hover:bg-gray-100'
-                  }`}
+                  className={`px-4 py-2 rounded-lg capitalize transition-colors ${filterStatus === status
+                    ? 'bg-black text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                    }`}
                 >
                   {status}
                 </button>
               ))}
             </div>
-            
+
             {/* View Mode Toggle */}
             <div className="flex items-center space-x-2 bg-white rounded-lg p-1">
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-2 rounded transition-colors ${
-                  viewMode === 'list'
-                    ? 'bg-black text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                className={`px-4 py-2 rounded transition-colors ${viewMode === 'list'
+                  ? 'bg-black text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+                  }`}
               >
                 List
               </button>
               <button
                 onClick={() => setViewMode('calendar')}
-                className={`px-4 py-2 rounded transition-colors flex items-center ${
-                  viewMode === 'calendar'
-                    ? 'bg-black text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                className={`px-4 py-2 rounded transition-colors flex items-center ${viewMode === 'calendar'
+                  ? 'bg-black text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+                  }`}
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 Calendar
@@ -352,14 +354,14 @@ export default function SessionsPage() {
                     {day}
                   </div>
                 ))}
-                
+
                 {/* Calendar Days */}
                 {Array.from({ length: 35 }).map((_, index) => {
                   const date = new Date()
                   const firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
                   const dayOfWeek = firstDay.getDay()
                   const currentDate = new Date(date.getFullYear(), date.getMonth(), index - dayOfWeek + 1)
-                  
+
                   const dayEvents = calendarEvents.filter((event: any) => {
                     const eventDate = new Date(event.startDate)
                     return (
@@ -368,20 +370,19 @@ export default function SessionsPage() {
                       eventDate.getFullYear() === currentDate.getFullYear()
                     )
                   })
-                  
-                  const isToday = 
+
+                  const isToday =
                     currentDate.getDate() === date.getDate() &&
                     currentDate.getMonth() === date.getMonth() &&
                     currentDate.getFullYear() === date.getFullYear()
-                  
+
                   const isCurrentMonth = currentDate.getMonth() === date.getMonth()
-                  
+
                   return (
                     <div
                       key={index}
-                      className={`min-h-24 p-2 border border-gray-200 rounded ${
-                        isToday ? 'bg-blue-50 border-blue-300' : ''
-                      } ${!isCurrentMonth ? 'opacity-40' : ''}`}
+                      className={`min-h-24 p-2 border border-gray-200 rounded ${isToday ? 'bg-blue-50 border-blue-300' : ''
+                        } ${!isCurrentMonth ? 'opacity-40' : ''}`}
                     >
                       <div className={`text-sm font-medium mb-1 ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>
                         {currentDate.getDate()}
@@ -407,7 +408,7 @@ export default function SessionsPage() {
                   )
                 })}
               </div>
-              
+
               {/* Upcoming Events List */}
               <div className="mt-6">
                 <h3 className="font-semibold text-black mb-3">Upcoming Events</h3>
@@ -435,207 +436,260 @@ export default function SessionsPage() {
             </div>
           ) : (
             <>
-          {/* Upcoming Sessions */}
-          {upcomingSessions.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-black mb-4">Upcoming Sessions</h2>
-              <div className="grid gap-4">
-                {upcomingSessions.map((session: any) => (
-              <motion.div
-                    key={session._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-lg premium-shadow p-6"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                          <User className="w-6 h-6 text-purple-600" />
+              {/* Upcoming Sessions */}
+              {upcomingSessions.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold text-black mb-4">Upcoming Sessions</h2>
+                  <div className="grid gap-4">
+                    {upcomingSessions.map((session: any) => (
+                      <motion.div
+                        key={session._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white rounded-lg premium-shadow p-6"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                              <User className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-black text-lg">
+                                {getClientName(session)}
+                              </h3>
+                              <p className="text-sm text-gray-600">{session.sessionType}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-6">
+                            <div className="text-right">
+                              <p className="font-semibold text-black">
+                                {formatDate(session.scheduledDate)}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {session.scheduledTime} • {session.duration} min
+                              </p>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
+                                {getStatusIcon(session.status)}
+                                <span className="ml-1">{session.status}</span>
+                              </span>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Link
+                                href={`/video-call?sessionId=${session._id}`}
+                                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                title="Start Video Call"
+                              >
+                                <Video className="w-5 h-5" />
+                              </Link>
+
+                              {user?.role === 'therapist' && (
+                                <>
+                                  {session.status === 'in-progress' && (
+                                    <button
+                                      onClick={() => handleCompleteSession(session._id)}
+                                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                                      title="Complete Session"
+                                    >
+                                      Complete
+                                    </button>
+                                  )}
+                                  <button
+                                    className="p-2 text-gray-600 hover:text-black transition-colors"
+                                    title="Edit Session"
+                                  >
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    className="p-2 text-red-600 hover:text-red-700 transition-colors"
+                                    title="Cancel Session"
+                                    onClick={async () => {
+                                      if (confirm('Cancel this session?')) {
+                                        try {
+                                          const isSLPA = session.therapistId?.credentials === 'SLPA'
+                                          await sessionAPI.cancel(session._id, {
+                                            reason: 'Cancelled by therapist',
+                                            loggedByTherapist: isSLPA // If SLPA, they log it to get cancellation fee
+                                          })
+                                          fetchSessions()
+                                          if (isSLPA) {
+                                            alert('Session cancelled. Cancellation fee payment can be processed.')
+                                          }
+                                        } catch (error) {
+                                          alert('Failed to cancel session')
+                                        }
+                                      }
+                                    }}
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-black text-lg">
-                            {getClientName(session)}
-                          </h3>
-                          <p className="text-sm text-gray-600">{session.sessionType}</p>
+
+                        {session.notes && (
+                          <div className="mt-4 pt-4 border-t border-gray-100">
+                            <p className="text-sm text-gray-600">
+                              <strong>Notes:</strong> {session.notes}
+                            </p>
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
-                
-                      <div className="flex items-center space-x-6">
-                        <div className="text-right">
-                          <p className="font-semibold text-black">
-                            {formatDate(session.scheduledDate)}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {session.scheduledTime} • {session.duration} min
-                          </p>
-                    </div>
+              )}
 
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
-                            {getStatusIcon(session.status)}
-                            <span className="ml-1">{session.status}</span>
-                          </span>
+              {/* Past Sessions */}
+              {pastSessions.length > 0 && (
+                <div>
+                  <h2 className="text-xl font-bold text-black mb-4">Past Sessions</h2>
+                  <div className="grid gap-4">
+                    {pastSessions.map((session: any) => (
+                      <motion.div
+                        key={session._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white rounded-lg premium-shadow p-6 opacity-75"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                              <User className="w-6 h-6 text-gray-600" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-black">
+                                {getClientName(session)}
+                              </h3>
+                              <p className="text-sm text-gray-600">{session.sessionType}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-6">
+                            <div className="text-right">
+                              <p className="font-semibold text-gray-700">
+                                {formatDate(session.scheduledDate)}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {session.scheduledTime} • {session.duration} min
+                              </p>
+                              {session.price && (
+                                <p className="text-sm font-medium text-gray-700 mt-1">
+                                  ${session.price}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="flex flex-col items-end gap-2">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
+                                {session.status}
+                              </span>
+
+                              {/* Payment Status */}
+                              {session.paymentStatus && (
+                                <span className={`px-2 py-1 rounded text-xs ${session.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
+                                  session.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-gray-100 text-gray-800'
+                                  }`}>
+                                  {session.paymentStatus}
+                                </span>
+                              )}
+
+                              {/* Payment Buttons */}
+                              {user?.role === 'client' && (
+                                <>
+                                  {session.status === 'completed' && session.paymentStatus !== 'paid' && (
+                                    <button
+                                      onClick={() => handleProcessPayment(session._id)}
+                                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm flex items-center gap-2"
+                                    >
+                                      <CreditCard className="w-4 h-4" />
+                                      Pay ${session.price || 0}
+                                    </button>
+                                  )}
+                                </>
+                              )}
+
+                              {/* SLPA Cancellation Fee Payment */}
+                              {session.status === 'cancelled' &&
+                                session.therapistId?.credentials === 'SLPA' &&
+                                session.paymentStatus !== 'paid' && (
+                                  <button
+                                    onClick={() => handleProcessPayment(session._id, true)}
+                                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center gap-2"
+                                  >
+                                    <CreditCard className="w-4 h-4" />
+                                    Pay Cancellation Fee
+                                  </button>
+                                )}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-                
-                        <div className="flex items-center space-x-2">
-                          <Link
-                            href={`/video-call?sessionId=${session._id}`}
-                            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                            title="Start Video Call"
-                          >
-                            <Video className="w-5 h-5" />
-                          </Link>
-                          
-                          {user?.role === 'therapist' && (
-                            <>
-                              {session.status === 'in-progress' && (
-                                <button
-                                  onClick={() => handleCompleteSession(session._id)}
-                                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                                  title="Complete Session"
-                                >
-                                  Complete
-                                </button>
-                              )}
-                              <button
-                                className="p-2 text-gray-600 hover:text-black transition-colors"
-                                title="Edit Session"
-                              >
-                                <Edit className="w-5 h-5" />
-                              </button>
-                              <button
-                                className="p-2 text-red-600 hover:text-red-700 transition-colors"
-                                title="Cancel Session"
-                                onClick={async () => {
-                                  if (confirm('Cancel this session?')) {
-                                    try {
-                                      const isSLPA = session.therapistId?.credentials === 'SLPA'
-                                      await sessionAPI.cancel(session._id, {
-                                        reason: 'Cancelled by therapist',
-                                        loggedByTherapist: isSLPA // If SLPA, they log it to get cancellation fee
-                                      })
-                                      fetchSessions()
-                                      if (isSLPA) {
-                                        alert('Session cancelled. Cancellation fee payment can be processed.')
-                                      }
-                                    } catch (error) {
-                                      alert('Failed to cancel session')
-                                    }
-                                  }
-                                }}
-                              >
-                                <Trash2 className="w-5 h-5" />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-            </div>
-
-                    {session.notes && (
-                      <div className="mt-4 pt-4 border-t border-gray-100">
-                        <p className="text-sm text-gray-600">
-                          <strong>Notes:</strong> {session.notes}
-                        </p>
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Past Sessions */}
-          {pastSessions.length > 0 && (
-            <div>
-              <h2 className="text-xl font-bold text-black mb-4">Past Sessions</h2>
-              <div className="grid gap-4">
-                {pastSessions.map((session: any) => (
-                <motion.div
-                    key={session._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-lg premium-shadow p-6 opacity-75"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                          <User className="w-6 h-6 text-gray-600" />
-                      </div>
-                      <div>
-                          <h3 className="font-semibold text-black">
-                            {getClientName(session)}
-                          </h3>
-                          <p className="text-sm text-gray-600">{session.sessionType}</p>
-                        </div>
-                    </div>
-                    
-                      <div className="flex items-center space-x-6">
-                      <div className="text-right">
-                          <p className="font-semibold text-gray-700">
-                            {formatDate(session.scheduledDate)}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {session.scheduledTime} • {session.duration} min
-                          </p>
-                          {session.price && (
-                            <p className="text-sm font-medium text-gray-700 mt-1">
-                              ${session.price}
-                            </p>
-                          )}
-                      </div>
-                      
-                        <div className="flex flex-col items-end gap-2">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
-                            {session.status}
-                          </span>
-                          
-                          {/* Payment Status */}
-                          {session.paymentStatus && (
-                            <span className={`px-2 py-1 rounded text-xs ${
-                              session.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                              session.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {session.paymentStatus}
+              )}
+              {/* Show all other sessions that aren't categorized */}
+              {otherSessions.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold text-black mb-4">All Sessions</h2>
+                  <div className="grid gap-4">
+                    {otherSessions.map((session: any) => (
+                      <motion.div
+                        key={session._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white rounded-lg premium-shadow p-6"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                              <User className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-black text-lg">{getClientName(session)}</h3>
+                              <p className="text-sm text-gray-600">{session.sessionType}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-6">
+                            <div className="text-right">
+                              <p className="font-semibold text-black">{formatDate(session.scheduledDate)}</p>
+                              <p className="text-sm text-gray-600">{session.scheduledTime} • {session.duration} min</p>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
+                              {session.status}
                             </span>
-                          )}
-
-                          {/* Payment Buttons */}
-                          {user?.role === 'client' && (
-                            <>
-                              {session.status === 'completed' && session.paymentStatus !== 'paid' && (
-                                <button
-                                  onClick={() => handleProcessPayment(session._id)}
-                                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm flex items-center gap-2"
-                                >
-                                  <CreditCard className="w-4 h-4" />
-                                  Pay ${session.price || 0}
-                                </button>
-                              )}
-                            </>
-                          )}
-
-                          {/* SLPA Cancellation Fee Payment */}
-                          {session.status === 'cancelled' && 
-                           session.therapistId?.credentials === 'SLPA' && 
-                           session.paymentStatus !== 'paid' && (
-                            <button
-                              onClick={() => handleProcessPayment(session._id, true)}
-                              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center gap-2"
+                            <Link
+                              href={`/video-call?sessionId=${session._id}`}
+                              className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                             >
-                              <CreditCard className="w-4 h-4" />
-                              Pay Cancellation Fee
-                            </button>
-                          )}
+                              <Video className="w-5 h-5" />
+                            </Link>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-                      </div>
-                    </div>
-          )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Empty State for list view */}
+              {filteredSessions.length === 0 && (
+                <div className="text-center py-12">
+                  <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <p className="text-xl text-gray-600 mb-2">No sessions found</p>
+                  <p className="text-gray-500">
+                    {filterStatus !== 'all' ? `No ${filterStatus} sessions found. Try a different filter.` : 'No sessions yet.'}
+                  </p>
+                </div>
+              )}
             </>
           )}
 
@@ -658,7 +712,7 @@ export default function SessionsPage() {
               <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <p className="text-xl text-gray-600 mb-2">No sessions yet</p>
               <p className="text-gray-500 mb-4">
-                {user?.role === 'therapist' 
+                {user?.role === 'therapist'
                   ? 'Create your first session to get started'
                   : 'Book a session with a therapist to begin your journey'}
               </p>
@@ -678,30 +732,30 @@ export default function SessionsPage() {
                 </Link>
               )}
             </div>
-        )}
-      </div>
+          )}
+        </div>
 
         {/* Create Session Modal (Therapist Only) */}
         {showCreateModal && user?.role === 'therapist' && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between mb-6">
+            >
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-black">Create New Session</h2>
-              <button 
+                <button
                   onClick={() => setShowCreateModal(false)}
                   className="text-gray-500 hover:text-black"
-              >
+                >
                   ✕
-              </button>
-            </div>
-            
+                </button>
+              </div>
+
               <div className="space-y-4">
                 {/* Client Selection */}
-              <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Select Client
                   </label>
@@ -716,25 +770,25 @@ export default function SessionsPage() {
                         {client.userId ? `${client.userId.firstName} ${client.userId.lastName}` : 'Unknown'}
                       </option>
                     ))}
-                </select>
-              </div>
-              
+                  </select>
+                </div>
+
                 {/* Date */}
-              <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Date
                   </label>
-                <input 
-                  type="date" 
+                  <input
+                    type="date"
                     value={newSession.scheduledDate}
                     onChange={(e) => setNewSession({ ...newSession, scheduledDate: e.target.value })}
                     min={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                />
-              </div>
-              
+                  />
+                </div>
+
                 {/* Time */}
-              <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Time
                   </label>
@@ -753,10 +807,10 @@ export default function SessionsPage() {
                     <option value="4:00 PM">4:00 PM</option>
                     <option value="5:00 PM">5:00 PM</option>
                   </select>
-              </div>
-              
+                </div>
+
                 {/* Duration */}
-              <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Duration
                   </label>
@@ -768,11 +822,11 @@ export default function SessionsPage() {
                     <option value={30}>30 minutes</option>
                     <option value={45}>45 minutes</option>
                     <option value={60}>60 minutes</option>
-                </select>
-              </div>
-              
+                  </select>
+                </div>
+
                 {/* Session Type */}
-              <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Session Type
                   </label>
@@ -785,11 +839,11 @@ export default function SessionsPage() {
                     <option value="follow-up">Follow-up Session</option>
                     <option value="assessment">Assessment</option>
                     <option value="maintenance">Maintenance</option>
-                </select>
-              </div>
-              
+                  </select>
+                </div>
+
                 {/* Price */}
-              <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Session Price
                   </label>
@@ -798,9 +852,9 @@ export default function SessionsPage() {
                     value={newSession.price}
                     onChange={(e) => setNewSession({ ...newSession, price: parseFloat(e.target.value) })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                />
-              </div>
-              
+                  />
+                </div>
+
                 {/* Buttons */}
                 <div className="flex space-x-4 pt-4">
                   <button
@@ -809,18 +863,18 @@ export default function SessionsPage() {
                   >
                     Create Session
                   </button>
-                <button 
+                  <button
                     onClick={() => setShowCreateModal(false)}
                     className="flex-1 border border-gray-300 text-black px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-semibold"
-                >
-                  Cancel
-                </button>
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
-          </motion.div>
-        </div>
-      )}
-    </div>
+            </motion.div>
+          </div>
+        )}
+      </div>
     </ProtectedRoute>
   )
 }

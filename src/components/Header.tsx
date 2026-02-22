@@ -1,35 +1,71 @@
-'use client'
-
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
-import { Bell, Settings, LogOut } from 'lucide-react'
+import { Bell, Settings, LogOut, X, ExternalLink } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import CredentialsBadge from './CredentialsBadge'
-import { translationAPI, therapistAPI } from '@/lib/api'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { therapistAPI, notificationsAPI } from '@/lib/api'
 import { useTranslation } from '@/hooks/useTranslation'
+
+interface Notification {
+  id: string
+  type: 'info' | 'warning' | 'urgent' | 'success'
+  icon: string
+  title: string
+  message: string
+  link: string
+  time: string
+  read: boolean
+}
 
 export default function Header() {
   const { user, logout, isAuthenticated } = useAuth()
   const router = useRouter()
-  const { currentLanguage, changeLanguage } = useLanguage()
   const t = useTranslation()
-  const [isDetectingLanguage, setIsDetectingLanguage] = useState(false)
   const [therapistCredentials, setTherapistCredentials] = useState<'SLP' | 'SLPA' | null>(null)
   const [canSupervise, setCanSupervise] = useState<boolean>(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [readIds, setReadIds] = useState<Set<string>>(new Set())
+  const notifRef = useRef<HTMLDivElement>(null)
 
   const handleLogout = () => {
     logout()
     router.push('/login')
   }
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifications(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await notificationsAPI.getAll()
+      const data = res.data.data
+      setNotifications(data.notifications || [])
+      // Subtract already-read ones from local state
+      const unread = (data.notifications || []).filter((n: Notification) => !n.read && !readIds.has(n.id))
+      setUnreadCount(unread.length)
+    } catch (error) {
+      // Silently fail
+    }
+  }
+
   useEffect(() => {
     if (isAuthenticated && user) {
-      fetchLanguagePreferences()
-      if (user.role === 'therapist') {
-        fetchTherapistCredentials()
-      }
+      if (user.role === 'therapist') fetchTherapistCredentials()
+      fetchNotifications()
+      // Poll every 60s
+      const interval = setInterval(fetchNotifications, 60000)
+      return () => clearInterval(interval)
     }
   }, [isAuthenticated, user])
 
@@ -43,41 +79,7 @@ export default function Header() {
     }
   }
 
-  const fetchLanguagePreferences = async () => {
-    try {
-      const response = await translationAPI.getPreferences()
-      const prefs = response.data.data
-      if (prefs?.interfaceLanguage && prefs.interfaceLanguage !== currentLanguage) {
-        await changeLanguage(prefs.interfaceLanguage)
-      }
-    } catch (error) {
-      console.error('Failed to fetch language preferences:', error)
-    }
-  }
 
-  const handleLanguageChange = async (language: string) => {
-    await changeLanguage(language)
-    // Reload page to apply interface translation
-    window.location.reload()
-  }
-
-  const detectLanguageFromText = async (text: string) => {
-    if (!text || text.trim().length < 10) return
-
-    setIsDetectingLanguage(true)
-    try {
-      const response = await translationAPI.detectLanguage(text)
-      const detectedLang = response.data.data.language
-      if (detectedLang && detectedLang !== currentLanguage) {
-        // Auto-switch interface language if detected language is different
-        await handleLanguageChange(detectedLang)
-      }
-    } catch (error) {
-      console.error('Language detection failed:', error)
-    } finally {
-      setIsDetectingLanguage(false)
-    }
-  }
 
   const getInitials = () => {
     if (!user) return 'U'
@@ -193,10 +195,107 @@ export default function Header() {
               <CredentialsBadge credentials={therapistCredentials} canSupervise={canSupervise} size="sm" />
             )}
 
-            <button className="relative p-2 text-gray-600 hover:text-black transition-colors">
-              <Bell className="w-6 h-6" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-            </button>
+
+            {/* Notification Bell */}
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => {
+                  setShowNotifications(prev => !prev)
+                  if (!showNotifications) {
+                    // Mark all visible as read locally
+                    const allIds = new Set([...readIds, ...notifications.map(n => n.id)])
+                    setReadIds(allIds)
+                    setUnreadCount(0)
+                  }
+                }}
+                className="relative p-2 text-gray-600 hover:text-black transition-colors rounded-lg hover:bg-gray-100"
+              >
+                <Bell className="w-6 h-6" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+                    <div className="flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-gray-700" />
+                      <h3 className="font-semibold text-gray-800 text-sm">Notifications</h3>
+                      {unreadCount > 0 && (
+                        <span className="text-xs bg-red-100 text-red-600 font-semibold px-1.5 py-0.5 rounded-full">{unreadCount} new</span>
+                      )}
+                    </div>
+                    <button onClick={() => setShowNotifications(false)} className="text-gray-400 hover:text-gray-700 p-1 rounded">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* List */}
+                  <div className="max-h-96 overflow-y-auto divide-y divide-gray-50">
+                    {notifications.length === 0 ? (
+                      <div className="text-center py-10 text-gray-400">
+                        <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                        <p className="text-sm">You're all caught up!</p>
+                      </div>
+                    ) : (
+                      notifications.map((n) => {
+                        const borderColors = {
+                          urgent: 'border-l-red-500',
+                          warning: 'border-l-yellow-500',
+                          success: 'border-l-green-500',
+                          info: 'border-l-blue-500',
+                        }
+                        const bgColors = {
+                          urgent: 'bg-red-50 hover:bg-red-100',
+                          warning: 'bg-yellow-50 hover:bg-yellow-100',
+                          success: 'bg-green-50 hover:bg-green-100',
+                          info: 'bg-blue-50 hover:bg-blue-100',
+                        }
+                        const isRead = n.read || readIds.has(n.id)
+                        return (
+                          <Link
+                            key={n.id}
+                            href={n.link}
+                            onClick={() => setShowNotifications(false)}
+                            className={`flex items-start gap-3 px-4 py-3 border-l-4 transition-colors cursor-pointer ${bgColors[n.type]
+                              } ${borderColors[n.type]} ${isRead ? 'opacity-60' : ''}`}
+                          >
+                            <span className="text-xl mt-0.5 flex-shrink-0">{n.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-xs font-semibold text-gray-800 truncate">{n.title}</span>
+                                {!isRead && <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />}
+                              </div>
+                              <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">{n.message}</p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {new Date(n.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                            <ExternalLink className="w-3 h-3 text-gray-300 flex-shrink-0 mt-1" />
+                          </Link>
+                        )
+                      })
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="border-t border-gray-100 px-4 py-2 bg-gray-50">
+                    <Link
+                      href="/sessions"
+                      onClick={() => setShowNotifications(false)}
+                      className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      View all sessions →
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="flex items-center space-x-3">
               <div className={`w-8 h-8 ${getUserColor()} rounded-full flex items-center justify-center`}>
