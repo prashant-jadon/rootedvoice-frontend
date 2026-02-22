@@ -24,12 +24,13 @@ function BookSessionContent() {
   const [evaluationBlocked, setEvaluationBlocked] = useState(false)
   const [evaluationStatus, setEvaluationStatus] = useState<string | null>(null)
 
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const therapistId = searchParams.get('therapistId')
 
   useEffect(() => {
+    if (authLoading) return
     if (!isAuthenticated) {
       router.push('/login')
       return

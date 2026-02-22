@@ -26,7 +26,7 @@ import {
 import Link from 'next/link'
 
 export default function CommunityPage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('discussions')
   const [posts, setPosts] = useState<any[]>([])
@@ -80,6 +80,7 @@ export default function CommunityPage() {
   }
 
   const handleCreatePost = async () => {
+    if (authLoading) return
     if (!isAuthenticated) {
       router.push('/login')
       return

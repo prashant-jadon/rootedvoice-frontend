@@ -35,7 +35,7 @@ import Link from 'next/link'
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { therapistAPI, sessionAPI, clientAPI, evaluationAPI } from '@/lib/api'
+import { therapistAPI, sessionAPI, clientAPI, evaluationAPI, subscriptionAPI } from '@/lib/api'
 import CredentialsBadge from '@/components/CredentialsBadge'
 import AvailabilityManager from '@/components/AvailabilityManager'
 
@@ -50,13 +50,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: str
 }
 
 export default function MyPracticePage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   // Real data from API
   const [therapistProfile, setTherapistProfile] = useState<any>(null)
+  const [pricingTiers, setPricingTiers] = useState<any[]>([])
   const [sessions, setSessions] = useState<any[]>([])
   const [clients, setClients] = useState<any[]>([])
   const [evaluations, setEvaluations] = useState<any[]>([])
@@ -72,7 +73,7 @@ export default function MyPracticePage() {
     }
 
     fetchPracticeData()
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, user, authLoading])
 
   const fetchPracticeData = async () => {
     try {
@@ -96,6 +97,24 @@ export default function MyPracticePage() {
         setEvaluations(evalsRes.data.data || [])
       } catch (error) {
         console.log('Could not fetch evaluation assignments')
+      }
+
+      try {
+        const pricingRes = await subscriptionAPI.getPricing()
+        const backendPricing = pricingRes.data.data
+        const transformedPricing = Object.entries(backendPricing).map(([id, data]: [string, any]) => ({
+          id,
+          name: data.name.replace(' Tier', '').replace(' tier', ''),
+          price: data.price,
+          sessionsPerMonth: data.sessionsPerMonth,
+          billingCycle: data.billingCycle
+        }))
+        // Sort: Rooted, Flourish, Bloom, Evaluation
+        const sortOrder = ['rooted', 'flourish', 'bloom', 'evaluation']
+        transformedPricing.sort((a, b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id))
+        setPricingTiers(transformedPricing)
+      } catch (error) {
+        console.log('Could not fetch pricing tiers')
       }
 
     } catch (error) {
@@ -628,9 +647,11 @@ export default function MyPracticePage() {
                       className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     >
                       <option value="">Select a tier...</option>
-                      <option value="rooted">Rooted - $325/month (4 sessions)</option>
-                      <option value="flourish">Flourish - $525/month (8 sessions)</option>
-                      <option value="bloom">Bloom - Pay As You Go ($125/session)</option>
+                      {pricingTiers.map((tier) => (
+                        <option key={tier.id} value={tier.id}>
+                          {tier.name} - ${tier.price}{tier.billingCycle === 'monthly' || tier.billingCycle === 'every-4-weeks' ? '/month' : '/session'} {tier.sessionsPerMonth > 0 && `(${tier.sessionsPerMonth} sessions)`}
+                        </option>
+                      ))}
                     </select>
                   </div>
 

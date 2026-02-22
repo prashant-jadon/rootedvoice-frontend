@@ -2,14 +2,14 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { 
-  Star, 
-  MapPin, 
-  Clock, 
-  MessageCircle, 
-  Calendar, 
-  Award, 
-  Users, 
+import {
+  Star,
+  MapPin,
+  Clock,
+  MessageCircle,
+  Calendar,
+  Award,
+  Users,
   CheckCircle,
   ArrowLeft,
   Globe,
@@ -29,7 +29,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
   const [reviews, setReviews] = useState<any[]>([])
   const [subscription, setSubscription] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -62,6 +62,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
   }
 
   const handleScheduleClick = () => {
+    if (authLoading) return
     if (!isAuthenticated) {
       router.push(`/signup?therapist=${params.id}`)
       return
@@ -135,7 +136,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               <span className="text-gray-400">/</span>
               <h1 className="text-lg font-bold text-black">{therapistName}</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/services" className="text-gray-600 hover:text-black transition-colors">
                 Services
@@ -151,8 +152,8 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <div className="mb-8">
-          <Link 
-            href="/meet-our-therapists" 
+          <Link
+            href="/meet-our-therapists"
             className="inline-flex items-center text-gray-600 hover:text-black transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
@@ -177,7 +178,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                   </span>
                 </div>
               </div>
-              
+
               {therapist.isVerified && (
                 <div className="mt-4 inline-flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm font-medium">
                   <CheckCircle className="w-4 h-4 mr-2" />
@@ -193,18 +194,17 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               </h1>
               <p className="text-xl text-gray-600 mb-2">Speech-Language Pathologist</p>
               <p className="text-gray-500 mb-4">{therapist.credentials || 'CCC-SLP'}</p>
-              
+
               {/* Rating */}
               <div className="flex items-center space-x-2 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-5 h-5 ${
-                        i < Math.floor(therapist.rating || 0)
+                      className={`w-5 h-5 ${i < Math.floor(therapist.rating || 0)
                           ? 'text-yellow-400 fill-current'
                           : 'text-gray-300'
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>
@@ -257,11 +257,11 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                   className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center group"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
-                  {!isAuthenticated 
-                    ? 'Sign Up to Book' 
-                    : !subscription 
-                    ? 'Choose Plan to Book' 
-                    : 'Schedule Consultation'}
+                  {!isAuthenticated
+                    ? 'Sign Up to Book'
+                    : !subscription
+                      ? 'Choose Plan to Book'
+                      : 'Schedule Consultation'}
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button className="border border-gray-300 text-black px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
@@ -280,11 +280,10 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === tab.id
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
                     ? 'bg-black text-white'
                     : 'text-gray-600 hover:text-black hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 {tab.icon}
                 <span>{tab.label}</span>
@@ -305,24 +304,24 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               <p className="text-gray-600 leading-relaxed mb-8">
                 {therapist.bio || `Dr. ${therapistName} is an experienced speech-language pathologist dedicated to providing evidence-based therapy and personalized care. With ${therapist.experience || 0} years of experience, they specialize in helping clients achieve their communication goals through compassionate and effective treatment approaches.`}
               </p>
-              
+
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-lg font-semibold text-black mb-4">Education</h3>
                   {therapist.education && therapist.education.length > 0 ? (
-                  <ul className="space-y-2">
+                    <ul className="space-y-2">
                       {therapist.education.map((edu: any, index: number) => (
-                      <li key={index} className="flex items-start space-x-2">
-                        <GraduationCap className="w-4 h-4 text-gray-500 mt-1 flex-shrink-0" />
+                        <li key={index} className="flex items-start space-x-2">
+                          <GraduationCap className="w-4 h-4 text-gray-500 mt-1 flex-shrink-0" />
                           <span className="text-gray-600">{edu.degree} - {edu.institution} ({edu.year})</span>
-                      </li>
-                    ))}
-                  </ul>
+                        </li>
+                      ))}
+                    </ul>
                   ) : (
                     <p className="text-gray-500 italic">Education information not provided</p>
                   )}
                 </div>
-                
+
                 <div>
                   <h3 className="text-lg font-semibold text-black mb-4">Clinical Role & Credentials</h3>
                   <ul className="space-y-2">
@@ -330,8 +329,8 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                       <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
                       <div className="flex items-center gap-2">
                         <span className="text-gray-600">Clinical Role:</span>
-                        <CredentialsBadge 
-                          credentials={therapist.credentials || 'SLP'} 
+                        <CredentialsBadge
+                          credentials={therapist.credentials || 'SLP'}
                           canSupervise={therapist.canSupervise || false}
                           size="sm"
                         />
@@ -341,7 +340,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                       <li className="flex items-start space-x-2">
                         <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
                         <span className="text-gray-600">
-                          State License: {therapist.complianceDocuments.stateLicensure.licenseNumber} 
+                          State License: {therapist.complianceDocuments.stateLicensure.licenseNumber}
                           {therapist.complianceDocuments.stateLicensure.state && ` (${therapist.complianceDocuments.stateLicensure.state})`}
                         </span>
                       </li>
@@ -381,22 +380,22 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               transition={{ duration: 0.6 }}
             >
               <h2 className="text-2xl font-bold text-black mb-6">Specialties & Expertise</h2>
-              
+
               <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-black mb-4">Areas of Expertise</h3>
+                <h3 className="text-lg font-semibold text-black mb-4">Areas of Expertise</h3>
                 <div className="grid md:grid-cols-2 gap-3">
                   {(therapist.specializations || []).map((specialty: string, index: number) => (
                     <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                       <span className="text-gray-700 font-medium">{specialty}</span>
-                      </div>
-                    ))}
+                    </div>
+                  ))}
                 </div>
                 {(!therapist.specializations || therapist.specializations.length === 0) && (
                   <p className="text-gray-500 italic">No specializations listed</p>
                 )}
               </div>
-              
+
               <div>
                 <h3 className="text-lg font-semibold text-black mb-4">Licensed States</h3>
                 <div className="flex flex-wrap gap-2">
@@ -417,34 +416,33 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               transition={{ duration: 0.6 }}
             >
               <h2 className="text-2xl font-bold text-black mb-6">Client Reviews</h2>
-              
+
               {reviews.length > 0 ? (
-              <div className="space-y-6">
+                <div className="space-y-6">
                   {reviews.map((review, index) => (
-                  <div key={index} className="border-b border-gray-100 pb-6 last:border-b-0">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <Users className="w-5 h-5 text-gray-500" />
-                        </div>
-                        <div>
+                    <div key={index} className="border-b border-gray-100 pb-6 last:border-b-0">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                            <Users className="w-5 h-5 text-gray-500" />
+                          </div>
+                          <div>
                             <h4 className="font-semibold text-black">
                               {review.isAnonymous ? 'Anonymous' : 'Client'}
                             </h4>
-                          <div className="flex items-center space-x-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < review.rating
-                                    ? 'text-yellow-400 fill-current'
-                                    : 'text-gray-300'
-                                }`}
-                              />
-                            ))}
+                            <div className="flex items-center space-x-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${i < review.rating
+                                      ? 'text-yellow-400 fill-current'
+                                      : 'text-gray-300'
+                                    }`}
+                                />
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
                         <span className="text-sm text-gray-500">
                           {new Date(review.createdAt).toLocaleDateString()}
                         </span>
@@ -456,9 +454,9 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                           <p className="text-sm text-gray-600">{review.response}</p>
                         </div>
                       )}
-                  </div>
-                ))}
-              </div>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="text-center py-12">
                   <Star className="w-16 h-16 mx-auto mb-4 text-gray-400" />
@@ -476,19 +474,19 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               transition={{ duration: 0.6 }}
             >
               <h2 className="text-2xl font-bold text-black mb-6">Availability & Pricing</h2>
-              
+
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-lg font-semibold text-black mb-4">Weekly Schedule</h3>
                   {therapist.availability && therapist.availability.length > 0 ? (
-                  <div className="space-y-3">
+                    <div className="space-y-3">
                       {therapist.availability.map((slot: any, index: number) => (
                         <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                           <span className="font-medium text-black capitalize">{slot.day}</span>
                           <span className="text-gray-600">{slot.startTime} - {slot.endTime}</span>
-                      </div>
-                    ))}
-                  </div>
+                        </div>
+                      ))}
+                    </div>
                   ) : (
                     <div className="p-6 bg-gray-50 rounded-lg text-center">
                       <Calendar className="w-12 h-12 mx-auto mb-2 text-gray-400" />
@@ -497,16 +495,10 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                     </div>
                   )}
                 </div>
-                
+
                 <div>
                   <h3 className="text-lg font-semibold text-black mb-4">Pricing</h3>
                   <div className="space-y-4">
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-black">Hourly Rate</span>
-                        <span className="text-lg font-bold text-black">${therapist.hourlyRate || 85}/hr</span>
-                      </div>
-                    </div>
                     <div className="p-4 bg-green-50 rounded-lg">
                       <div className="flex justify-between items-center">
                         <span className="font-medium text-black">Initial Consultation</span>
@@ -514,7 +506,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                     <h4 className="font-semibold text-black mb-2">Session Options</h4>
                     <ul className="space-y-1 text-sm text-gray-600">
@@ -554,11 +546,11 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               onClick={handleScheduleClick}
               className="bg-white text-black px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
             >
-              {!isAuthenticated 
-                ? 'Sign Up & Schedule' 
-                : !subscription 
-                ? 'Choose Plan & Schedule' 
-                : 'Schedule Free Consultation'}
+              {!isAuthenticated
+                ? 'Sign Up & Schedule'
+                : !subscription
+                  ? 'Choose Plan & Schedule'
+                  : 'Schedule Free Consultation'}
             </button>
             <Link
               href="/meet-our-therapists"

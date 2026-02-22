@@ -43,7 +43,7 @@ import FamilyCoachingScheduler from '@/components/FamilyCoachingScheduler'
 import FamilyCoachingList from '@/components/FamilyCoachingList'
 
 export default function ClientProfilePage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const t = useTranslation()
   const [isEditing, setIsEditing] = useState(false)
@@ -68,7 +68,7 @@ export default function ClientProfilePage() {
     }
     
     fetchClientData()
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, user, authLoading])
 
   const fetchClientData = async () => {
     try {

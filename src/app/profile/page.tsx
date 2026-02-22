@@ -60,7 +60,7 @@ const languageMap: { [key: string]: string } = {
 }
 
 export default function ProfilePage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('personal')
@@ -85,7 +85,7 @@ export default function ProfilePage() {
       return
     }
     fetchProfile()
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, user, authLoading])
 
   const fetchProfile = async () => {
     try {

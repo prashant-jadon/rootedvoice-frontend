@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 
 export default function AssignmentsPage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [assignments, setAssignments] = useState<any[]>([])
   const [clients, setClients] = useState<any[]>([])
@@ -37,6 +37,7 @@ export default function AssignmentsPage() {
   const [filterClient, setFilterClient] = useState('all')
 
   useEffect(() => {
+    if (authLoading) return
     if (!isAuthenticated) {
       router.push('/login')
       return
@@ -48,7 +49,7 @@ export default function AssignmentsPage() {
     }
 
     fetchData()
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, user, authLoading])
 
   const fetchData = async () => {
     try {

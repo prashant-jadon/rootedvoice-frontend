@@ -193,7 +193,7 @@ export default function SignupPage() {
         return
       }
 
-      if (formData.practiceLocations.length === 0 || !formData.practiceLocations[0].state || !formData.practiceLocations[0].city || !formData.practiceLocations[0].postcode) {
+      if (formData.practiceLocations.length === 0 || !formData.practiceLocations[0].state) {
         setError(t('signup.completePracticeLocation'))
         setIsLoading(false)
         return
@@ -468,12 +468,12 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-white flex selection:bg-[#203936]/10">
       {/* Left Side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-md w-full">
           {/* Back to Home */}
-          <Link href="/" className="flex items-center text-gray-600 hover:text-black transition-colors mb-8">
+          <Link href="/" className="flex items-center text-[#203936]/60 hover:text-[#132D22] transition-colors mb-8 font-medium">
             <ArrowLeft className="w-4 h-4 mr-2" />
             {t('signup.backToHome')}
           </Link>
@@ -481,30 +481,30 @@ export default function SignupPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6, ease: 'easeOut' as const }}
           >
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-black mb-2">{t('signup.title')}</h1>
-              <p className="text-gray-600">{t('signup.subtitle')}</p>
+            <div className="mb-10">
+              <h1 className="text-3xl font-black text-[#132D22] mb-3 tracking-tight">{t('signup.title')}</h1>
+              <p className="text-[#203936]/70">{t('signup.subtitle')}</p>
               {error && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{error}</p>
+                <div className="mt-5 p-4 bg-red-50 border border-red-100 rounded-xl">
+                  <p className="text-sm text-red-600 font-medium">{error}</p>
                 </div>
               )}
             </div>
 
             {/* User Type Selection */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+            <div className="mb-8">
+              <label className="block text-sm font-semibold text-[#132D22] mb-3">
                 {t('signup.iAmA')}
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 bg-gray-50/50 p-1.5 rounded-xl border border-gray-100">
                 <button
                   type="button"
                   onClick={() => setUserType('client')}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all duration-300 ${userType === 'client'
-                    ? 'border-black bg-black text-white'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                  className={`py-3 px-4 rounded-lg font-bold transition-all duration-200 ${userType === 'client'
+                    ? 'bg-white text-[#132D22] shadow-sm ring-1 ring-gray-200'
+                    : 'text-[#203936]/60 hover:text-[#132D22] hover:bg-white/50'
                     }`}
                 >
                   {t('signup.client')}
@@ -512,9 +512,9 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setUserType('therapist')}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all duration-300 ${userType === 'therapist'
-                    ? 'border-black bg-black text-white'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                  className={`py-3 px-4 rounded-lg font-bold transition-all duration-200 ${userType === 'therapist'
+                    ? 'bg-white text-[#132D22] shadow-sm ring-1 ring-gray-200'
+                    : 'text-[#203936]/60 hover:text-[#132D22] hover:bg-white/50'
                     }`}
                 >
                   {t('signup.therapist')}
@@ -668,7 +668,7 @@ export default function SignupPage() {
                             </button>
                           </div>
                         )}
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               {t('signup.state')} <span className="text-red-500">*</span>
@@ -732,32 +732,6 @@ export default function SignupPage() {
                               <option value="WY">Wyoming (WY)</option>
                               <option value="DC">District of Columbia (DC)</option>
                             </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              {t('signup.city')} <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              required
-                              value={location.city}
-                              onChange={(e) => handleLocationChange(index, 'city', e.target.value)}
-                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                              placeholder={t('signup.city')}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              {t('signup.postcode')} <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              required
-                              value={location.postcode}
-                              onChange={(e) => handleLocationChange(index, 'postcode', e.target.value)}
-                              className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                              placeholder={t('signup.postcode')}
-                            />
                           </div>
                         </div>
                       </div>
@@ -1491,24 +1465,24 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-[#F7EBD3] bg-[#203936] hover:bg-[#132D22] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#203936] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-8"
               >
                 {isLoading ? t('signup.creatingAccount') : t('signup.createAccount')}
               </button>
             </form>
 
-            <div className="mt-6">
+            <div className="mt-10">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
+                  <div className="w-full border-t border-gray-200" />
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">{t('signup.orContinueWith')}</span>
+                <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
+                  <span className="px-3 bg-white text-[#203936]/40">{t('signup.orContinueWith')}</span>
                 </div>
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                <button className="w-full inline-flex justify-center py-3 px-4 border border-gray-200 rounded-xl shadow-sm bg-white text-sm font-semibold text-[#132D22] hover:bg-gray-50 transition-colors">
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                     <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -1518,7 +1492,7 @@ export default function SignupPage() {
                   <span className="ml-2">{t('signup.google')}</span>
                 </button>
 
-                <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                <button className="w-full inline-flex justify-center py-3 px-4 border border-gray-200 rounded-xl shadow-sm bg-white text-sm font-semibold text-[#132D22] hover:bg-gray-50 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
@@ -1527,20 +1501,20 @@ export default function SignupPage() {
               </div>
             </div>
 
-            <p className="mt-8 text-center text-sm text-gray-600">
+            <p className="mt-8 text-center text-sm text-[#203936]/60">
               {t('signup.alreadyHaveAccount')}{' '}
-              <Link href="/login" className="text-black hover:text-gray-600 transition-colors font-medium">
+              <Link href="/login" className="text-[#203936] hover:text-[#132D22] transition-colors font-bold border-b border-[#203936]/30 hover:border-[#132D22]">
                 {t('signup.signIn')}
               </Link>
             </p>
 
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-center text-sm text-gray-600 mb-4">{t('signup.demoAccess')}</p>
+            <div className="mt-10 pt-8 border-t border-gray-100">
+              <p className="text-center text-xs uppercase tracking-wider font-semibold text-[#203936]/40 mb-4">{t('signup.demoAccess')}</p>
               <div className="flex space-x-3">
-                <Link href="/dashboard" className="flex-1 bg-gray-100 text-black px-4 py-2 rounded-lg text-center hover:bg-gray-200 transition-colors">
+                <Link href="/dashboard" className="flex-1 bg-gray-50 border border-gray-100 text-[#132D22] px-4 py-2.5 rounded-lg text-center text-sm font-semibold hover:bg-gray-100 transition-colors">
                   {t('signup.therapistDemo')}
                 </Link>
-                <Link href="/client-dashboard" className="flex-1 bg-gray-100 text-black px-4 py-2 rounded-lg text-center hover:bg-gray-200 transition-colors">
+                <Link href="/client-dashboard" className="flex-1 bg-gray-50 border border-gray-100 text-[#132D22] px-4 py-2.5 rounded-lg text-center text-sm font-semibold hover:bg-gray-100 transition-colors">
                   {t('signup.clientDemo')}
                 </Link>
               </div>
@@ -1550,57 +1524,73 @@ export default function SignupPage() {
       </div>
 
       {/* Right Side - Image/Content */}
-      <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-center bg-gray-50">
+      <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-center bg-[#F7EBD3] relative overflow-hidden">
+        {/* Subtle background decoration */}
+        <div className="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#203936 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
+          initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="max-w-md text-center"
+          transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' as const }}
+          className="max-w-md text-left relative z-10 px-8"
         >
-          <div className="w-64 h-64 bg-gray-200 rounded-3xl mx-auto mb-8 flex items-center justify-center">
-            <div className="text-6xl">🚀</div>
-          </div>
-          <h2 className="text-2xl font-bold text-black mb-4">
-            {userType === 'client' ? t('signup.findRightTherapist') : t('signup.growYourPractice')}
-          </h2>
-          <p className="text-gray-600 mb-8">
-            {userType === 'client'
-              ? t('signup.clientDescription')
-              : t('signup.therapistDescription')
-            }
-          </p>
-          <div className="space-y-4 text-left">
-            {userType === 'client' ? (
-              <>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                  <span className="text-gray-700">{t('signup.easyOnlineBooking')}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                  <span className="text-gray-700">{t('signup.secureVideoSessions')}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                  <span className="text-gray-700">{t('signup.progressTracking')}</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                  <span className="text-gray-700">{t('signup.clientManagementTools')}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                  <span className="text-gray-700">{t('signup.automatedBilling')}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-black rounded-full mr-3"></div>
-                  <span className="text-gray-700">{t('signup.resourceLibrary')}</span>
-                </div>
-              </>
-            )}
+          <div className="bg-[#132D22]/5 border border-[#132D22]/10 rounded-2xl p-8 backdrop-blur-sm">
+            <h2 className="text-3xl font-black text-[#132D22] mb-4 leading-tight">
+              {userType === 'client' ? t('signup.findRightTherapist') : t('signup.growYourPractice')}
+            </h2>
+            <p className="text-[#203936]/80 text-lg mb-8 leading-relaxed">
+              {userType === 'client'
+                ? t('signup.clientDescription')
+                : t('signup.therapistDescription')
+              }
+            </p>
+
+            <div className="space-y-4 pt-6 border-t border-[#132D22]/10">
+              {userType === 'client' ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                      <ArrowLeft className="w-3 h-3 rotate-180" />
+                    </div>
+                    <span className="text-[#132D22]/80 font-medium">{t('signup.easyOnlineBooking')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                      <ArrowLeft className="w-3 h-3 rotate-180" />
+                    </div>
+                    <span className="text-[#132D22]/80 font-medium">{t('signup.secureVideoSessions')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                      <ArrowLeft className="w-3 h-3 rotate-180" />
+                    </div>
+                    <span className="text-[#132D22]/80 font-medium">{t('signup.progressTracking')}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                      <ArrowLeft className="w-3 h-3 rotate-180" />
+                    </div>
+                    <span className="text-[#132D22]/80 font-medium">{t('signup.clientManagementTools')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                      <ArrowLeft className="w-3 h-3 rotate-180" />
+                    </div>
+                    <span className="text-[#132D22]/80 font-medium">{t('signup.automatedBilling')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                      <ArrowLeft className="w-3 h-3 rotate-180" />
+                    </div>
+                    <span className="text-[#132D22]/80 font-medium">{t('signup.resourceLibrary')}</span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </motion.div>
       </div>

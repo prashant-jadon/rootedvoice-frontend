@@ -42,7 +42,7 @@ const STATUS_ORDER = [
 ]
 
 export default function ClientEvaluationPage() {
-    const { user, isAuthenticated } = useAuth()
+    const { user, isAuthenticated, isLoading: authLoading } = useAuth()
     const router = useRouter()
     const [evaluation, setEvaluation] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -54,7 +54,7 @@ export default function ClientEvaluationPage() {
             return
         }
         fetchEvaluation()
-    }, [isAuthenticated, user])
+    }, [isAuthenticated, user, authLoading])
 
     const fetchEvaluation = async () => {
         try {

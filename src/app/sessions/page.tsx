@@ -41,7 +41,7 @@ export default function SessionsPage() {
     title?: string
     description?: string
   }>({ isOpen: false, amount: 0 })
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
 
   // Create session form state
@@ -55,6 +55,7 @@ export default function SessionsPage() {
   })
 
   useEffect(() => {
+    if (authLoading) return
     if (!isAuthenticated) {
       router.push('/login')
       return
@@ -64,7 +65,7 @@ export default function SessionsPage() {
     if (user?.role === 'therapist') {
       fetchClients()
     }
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, user, authLoading])
 
   const fetchSessions = async () => {
     try {

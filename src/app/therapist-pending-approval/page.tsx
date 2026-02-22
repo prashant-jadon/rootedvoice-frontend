@@ -9,11 +9,12 @@ import { useTranslation } from '@/hooks/useTranslation'
 
 export default function TherapistPendingApprovalPage() {
   const t = useTranslation()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [checkingStatus, setCheckingStatus] = useState(true)
 
   useEffect(() => {
+    if (authLoading) return
     if (!isAuthenticated) {
       router.push('/login')
       return

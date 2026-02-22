@@ -34,7 +34,7 @@ function PricingContent() {
   const [intakeCompleted, setIntakeCompleted] = useState(false)
   const [checkingIntake, setCheckingIntake] = useState(true)
   const [evaluationCredit, setEvaluationCredit] = useState<any>(null)
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslation()
@@ -188,10 +188,8 @@ function PricingContent() {
 
         if (tierId === 'bloom') {
           // Bloom specific text
-          extraTagline = 'Initial Evaluation (required): $195 one-time'
-          billingText = 'per session'
-          priceDisplay = '$125'
-          periodDisplay = '/session'
+          const evalPrice = backendPricing['evaluation']?.price || 195;
+          extraTagline = `Initial Evaluation (required): $${evalPrice} one-time`
         } else if (tierId === 'rooted' || tierId === 'flourish') {
           // Subscription specific text
           extraTagline = 'Initial Evaluation: Included'
@@ -287,6 +285,7 @@ function PricingContent() {
   }
 
   const handleSelectPlan = async (tierId: string) => {
+    if (authLoading) return
     if (!isAuthenticated) {
       // Redirect to signup with selected plan
       router.push(`/signup?plan=${tierId}`)
@@ -555,7 +554,7 @@ function PricingContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className={`bg-white p-8 rounded-2xl premium-shadow relative ${tier.color} ${recommendedTier === tier.id ? 'ring-2 ring-emerald-500 border-emerald-500' :
-                    tier.popular ? 'ring-2 ring-black' : ''
+                  tier.popular ? 'ring-2 ring-black' : ''
                   }`}
               >
                 {recommendedTier === tier.id && (

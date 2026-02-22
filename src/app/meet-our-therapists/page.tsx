@@ -2,14 +2,14 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { 
-  Star, 
-  MapPin, 
-  Clock, 
-  MessageCircle, 
-  Calendar, 
-  Award, 
-  Users, 
+import {
+  Star,
+  MapPin,
+  Clock,
+  MessageCircle,
+  Calendar,
+  Award,
+  Users,
   Heart,
   CheckCircle,
   Filter,
@@ -42,11 +42,11 @@ export default function MeetOurTherapistsPage() {
     try {
       setIsLoading(true)
       const params: any = {}
-      
+
       if (selectedSpecialty !== 'all') {
         params.specialization = selectedSpecialty
       }
-      
+
       if (selectedState !== 'all') {
         params.state = selectedState
       }
@@ -56,20 +56,20 @@ export default function MeetOurTherapistsPage() {
         try {
           const bilingualResponse = await translationAPI.getBilingualTherapists(selectedLanguage)
           const bilingualTherapists = bilingualResponse.data.data || []
-          
+
           // Filter by other criteria
           let filtered = bilingualTherapists
           if (selectedSpecialty !== 'all') {
-            filtered = filtered.filter((t: any) => 
+            filtered = filtered.filter((t: any) =>
               t.specializations?.includes(selectedSpecialty)
             )
           }
           if (selectedState !== 'all') {
-            filtered = filtered.filter((t: any) => 
+            filtered = filtered.filter((t: any) =>
               t.licensedStates?.includes(selectedState)
             )
           }
-          
+
           setTherapists(filtered)
           return
         } catch (error) {
@@ -140,10 +140,10 @@ export default function MeetOurTherapistsPage() {
 
   const filteredTherapists = therapists.filter((therapist: any) => {
     const fullName = `${therapist.userId?.firstName || ''} ${therapist.userId?.lastName || ''}`.toLowerCase()
-    const matchesSearch = searchTerm === '' || 
+    const matchesSearch = searchTerm === '' ||
       fullName.includes(searchTerm.toLowerCase()) ||
       therapist.specializations?.some((s: string) => s.toLowerCase().includes(searchTerm.toLowerCase()))
-    
+
     return matchesSearch
   })
 
@@ -158,7 +158,7 @@ export default function MeetOurTherapistsPage() {
               <span className="text-gray-400">/</span>
               <h1 className="text-2xl font-bold text-black">Meet Our Therapists</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/services" className="text-gray-600 hover:text-black transition-colors">
                 Services
@@ -185,7 +185,7 @@ export default function MeetOurTherapistsPage() {
             <span className="gradient-text">Therapists</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Our team of certified speech-language pathologists brings years of experience 
+            Our team of certified speech-language pathologists brings years of experience
             and specialized training to help you achieve your communication goals.
           </p>
         </motion.div>
@@ -277,7 +277,7 @@ export default function MeetOurTherapistsPage() {
           <div className="text-center py-12">
             <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
             <p className="text-xl text-gray-600">No therapists found matching your criteria</p>
-            <button 
+            <button
               onClick={() => {
                 setSelectedSpecialty('all')
                 setSelectedState('all')
@@ -317,24 +317,23 @@ export default function MeetOurTherapistsPage() {
                     </h3>
                     <p className="text-gray-600 mb-2">Speech-Language Pathologist</p>
                     <div className="mb-3">
-                      <CredentialsBadge 
-                        credentials={therapist.credentials || 'SLP'} 
+                      <CredentialsBadge
+                        credentials={therapist.credentials || 'SLP'}
                         canSupervise={therapist.canSupervise || false}
                         size="sm"
                       />
                     </div>
-                    
+
                     {/* Rating */}
                     <div className="flex items-center space-x-2 mb-3">
                       <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.floor(therapist.rating || 0)
+                            className={`w-4 h-4 ${i < Math.floor(therapist.rating || 0)
                                 ? 'text-yellow-400 fill-current'
                                 : 'text-gray-300'
-                            }`}
+                              }`}
                           />
                         ))}
                       </div>
@@ -342,7 +341,7 @@ export default function MeetOurTherapistsPage() {
                         {(therapist.rating || 0).toFixed(1)} ({therapist.totalReviews || 0} reviews)
                       </span>
                     </div>
-                    
+
                     {/* Verified Badge */}
                     {therapist.isVerified && (
                       <div className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 text-xs rounded-full">
@@ -400,10 +399,6 @@ export default function MeetOurTherapistsPage() {
                   {/* Pricing */}
                   <div className="mb-6 p-3 bg-gray-50 rounded-lg">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Hourly Rate:</span>
-                      <span className="font-semibold text-black">${therapist.hourlyRate || 85}/hr</span>
-                    </div>
-                    <div className="flex justify-between items-center mt-1">
                       <span className="text-sm text-gray-600">Consultation:</span>
                       <span className="text-sm text-green-600 font-medium">Free 15-min</span>
                     </div>
@@ -419,19 +414,19 @@ export default function MeetOurTherapistsPage() {
                       View Profile
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
-                  
-                  <Link
-                    href="/pricing"
-                    className="w-full border border-gray-300 text-black py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
-                  >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Schedule Consultation
-                  </Link>
+
+                    <Link
+                      href="/pricing"
+                      className="w-full border border-gray-300 text-black py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Schedule Consultation
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
         )}
 
         {/* Why Choose Us */}
@@ -444,11 +439,11 @@ export default function MeetOurTherapistsPage() {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-black mb-4">Why Choose Our Therapists?</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              All our therapists are licensed, certified, and committed to providing 
+              All our therapists are licensed, certified, and committed to providing
               evidence-based, personalized care.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
@@ -487,7 +482,7 @@ export default function MeetOurTherapistsPage() {
         >
           <h2 className="text-2xl font-bold text-black mb-4">Ready to Get Started?</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Schedule a free consultation with one of our experienced therapists 
+            Schedule a free consultation with one of our experienced therapists
             and take the first step towards better communication.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

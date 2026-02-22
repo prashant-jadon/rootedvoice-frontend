@@ -39,11 +39,13 @@ export default function ClientDashboardPage() {
   const [showConversionModal, setShowConversionModal] = useState(false)
   const [pendingEvaluation, setPendingEvaluation] = useState<any>(null)
   const [evaluationCredit, setEvaluationCredit] = useState<any>(null)
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const t = useTranslation()
 
   useEffect(() => {
+    if (authLoading) return
+
     if (!isAuthenticated) {
       router.push('/login')
       return
@@ -55,7 +57,7 @@ export default function ClientDashboardPage() {
     }
 
     fetchClientData()
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, user, authLoading])
 
   const fetchClientData = async () => {
     try {

@@ -18,7 +18,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { clientAPI } from '@/lib/api'
 
 export default function ClientIntakePage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [intakeStatus, setIntakeStatus] = useState<any>(null)
@@ -42,12 +42,13 @@ export default function ClientIntakePage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
+    if (authLoading) return
     if (!isAuthenticated || user?.role !== 'client') {
       router.push('/login')
       return
     }
     checkIntakeStatus()
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, user, authLoading])
 
   const checkIntakeStatus = async () => {
     try {
@@ -222,8 +223,8 @@ export default function ClientIntakePage() {
                   type="button"
                   onClick={() => setFormData({ ...formData, clientType: 'child' })}
                   className={`p-4 rounded-lg border-2 transition-all ${formData.clientType === 'child'
-                      ? 'border-black bg-black text-white'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                    ? 'border-black bg-black text-white'
+                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                     }`}
                 >
                   <div className="text-2xl mb-2">👶</div>
@@ -234,8 +235,8 @@ export default function ClientIntakePage() {
                   type="button"
                   onClick={() => setFormData({ ...formData, clientType: 'adult' })}
                   className={`p-4 rounded-lg border-2 transition-all ${formData.clientType === 'adult'
-                      ? 'border-black bg-black text-white'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                    ? 'border-black bg-black text-white'
+                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                     }`}
                 >
                   <div className="text-2xl mb-2">👤</div>

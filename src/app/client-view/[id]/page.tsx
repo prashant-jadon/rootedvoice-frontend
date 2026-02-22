@@ -24,7 +24,7 @@ import Link from 'next/link'
 export default function ClientViewPage() {
   const params = useParams()
   const router = useRouter()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const [client, setClient] = useState<any>(null)
   const [activeTab, setActiveTab] = useState('documents')
   const [timelineEvents, setTimelineEvents] = useState<any[]>([])
