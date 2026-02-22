@@ -19,7 +19,8 @@ import {
   Mail,
   Globe,
   GraduationCap,
-  Shield
+  Shield,
+  Target
 } from 'lucide-react'
 import Link from 'next/link'
 import { therapistAPI, translationAPI } from '@/lib/api'
@@ -331,8 +332,8 @@ export default function MeetOurTherapistsPage() {
                           <Star
                             key={i}
                             className={`w-4 h-4 ${i < Math.floor(therapist.rating || 0)
-                                ? 'text-yellow-400 fill-current'
-                                : 'text-gray-300'
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
                               }`}
                           />
                         ))}
@@ -436,30 +437,39 @@ export default function MeetOurTherapistsPage() {
           transition={{ duration: 0.6 }}
           className="mt-16 bg-white rounded-2xl premium-shadow p-8"
         >
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-black mb-4">Why Choose Our Therapists?</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              All our therapists are licensed, certified, and committed to providing
-              evidence-based, personalized care.
-            </p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-black mb-6">Why Rooted Voices Is Different</h2>
+            <div className="max-w-3xl mx-auto space-y-4 text-lg text-gray-600">
+              <p>
+                Rooted Voices was founded by a practicing Speech-Language Pathologist who understands firsthand the clinical, ethical, and accessibility gaps within traditional therapy systems.
+              </p>
+              <p>
+                We are building a platform where quality, structure, and integrity come before volume.
+              </p>
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
                 icon: <Award className="w-8 h-8" />,
-                title: 'Licensed & Certified',
-                description: 'All therapists hold current licenses and ASHA certification (CCC-SLP).'
+                title: 'Clinician-Founded & Practicing Professionals',
+                description: 'Our therapists are licensed SLPs who actively practice and understand real-world clinical demands. This platform was built by clinicians — not corporations.'
+              },
+              {
+                icon: <Target className="w-8 h-8" />,
+                title: 'Evaluation-First Model',
+                description: 'Therapy begins with appropriate diagnostic evaluation and clearly defined goals. We prioritize measurable progress, not open-ended sessions without structure.'
+              },
+              {
+                icon: <Globe className="w-8 h-8" />,
+                title: 'Multilingual & Culturally Responsive Care',
+                description: 'We support bilingual clinicians, real-time session transcription, and a language-responsive platform to expand access to diverse communities.'
               },
               {
                 icon: <Shield className="w-8 h-8" />,
-                title: 'HIPAA Compliant',
-                description: 'Secure, confidential therapy sessions with full privacy protection.'
-              },
-              {
-                icon: <Heart className="w-8 h-8" />,
-                title: 'Personalized Care',
-                description: 'Individualized treatment plans tailored to your specific needs and goals.'
+                title: 'Secure & Compliant Infrastructure',
+                description: 'All sessions are conducted through encrypted, HIPAA-compliant technology to ensure privacy and professional standards.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center">
@@ -467,7 +477,7 @@ export default function MeetOurTherapistsPage() {
                   {feature.icon}
                 </div>
                 <h3 className="text-lg font-semibold text-black mb-2">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
