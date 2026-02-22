@@ -117,15 +117,15 @@ export default function Header() {
     return (
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center py-2">
             <div className="flex items-center space-x-8">
-              <Link href="/" className="flex items-center">
+              <Link href="/" className="flex items-center gap-3 group">
                 <img
                   src="/logorooted 1.png"
                   alt="Rooted Voices"
-                  className="w-18 h-20 mr-2"
+                  className="h-[80px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
                 />
-                <span className="text-2xl font-bold text-black">Rooted Voices</span>
+                <span className="text-2xl font-bold text-gray-900 tracking-tight">Rooted Voices</span>
               </Link>
 
               {/* Navigation Links for Unauthenticated Users */}
@@ -165,15 +165,15 @@ export default function Header() {
   return (
     <header className="bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center py-4">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center gap-3 group">
               <img
                 src="/logorooted 1.png"
                 alt="Rooted Voices"
-                className="w-18 h-20 mr-2"
+                className="h-[104px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
               />
-              <span className="text-2xl font-bold text-black">Rooted Voices</span>
+              <span className="text-2xl font-bold text-gray-900 tracking-tight hidden sm:block">Rooted Voices</span>
             </Link>
 
             <nav className="hidden md:flex items-center space-x-6">

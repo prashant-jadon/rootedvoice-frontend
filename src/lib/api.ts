@@ -216,8 +216,12 @@ export const resourceAPI = {
   aiSearch: (query: string, params?: any) =>
     api.get('/resources/ai-search', { params: { query, ...params } }),
   getById: (id: string) => api.get(`/resources/${id}`),
-  create: (data: any) => api.post('/resources', data),
-  update: (id: string, data: any) => api.put(`/resources/${id}`, data),
+  create: (formData: FormData) => api.post('/resources', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id: string, formData: FormData) => api.put(`/resources/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   delete: (id: string) => api.delete(`/resources/${id}`),
 };
 

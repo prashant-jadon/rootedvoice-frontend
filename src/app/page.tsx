@@ -243,8 +243,8 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-[68px]">
 
             {/* Logo */}
-            <Link href="/" className="flex items-center group">
-              <img src="/logorooted 1.png" alt="Rooted Voices" className="h-11 w-auto" />
+            <Link href="/" className="flex items-center gap-3 group">
+              <img src="/logorooted 1.png" alt="Rooted Voices" className="h-[80px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105" />
             </Link>
 
             {/* Desktop nav */}
@@ -754,7 +754,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-5 gap-10 mb-14">
             <div className="md:col-span-2">
-              <img src="/logorooted 1.png" alt="Rooted Voices" className="h-12 w-auto mb-4 brightness-0 invert opacity-80" />
+              <img src="/logorooted 1.png" alt="Rooted Voices" className="h-14 w-auto mb-4 brightness-0 invert opacity-80" />
               <p className="text-[#F7EBD3]/45 text-sm leading-relaxed max-w-xs">
                 Making speech & language therapy accessible, private, and effective for everyone.
               </p>
