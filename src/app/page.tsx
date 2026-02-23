@@ -396,8 +396,7 @@ export default function LandingPage() {
               variants={fadeUp}
               className="text-lg text-white/75 leading-relaxed max-w-xl mb-10"
             >
-              Connect with certified speech-language pathologists from the comfort of home.
-              Personalized therapy that fits your life — private, effective, and accessible.
+              At Rooted Voices, we believe communication holds power — the power to connect, advocate, grow, and thrive.
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 items-start">

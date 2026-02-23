@@ -915,15 +915,7 @@ function PricingContent() {
             Contact us for personalized recommendations.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                <Phone className="w-6 h-6 text-black" />
-              </div>
-              <h3 className="font-semibold text-black mb-1">Call Us</h3>
-              <p className="text-gray-600 text-sm">Contact Us</p>
-              <p className="text-gray-500 text-xs">Mon-Fri, 8AM-6PM</p>
-            </div>
+          <div className="grid grid-cols-2 gap-6 max-w-2xl mx-auto">
 
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">

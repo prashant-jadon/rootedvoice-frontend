@@ -478,7 +478,6 @@ export default function ForTherapistsPage() {
         </div>
       </section>
 
-      <Footer />
     </div>
   )
 }
