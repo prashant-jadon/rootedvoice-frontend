@@ -530,14 +530,14 @@ function PricingContent() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-            {t('pricing.title')}
+            Your Care Starts with Understanding
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            {t('pricing.subtitle')}
+            Every journey begins with a comprehensive evaluation. Based on your needs, your clinician will recommend the therapy structure that best supports your communication goals.
           </p>
           {!isAuthenticated && (
             <p className="text-sm text-gray-500">
-              Please <Link href="/login" className="text-black font-semibold hover:underline">login</Link> or <Link href="/signup" className="text-black font-semibold hover:underline">create an account</Link> to select a plan
+              Please <Link href="/login" className="text-black font-semibold hover:underline">login</Link> or <Link href="/signup" className="text-black font-semibold hover:underline">create an account</Link> to start your evaluation
             </p>
           )}
         </motion.div>
@@ -548,75 +548,49 @@ function PricingContent() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {pricingTiers.map((tier, index) => (
-              <motion.div
-                key={tier.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`bg-white p-8 rounded-2xl premium-shadow relative ${tier.color} ${recommendedTier === tier.id ? 'ring-2 ring-emerald-500 border-emerald-500' :
-                  tier.popular ? 'ring-2 ring-black' : ''
-                  }`}
-              >
-                {recommendedTier === tier.id && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-emerald-600 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                      <Star className="w-3 h-3" /> Recommended for You
+          <div className="max-w-7xl mx-auto mb-16 space-y-16">
+
+            {/* Evaluation Highlight Card */}
+            {pricingTiers.find(t => t.id === 'evaluation') && (
+              <div className="max-w-3xl mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6 }}
+                  className="bg-white p-8 md:p-12 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border-2 border-[#132D22] relative overflow-hidden text-center"
+                >
+                  <div className="absolute top-0 right-0 p-4">
+                    <span className="bg-[#132D22] text-[#F7EBD3] px-4 py-1.5 rounded-full text-sm font-bold tracking-wide">
+                      Step 1
                     </span>
                   </div>
-                )}
-                {tier.popular && !recommendedTier && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-semibold">
-                      {t('pricing.mostPopular')}
+
+                  <div className="text-5xl mb-6">📋</div>
+                  <h3 className="text-3xl font-black text-[#132D22] mb-4">
+                    Comprehensive Evaluation
+                  </h3>
+
+                  <div className="text-5xl font-black text-[#132D22] mb-3">
+                    {pricingTiers.find(t => t.id === 'evaluation')?.price}
+                    <span className="text-xl font-medium text-gray-500 block mt-1">
+                      (one-time fee)
                     </span>
                   </div>
-                )}
 
-                <div className="text-center mb-8">
-                  <div className="text-4xl mb-2">{tier.icon}</div>
-                  <h3 className="text-2xl font-bold text-black mb-2">{tier.name} Tier</h3>
-                  <div className="text-4xl font-bold text-black mb-2">
-                    {tier.price}
-                    <span className="text-lg text-gray-600">{tier.period}</span>
-                  </div>
-                  <p className="text-sm text-gray-500 mb-2">{tier.billing}</p>
-                  {evaluationCredit && evaluationCredit.status === 'available' && evaluationCredit.amount > 0 && tier.id !== 'evaluation' && tier.id !== 'bloom' && (
-                    <p className="text-sm font-semibold text-green-600">
-                      After credit: ${Math.max(0, parseInt(tier.price.replace('$', '')) - evaluationCredit.amount)}{tier.period} first month
+                  <p className="text-lg text-[#203936]/80 font-medium mb-4 max-w-xl mx-auto leading-relaxed">
+                    Clinical assessment, goal-setting, and personalized care recommendation.
+                  </p>
+
+                  <div className="bg-[#132D22]/5 rounded-xl p-4 mb-8 inline-block">
+                    <p className="text-sm font-bold text-[#132D22]">
+                      ✨ The {pricingTiers.find(t => t.id === 'evaluation')?.price} evaluation fee is credited toward your recommended subscription plan.
                     </p>
-                  )}
-                  {tier.sessionsPerMonth > 0 && (
-                    <p className="text-sm font-semibold text-black mb-2">
-                      {tier.sessionsPerMonth} {tier.sessionsPerMonth === 1 ? 'session' : 'sessions'} per month ({tier.duration} min each)
-                    </p>
-                  )}
-                  <p className="text-gray-600 font-medium mb-2">{tier.description}</p>
-                  <p className="text-sm text-gray-500">{tier.tagline}</p>
-                </div>
-
-                <ul className="space-y-4 mb-8">
-                  {tier.features.map((feature: string, featureIndex: number) => (
-                    <li key={featureIndex} className="flex items-start">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-600 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {currentSubscription?.tier === tier.id ? (
-                  <div className="w-full py-3 rounded-full font-semibold bg-green-500 text-white text-center">
-                    ✓ {t('pricing.currentPlan')}
                   </div>
-                ) : (
+
                   <button
-                    onClick={() => handleSelectPlan(tier.id)}
+                    onClick={() => handleSelectPlan('evaluation')}
                     disabled={isLoading || (isAuthenticated && user?.role === 'client' && !intakeCompleted) || checkingIntake}
-                    className={`w-full py-3 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${tier.popular
-                      ? 'bg-black text-white hover:bg-gray-800'
-                      : 'border-2 border-black text-black hover:bg-black hover:text-white'
-                      }`}
+                    className="w-full md:w-auto px-8 py-4 bg-[#132D22] text-[#F7EBD3] rounded-xl font-bold text-lg hover:bg-[#203936] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                   >
                     {checkingIntake
                       ? 'Checking...'
@@ -624,15 +598,115 @@ function PricingContent() {
                         ? t('common.loading')
                         : (isAuthenticated && user?.role === 'client' && !intakeCompleted)
                           ? 'Complete Intake First'
-                          : isAuthenticated
-                            ? currentSubscription
-                              ? `Upgrade to ${tier.name}`
-                              : (tier.id === 'bloom' ? 'Purchase & Schedule Evaluation' : 'Subscribe')
-                            : t('nav.getStarted')}
+                          : 'Schedule Your Evaluation →'}
                   </button>
-                )}
-              </motion.div>
-            ))}
+                </motion.div>
+              </div>
+            )}
+
+            {/* Subscriptions Section */}
+            <div className="pt-8 border-t border-gray-200">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold text-[#132D22] mb-4">Recommended Therapy Structures</h2>
+                <p className="text-lg text-[#203936]/70">Following your evaluation, your clinician may recommend one of the following care options:</p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-8">
+                {pricingTiers.filter(t => t.id !== 'evaluation').map((tier, index) => (
+                  <motion.div
+                    key={tier.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className={`bg-white p-8 rounded-2xl premium-shadow relative ${recommendedTier === tier.id
+                      ? 'ring-2 ring-emerald-500 border-emerald-500'
+                      : tier.popular ? 'ring-2 ring-black' : 'border border-gray-100'
+                      }`}
+                  >
+                    {recommendedTier === tier.id && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-full text-center">
+                        <span className="bg-emerald-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold inline-flex items-center gap-1 shadow-md">
+                          <Star className="w-4 h-4" /> Recommended for You
+                        </span>
+                      </div>
+                    )}
+                    {tier.popular && !recommendedTier && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-full text-center">
+                        <span className="bg-[#132D22] text-[#F7EBD3] px-4 py-1.5 rounded-full text-sm font-semibold shadow-md inline-block">
+                          {t('pricing.mostPopular')}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="text-center mb-8 pt-2">
+                      <div className="text-4xl mb-3">{tier.icon}</div>
+                      <h3 className="text-2xl font-bold text-black mb-2">{tier.name}</h3>
+                      <div className="text-4xl font-bold text-black mb-2 flex items-baseline justify-center">
+                        {tier.price}
+                        <span className="text-lg text-gray-500 ml-1 font-medium">{tier.period}</span>
+                      </div>
+                      <p className="text-sm font-medium text-gray-500 mb-4">{tier.billing}</p>
+
+                      {evaluationCredit && evaluationCredit.status === 'available' && evaluationCredit.amount > 0 && tier.id !== 'bloom' && (
+                        <div className="bg-green-50 text-green-700 text-sm font-semibold py-2 px-3 rounded-lg mb-4">
+                          After credit: ${Math.max(0, parseInt(tier.price.replace('$', '')) - evaluationCredit.amount)}{tier.period} first month
+                        </div>
+                      )}
+
+                      {tier.sessionsPerMonth > 0 && (
+                        <div className="bg-gray-50 py-2 px-3 rounded-lg mb-4">
+                          <p className="text-sm font-semibold text-[#132D22]">
+                            {tier.sessionsPerMonth} session{tier.sessionsPerMonth !== 1 ? 's' : ''} / month
+                          </p>
+                          <p className="text-xs text-gray-500 mt-0.5">{tier.duration} min each</p>
+                        </div>
+                      )}
+
+                      <p className="text-gray-600 font-medium mb-3 min-h-[48px] flex items-center justify-center">{tier.description}</p>
+                      <p className="text-sm text-gray-500 italic bg-gray-50 py-2 rounded-lg">{tier.tagline}</p>
+                    </div>
+
+                    <ul className="space-y-4 mb-8">
+                      {tier.features.map((feature: string, featureIndex: number) => (
+                        <li key={featureIndex} className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-600 text-sm leading-relaxed">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-auto pt-6">
+                      {currentSubscription?.tier === tier.id ? (
+                        <div className="w-full py-4 rounded-xl font-semibold bg-green-50 text-green-700 border border-green-200 text-center flex items-center justify-center">
+                          <CheckCircle className="w-5 h-5 mr-2" /> Current Plan
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleSelectPlan(tier.id)}
+                          disabled={isLoading || (isAuthenticated && user?.role === 'client' && !intakeCompleted) || checkingIntake}
+                          className={`w-full py-4 rounded-xl font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${tier.popular || recommendedTier === tier.id
+                            ? 'bg-[#132D22] text-[#F7EBD3] hover:bg-[#203936] shadow-md hover:shadow-lg hover:-translate-y-0.5'
+                            : 'bg-white border-2 border-[#132D22] text-[#132D22] hover:bg-[#132D22] hover:text-[#F7EBD3]'
+                            }`}
+                        >
+                          {checkingIntake
+                            ? 'Checking...'
+                            : isLoading
+                              ? t('common.loading')
+                              : (isAuthenticated && user?.role === 'client' && !intakeCompleted)
+                                ? 'Complete Intake First'
+                                : isAuthenticated
+                                  ? currentSubscription
+                                    ? `Switch to ${tier.name}`
+                                    : 'Select Structure'
+                                  : t('nav.getStarted')}
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 

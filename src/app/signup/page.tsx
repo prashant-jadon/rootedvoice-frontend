@@ -240,13 +240,6 @@ export default function SignupPage() {
 
 
 
-      // Validate hourly rate against credentials
-      const maxRate = formData.credentials === 'SLP' ? 75 : 55
-      if (formData.hourlyRate > maxRate) {
-        setError(t('signup.hourlyRateExceeded').replace('{credential}', formData.credentials).replace('{maxRate}', maxRate.toString()))
-        setIsLoading(false)
-        return
-      }
     }
 
     try {
@@ -260,7 +253,6 @@ export default function SignupPage() {
           lastName: formData.lastName,
           phone: formData.phone,
           credentials: formData.credentials,
-          hourlyRate: formData.hourlyRate,
           specializations: formData.specializations,
           practiceLocation: {
             state: formData.practiceState,
@@ -609,7 +601,7 @@ export default function SignupPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          setFormData({ ...formData, credentials: 'SLP', hourlyRate: 75 })
+                          setFormData({ ...formData, credentials: 'SLP' })
                         }}
                         className={`py-3 px-4 rounded-lg border-2 transition-all ${formData.credentials === 'SLP'
                           ? 'border-black bg-black text-white'
@@ -622,7 +614,7 @@ export default function SignupPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          setFormData({ ...formData, credentials: 'SLPA', hourlyRate: 55 })
+                          setFormData({ ...formData, credentials: 'SLPA' })
                         }}
                         className={`py-3 px-4 rounded-lg border-2 transition-all ${formData.credentials === 'SLPA'
                           ? 'border-black bg-black text-white'
@@ -729,31 +721,6 @@ export default function SignupPage() {
                         </div>
                       </div>
                     ))}
-                  </div>
-
-                  {/* Hourly Rate */}
-                  <div>
-                    <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700 mb-2">
-                      {t('signup.hourlyRate')} <span className="text-red-500">*</span>
-                      <span className="text-xs text-gray-500 ml-2">
-                        {t('signup.maxRate')}: ${formData.credentials === 'SLP' ? '75' : '55'}/hr
-                      </span>
-                    </label>
-                    <input
-                      id="hourlyRate"
-                      type="number"
-                      required
-                      min="0"
-                      max={formData.credentials === 'SLP' ? 75 : 55}
-                      value={formData.hourlyRate}
-                      onChange={(e) => {
-                        const rate = parseFloat(e.target.value) || 0
-                        const maxRate = formData.credentials === 'SLP' ? 75 : 55
-                        setFormData({ ...formData, hourlyRate: Math.min(rate, maxRate) })
-                      }}
-                      className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                      placeholder={t('signup.enterHourlyRate')}
-                    />
                   </div>
 
                   {/* ASHA Certification (SLP Only) */}

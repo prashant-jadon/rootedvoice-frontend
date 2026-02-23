@@ -183,11 +183,10 @@ export default function MeetOurTherapistsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
             Meet Our Licensed
             <br />
-            <span className="gradient-text">Therapists</span>
+            <span className="gradient-text">Clinicians</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Our team of certified speech-language pathologists brings years of experience
-            and specialized training to help you achieve your communication goals.
+            Rooted Voices clinicians are licensed professionals committed to structured, evaluation-first care. Each therapist is selected for clinical excellence, ethical practice, and dedication to lasting communication progress.
           </p>
         </motion.div>
 
@@ -397,13 +396,7 @@ export default function MeetOurTherapistsPage() {
                     {therapist.bio || 'Experienced speech-language pathologist dedicated to helping clients achieve their communication goals.'}
                   </p>
 
-                  {/* Pricing */}
-                  <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Consultation:</span>
-                      <span className="text-sm text-green-600 font-medium">Free 15-min</span>
-                    </div>
-                  </div>
+
 
                   {/* Action Buttons */}
                   <div className="space-y-3">
@@ -421,7 +414,7 @@ export default function MeetOurTherapistsPage() {
                       className="w-full border border-gray-300 text-black py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
                     >
                       <Calendar className="w-4 h-4 mr-2" />
-                      Schedule Consultation
+                      Schedule an Evaluation
                     </Link>
                   </div>
                 </div>
@@ -490,18 +483,18 @@ export default function MeetOurTherapistsPage() {
           transition={{ duration: 0.6 }}
           className="mt-16 text-center"
         >
-          <h2 className="text-2xl font-bold text-black mb-4">Ready to Get Started?</h2>
+          <h2 className="text-2xl font-bold text-black mb-4">Begin with a Comprehensive Evaluation</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Schedule a free consultation with one of our experienced therapists
-            and take the first step towards better communication.
+            Every care plan at Rooted Voices starts with a structured evaluation to ensure therapy is intentional, personalized, and clinically appropriate.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/pricing" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">
-              View Pricing Plans
+              Schedule an Evaluation
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link href="/services" className="border border-gray-300 text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300">
-              Learn About Our Services
+              View Services & Pricing
+              <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
           </div>
         </motion.div>

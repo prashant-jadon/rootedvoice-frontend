@@ -202,8 +202,8 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                     <Star
                       key={i}
                       className={`w-5 h-5 ${i < Math.floor(therapist.rating || 0)
-                          ? 'text-yellow-400 fill-current'
-                          : 'text-gray-300'
+                        ? 'text-yellow-400 fill-current'
+                        : 'text-gray-300'
                         }`}
                     />
                   ))}
@@ -261,7 +261,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                     ? 'Sign Up to Book'
                     : !subscription
                       ? 'Choose Plan to Book'
-                      : 'Schedule Consultation'}
+                      : 'Schedule an Evaluation'}
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button className="border border-gray-300 text-black px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
@@ -281,8 +281,8 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
-                    ? 'bg-black text-white'
-                    : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                  ? 'bg-black text-white'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
                   }`}
               >
                 {tab.icon}
@@ -435,8 +435,8 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                                 <Star
                                   key={i}
                                   className={`w-4 h-4 ${i < review.rating
-                                      ? 'text-yellow-400 fill-current'
-                                      : 'text-gray-300'
+                                    ? 'text-yellow-400 fill-current'
+                                    : 'text-gray-300'
                                     }`}
                                 />
                               ))}
@@ -496,34 +496,24 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                   )}
                 </div>
 
-                <div>
-                  <h3 className="text-lg font-semibold text-black mb-4">Pricing</h3>
-                  <div className="space-y-4">
-                    <div className="p-4 bg-green-50 rounded-lg">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-black">Initial Consultation</span>
-                        <span className="text-green-600 font-medium">Free 15-min</span>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                    <h4 className="font-semibold text-black mb-2">Session Options</h4>
-                    <ul className="space-y-1 text-sm text-gray-600">
-                      <li className="flex items-center space-x-2">
-                        <CheckCircle className="w-4 h-4 text-blue-600" />
-                        <span>30-minute sessions available</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <CheckCircle className="w-4 h-4 text-blue-600" />
-                        <span>45-minute sessions available</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <CheckCircle className="w-4 h-4 text-blue-600" />
-                        <span>60-minute sessions available</span>
-                      </li>
-                    </ul>
-                  </div>
+
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                  <h4 className="font-semibold text-black mb-2">Session Options</h4>
+                  <ul className="space-y-1 text-sm text-gray-600">
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-blue-600" />
+                      <span>30-minute sessions available</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-blue-600" />
+                      <span>45-minute sessions available</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-blue-600" />
+                      <span>60-minute sessions available</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </motion.div>
@@ -537,9 +527,9 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
           transition={{ duration: 0.6, delay: 0.3 }}
           className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl premium-shadow p-8 mt-8 text-white text-center"
         >
-          <h2 className="text-2xl font-bold mb-4">Ready to Get Started?</h2>
+          <h2 className="text-2xl font-bold mb-4">Begin with a Comprehensive Evaluation</h2>
           <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-            Schedule a free 15-minute consultation with Dr. {therapistName} to discuss your goals and see if we're a good fit.
+            Every care plan at Rooted Voices starts with a structured evaluation to ensure therapy is intentional, personalized, and clinically appropriate.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
@@ -550,7 +540,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                 ? 'Sign Up & Schedule'
                 : !subscription
                   ? 'Choose Plan & Schedule'
-                  : 'Schedule Free Consultation'}
+                  : 'Schedule an Evaluation'}
             </button>
             <Link
               href="/meet-our-therapists"

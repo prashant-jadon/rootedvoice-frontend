@@ -55,7 +55,7 @@ export default function AccessibilityFeatures() {
     // For now, use image attributes and context
     const src = img.src || ''
     const className = img.className || ''
-    
+
     if (src.includes('therapist') || className.includes('therapist')) {
       return 'Professional therapist providing speech therapy services'
     }
@@ -74,8 +74,8 @@ export default function AccessibilityFeatures() {
 
     document.addEventListener('keydown', (e) => {
       // Skip navigation for input fields
-      if ((e.target as HTMLElement).tagName === 'INPUT' || 
-          (e.target as HTMLElement).tagName === 'TEXTAREA') {
+      if ((e.target as HTMLElement).tagName === 'INPUT' ||
+        (e.target as HTMLElement).tagName === 'TEXTAREA') {
         return
       }
 
@@ -84,10 +84,10 @@ export default function AccessibilityFeatures() {
         const focusableElements = Array.from(
           document.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])')
         ) as HTMLElement[]
-        
+
         const currentIndex = focusableElements.indexOf(e.target as HTMLElement)
         if (currentIndex !== -1) {
-          const nextIndex = e.key === 'ArrowRight' 
+          const nextIndex = e.key === 'ArrowRight'
             ? (currentIndex + 1) % focusableElements.length
             : (currentIndex - 1 + focusableElements.length) % focusableElements.length
           focusableElements[nextIndex]?.focus()
@@ -227,17 +227,6 @@ export default function AccessibilityFeatures() {
     }
   }
 
-  return (
-    <div className="accessibility-controls" style={{ position: 'fixed', bottom: '100px', right: '20px', zIndex: 9999 }}>
-      <button
-        onClick={toggleVoiceCommands}
-        className="bg-black text-white px-4 py-2 rounded-full text-sm shadow-lg hover:bg-gray-800 transition-colors"
-        aria-label={voiceCommandsEnabled ? 'Disable voice commands' : 'Enable voice commands'}
-        title={voiceCommandsEnabled ? 'Voice commands enabled. Say "Hey Rooted Voices" to activate.' : 'Enable voice commands'}
-      >
-        {voiceCommandsEnabled ? '🎤 Voice On' : '🎤 Voice Off'}
-      </button>
-    </div>
-  )
+  return null
 }
 

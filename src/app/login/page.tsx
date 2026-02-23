@@ -189,17 +189,6 @@ export default function LoginPage() {
               </Link>
             </p>
 
-            <div className="mt-10 pt-8 border-t border-gray-100">
-              <p className="text-center text-xs uppercase tracking-wider font-semibold text-[#203936]/40 mb-4">Quick Demo Access</p>
-              <div className="flex space-x-3">
-                <Link href="/dashboard" className="flex-1 bg-gray-50 border border-gray-100 text-[#132D22] px-4 py-2.5 rounded-lg text-center text-sm font-semibold hover:bg-gray-100 transition-colors">
-                  Therapist
-                </Link>
-                <Link href="/client-dashboard" className="flex-1 bg-gray-50 border border-gray-100 text-[#132D22] px-4 py-2.5 rounded-lg text-center text-sm font-semibold hover:bg-gray-100 transition-colors">
-                  Client
-                </Link>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>

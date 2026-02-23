@@ -193,7 +193,8 @@
   /* Google Translate Widget Styling - Premium Redesign */
   .google-translate-widget {
     position: fixed;
-    bottom: 24px;
+    bottom: 96px;
+    /* Positioned above the chat widget */
     right: 24px;
     z-index: 1000;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
@@ -358,8 +359,9 @@
     }
 
     .google-translate-widget {
-      bottom: 20px;
-      right: 12px;
+      bottom: 88px;
+      /* Lifted above the chat widget */
+      right: 24px;
     }
 
     .google-translate-widget.is-closed {
