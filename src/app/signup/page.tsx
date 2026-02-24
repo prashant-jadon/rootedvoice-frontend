@@ -231,12 +231,7 @@ export default function SignupPage() {
       //   }
       // }
 
-      // Ensure insurance is provided
-      if (!formData.insuranceProvider || !formData.insurancePolicyNumber || !formData.insuranceFile) {
-        setError(t('signup.insuranceRequired'))
-        setIsLoading(false)
-        return
-      }
+      // Insurance is optional at signup — therapists can add it later
 
 
 
@@ -763,7 +758,7 @@ export default function SignupPage() {
                               id="ashaCertificationFile"
                               type="file"
                               accept=".pdf,.jpg,.jpeg,.png"
-                              required={formData.credentials === 'SLP'}
+                              required={false}
                               onChange={(e) => {
                                 const file = e.target.files?.[0] || null
                                 setFormData({ ...formData, ashaCertificationFile: file, spaMembershipFile: file })

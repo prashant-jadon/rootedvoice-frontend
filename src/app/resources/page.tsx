@@ -427,7 +427,13 @@ export default function ResourcesPage() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <a
-                          href={`http://localhost:5001${resource.fileUrl}`}
+                          href={(() => {
+                            const rawUrl = resource.fileUrl?.startsWith('http') ? resource.fileUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5001'}${resource.fileUrl}`;
+                            if (rawUrl.includes('blob.vercel-storage.com')) {
+                              return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/blob/proxy?url=${encodeURIComponent(rawUrl)}`;
+                            }
+                            return rawUrl;
+                          })()}
                           target="_blank"
                           rel="noreferrer"
                           className="p-2 text-gray-400 hover:text-green-600 transition-colors"
@@ -510,7 +516,13 @@ export default function ResourcesPage() {
                               <Star className={`w-4 h-4 ${resource.isFavorite ? 'fill-current text-yellow-500' : ''}`} />
                             </button>
                             <a
-                              href={`http://localhost:5001${resource.fileUrl}`}
+                              href={(() => {
+                                const rawUrl = resource.fileUrl?.startsWith('http') ? resource.fileUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5001'}${resource.fileUrl}`;
+                                if (rawUrl.includes('blob.vercel-storage.com')) {
+                                  return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/blob/proxy?url=${encodeURIComponent(rawUrl)}`;
+                                }
+                                return rawUrl;
+                              })()}
                               target="_blank"
                               rel="noreferrer"
                               className="p-2 text-gray-400 hover:text-green-600 transition-colors"
