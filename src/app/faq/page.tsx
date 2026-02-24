@@ -130,11 +130,11 @@ export default function FAQPage() {
       questions: [
         {
           question: 'How do I schedule or reschedule an appointment?',
-          answer: 'You can schedule appointments through your client portal, by calling us, or by emailing your therapist directly. We offer flexible scheduling including evenings and weekends.'
+          answer: 'You can schedule appointments through your client portal or by emailing your therapist directly. We offer flexible scheduling including evenings and weekends.'
         },
         {
           question: 'What if I need to cancel or reschedule?',
-          answer: 'You can cancel or reschedule through your client portal, by calling, or by emailing. We require 24-hour notice to avoid cancellation fees. Emergency situations are handled on a case-by-case basis.'
+          answer: 'You can cancel or reschedule through your client portal or by emailing your therapist. We require 24-hour notice to avoid cancellation fees. Emergency situations are handled on a case-by-case basis.'
         },
         {
           question: 'Do you offer evening or weekend appointments?',
@@ -286,15 +286,7 @@ export default function FAQPage() {
             We're here to help! Contact us directly and we'll get back to you within 24 hours.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                <Phone className="w-6 h-6 text-black" />
-              </div>
-              <h3 className="font-semibold text-black mb-1">Call Us</h3>
-              <p className="text-gray-600 text-sm">Contact Us</p>
-            </div>
-
+          <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Mail className="w-6 h-6 text-black" />

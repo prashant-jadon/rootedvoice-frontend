@@ -839,24 +839,19 @@ function PricingContent() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                icon: <Award className="w-8 h-8" />,
-                title: 'Clinician-Founded & Led',
-                description: 'Built by licensed SLPs who actively practice in clinical settings. Our structure prioritizes clinical integrity over volume-driven care.'
-              },
-              {
                 icon: <Globe className="w-8 h-8" />,
                 title: 'Multilingual & Accessible',
-                description: 'Support for bilingual providers, real-time transcription during sessions, and a language-responsive platform designed to serve diverse populations.'
+                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
               },
               {
                 icon: <Target className="w-8 h-8" />,
-                title: 'Evaluation-First Care Model',
-                description: 'Therapy begins with appropriate diagnostic evaluation and clearly defined goals to ensure measurable progress.'
+                title: 'Evaluation-First, Personalized Care',
+                description: 'Every journey begins with a comprehensive evaluation so we can understand your unique needs and design a therapy plan tailored specifically to you.'
               },
               {
-                icon: <Shield className="w-8 h-8" />,
-                title: 'HIPAA Compliant',
-                description: 'Secure, encrypted sessions that meet healthcare privacy standards.'
+                icon: <Heart className="w-8 h-8" />,
+                title: 'Clinically Sound & Compassionate',
+                description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center">

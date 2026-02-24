@@ -51,13 +51,11 @@ export default function CancellationPolicyPage() {
     },
     {
       title: t('cancellationPolicy.howToCancel'),
-      icon: <Phone className="w-6 h-6" />,
+      icon: <Mail className="w-6 h-6" />,
       content: [
         t('cancellationPolicy.howToCancel1'),
         t('cancellationPolicy.howToCancel2'),
-        t('cancellationPolicy.howToCancel3'),
-        t('cancellationPolicy.howToCancel4'),
-        t('cancellationPolicy.howToCancel5')
+        t('cancellationPolicy.howToCancel3')
       ]
     },
     {
@@ -227,15 +225,7 @@ export default function CancellationPolicyPage() {
             {t('cancellationPolicy.questionsDesc')}
           </p>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                <Phone className="w-6 h-6 text-black" />
-              </div>
-              <h3 className="font-semibold text-black mb-1">{t('cancellationPolicy.callUs')}</h3>
-              <p className="text-gray-600 text-sm">{t('cancellationPolicy.phoneNumber')}</p>
-              <p className="text-gray-500 text-xs">{t('cancellationPolicy.officeHours')}</p>
-            </div>
+          <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
 
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">

@@ -145,8 +145,11 @@ function VideoCallContent() {
 
         if (!text) continue
 
+        const myName = user ? `${user.firstName} ${user.lastName}` : 'Guest'
+        const speakerLabel = `${user?.firstName || 'You'} (me)`
+
         if (!isFinal) {
-          // Update the interim caption in-place
+          // Update the interim caption in-place locally
           setCaptions(prev => {
             const existing = prev.find(c => c.id === interimId)
             if (existing) {
@@ -154,7 +157,7 @@ function VideoCallContent() {
             } else {
               return [...prev, {
                 id: interimId,
-                speaker: `${user?.firstName || 'You'} (me)`,
+                speaker: speakerLabel,
                 original: text,
                 translated: null,
                 isTranslating: false,
@@ -163,12 +166,36 @@ function VideoCallContent() {
               }].slice(-60)
             }
           })
+
+          // Broadcast interim caption to other participants
+          if (jitsiApiRef.current) {
+            jitsiApiRef.current.executeCommand('sendEndpointTextMessage', '', JSON.stringify({
+              type: 'caption',
+              id: interimId,
+              speaker: myName, // Send actual name to others
+              original: text,
+              isFinal: false,
+              sourceLang: sourceLanguage
+            }))
+          }
         } else {
-          // Mark as final, debounce translation
+          // Mark as final, debounce local translation
           const finalId = interimId
           setCaptions(prev => prev.map(c =>
             c.id === finalId ? { ...c, original: text, isFinal: true, isTranslating: true } : c
           ))
+
+          // Broadcast final caption to other participants
+          if (jitsiApiRef.current) {
+            jitsiApiRef.current.executeCommand('sendEndpointTextMessage', '', JSON.stringify({
+              type: 'caption',
+              id: finalId,
+              speaker: myName,
+              original: text,
+              isFinal: true,
+              sourceLang: sourceLanguage
+            }))
+          }
 
           if (translateTimeoutRef.current) clearTimeout(translateTimeoutRef.current)
           translateTimeoutRef.current = setTimeout(() => {
@@ -213,8 +240,7 @@ function VideoCallContent() {
     } else {
       stopSpeechRecognition()
     }
-    return () => stopSpeechRecognition()
-  }, [translationEnabled])
+  }, [translationEnabled, startSpeechRecognition, stopSpeechRecognition])
 
   // Re-translate when language changes
   useEffect(() => {
@@ -224,9 +250,16 @@ function VideoCallContent() {
       setCaptions(prev => prev.map(cap =>
         cap.id === c.id ? { ...cap, isTranslating: true, translated: null } : cap
       ))
-      translateCaption(c.id, c.original)
+      // Use original remote sourceLang if available, otherwise fallback to local sourceLanguage state
+      const capSourceLang = (c as any).sourceLang || sourceLanguage
+      if (!c.original.trim()) return
+      googleTranslateFree(c.original, targetLanguage, capSourceLang).then(translated => {
+        setCaptions(prev => prev.map(cap =>
+          cap.id === c.id ? { ...cap, translated, isTranslating: false } : cap
+        ))
+      })
     })
-  }, [targetLanguage, sourceLanguage])
+  }, [targetLanguage, sourceLanguage, translationEnabled])
 
   useEffect(() => {
     if (!user) {
@@ -321,6 +354,58 @@ function VideoCallContent() {
 
     jitsiApiRef.current = api
 
+    // Handle incoming messages from other participants
+    api.addListener('endpointTextMessageReceived', (event: any) => {
+      if (!translationEnabled) return
+
+      try {
+        const data = JSON.parse(event.data.text)
+        if (data.type === 'caption') {
+          // We received a caption from another user
+          setCaptions(prev => {
+            const existing = prev.find(c => c.id === data.id)
+
+            // Wait to translate until it is final
+            if (!existing) {
+              return [...prev, {
+                id: data.id,
+                speaker: data.speaker,
+                original: data.original,
+                translated: null,
+                isTranslating: data.isFinal,
+                timestamp: Date.now(),
+                isFinal: data.isFinal,
+                sourceLang: data.sourceLang
+              } as CaptionEntry].slice(-60)
+            } else {
+              return prev.map(c => c.id === data.id ? {
+                ...c,
+                original: data.original,
+                isFinal: data.isFinal,
+                isTranslating: data.isFinal ? true : c.isTranslating,
+                sourceLang: data.sourceLang
+              } : c)
+            }
+          })
+
+          // If the message is final, immediately trigger translation for it
+          if (data.isFinal && data.original.trim()) {
+            googleTranslateFree(data.original, targetLanguage, data.sourceLang).then(translated => {
+              setCaptions(prev => prev.map(c =>
+                c.id === data.id ? { ...c, translated, isTranslating: false } : c
+              ))
+            }).catch(() => {
+              setCaptions(prev => prev.map(c =>
+                c.id === data.id ? { ...c, translated: data.original, isTranslating: false } : c
+              ))
+            })
+          }
+        }
+      } catch (err) {
+        // Not JSON or another type of message
+      }
+    })
+
     api.addListener('videoConferenceJoined', () => {
       setJitsiReady(true)
       setConnectionStatus('connected')
@@ -366,14 +451,11 @@ function VideoCallContent() {
     )
   }
 
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     connecting: 'text-yellow-400',
     connected: 'text-green-400',
     disconnected: 'text-red-400',
   }
-
-  const targetLangName = LANGUAGES.find(l => l.code === targetLanguage)?.name || targetLanguage
-  const sourceLangName = LANGUAGES.find(l => l.code === sourceLanguage)?.name || sourceLanguage
 
   return (
     <div className="h-screen flex flex-col" style={{ background: '#0f172a' }}>
@@ -518,8 +600,8 @@ function VideoCallContent() {
                           }
                         }}
                         className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all ${isMicActive
-                            ? 'bg-red-500/20 border border-red-500/60 text-red-300 hover:bg-red-500/30'
-                            : 'bg-indigo-500/20 border border-indigo-500/60 text-indigo-300 hover:bg-indigo-500/30'
+                          ? 'bg-red-500/20 border border-red-500/60 text-red-300 hover:bg-red-500/30'
+                          : 'bg-indigo-500/20 border border-indigo-500/60 text-indigo-300 hover:bg-indigo-500/30'
                           }`}
                       >
                         {isMicActive ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
@@ -541,10 +623,10 @@ function VideoCallContent() {
                 {captions.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-white/20 gap-3 py-12">
                     <Languages className="w-10 h-10" />
-                    <div className="text-center text-xs leading-relaxed">
+                    <div className="text-center text-xs leading-relaxed px-4">
                       {translationEnabled
-                        ? <>Click <span className="text-indigo-400">Start Mic</span> to begin capturing your speech for live translation.</>
-                        : <>Enable <span className="text-indigo-400">Translation</span> above to get started.</>
+                        ? <>Click <span className="text-indigo-400">Start Mic</span> to transcribe your speech.<br />Captions from others will appear here automatically.</>
+                        : <>Enable <span className="text-indigo-400">Translation</span> above to read and share captions.</>
                       }
                     </div>
                   </div>
@@ -553,8 +635,8 @@ function VideoCallContent() {
                     <div
                       key={caption.id}
                       className={`rounded-xl p-3 space-y-1.5 transition-all ${caption.isFinal
-                          ? 'bg-white/8 border border-white/10'
-                          : 'bg-indigo-950/60 border border-indigo-500/20'
+                        ? 'bg-white/8 border border-white/10'
+                        : 'bg-indigo-950/60 border border-indigo-500/20'
                         }`}
                     >
                       <div className="flex items-center justify-between">

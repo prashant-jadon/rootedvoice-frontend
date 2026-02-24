@@ -446,23 +446,23 @@ export default function MeetOurTherapistsPage() {
             {[
               {
                 icon: <Award className="w-8 h-8" />,
-                title: 'Clinician-Founded & Practicing Professionals',
-                description: 'Our therapists are licensed SLPs who actively practice and understand real-world clinical demands. This platform was built by clinicians — not corporations.'
-              },
-              {
-                icon: <Target className="w-8 h-8" />,
-                title: 'Evaluation-First Model',
-                description: 'Therapy begins with appropriate diagnostic evaluation and clearly defined goals. We prioritize measurable progress, not open-ended sessions without structure.'
+                title: 'Clinician-Founded',
+                description: 'Rooted Voices was founded by a practicing Speech-Language Pathologist and built from firsthand clinical experience.'
               },
               {
                 icon: <Globe className="w-8 h-8" />,
-                title: 'Multilingual & Culturally Responsive Care',
-                description: 'We support bilingual clinicians, real-time session transcription, and a language-responsive platform to expand access to diverse communities.'
+                title: 'Multilingual & Accessible',
+                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
               },
               {
-                icon: <Shield className="w-8 h-8" />,
-                title: 'Secure & Compliant Infrastructure',
-                description: 'All sessions are conducted through encrypted, HIPAA-compliant technology to ensure privacy and professional standards.'
+                icon: <Target className="w-8 h-8" />,
+                title: 'Evaluation-First, Personalized Care',
+                description: 'Every journey begins with a comprehensive evaluation so we can understand your unique needs and design a therapy plan tailored specifically to you.'
+              },
+              {
+                icon: <Heart className="w-8 h-8" />,
+                title: 'Clinically Sound & Compassionate',
+                description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center">

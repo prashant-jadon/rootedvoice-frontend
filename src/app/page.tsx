@@ -332,7 +332,7 @@ export default function LandingPage() {
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section
         ref={heroRef}
-        className="relative min-h-[100dvh] flex items-end pb-10 sm:pb-24 overflow-hidden"
+        className="relative min-h-[100dvh] flex items-end pb-8 sm:pb-24 overflow-hidden"
         style={{ backgroundImage: 'url("/home-bg.jpeg")', backgroundSize: 'cover', backgroundPosition: 'center top' }}
       >
         {/* Gradient overlay — bottom-loaded like Bella Health */}
@@ -370,7 +370,7 @@ export default function LandingPage() {
 
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl md:text-7xl font-black text-white leading-[1.06] tracking-tight mb-4 sm:mb-6"
+              className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.06] tracking-tight mb-3 sm:mb-6"
             >
               Find your voice.
               <br />
@@ -379,12 +379,12 @@ export default function LandingPage() {
 
             <motion.p
               variants={fadeUp}
-              className="text-lg text-white/75 leading-relaxed max-w-xl mb-6 sm:mb-10"
+              className="text-base sm:text-lg text-white/75 leading-relaxed max-w-xl mb-5 sm:mb-10"
             >
               At Rooted Voices, we believe communication holds power — the power to connect, advocate, grow, and thrive.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 items-start">
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start">
               <Link
                 href="/signup"
                 className="inline-flex items-center gap-2.5 bg-[#F7EBD3] text-[#132D22] text-sm font-black px-7 py-4 rounded-full hover:bg-white hover:scale-[1.03] active:scale-100 transition-all duration-200 shadow-xl shadow-black/30 group"

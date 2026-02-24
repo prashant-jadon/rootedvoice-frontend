@@ -95,7 +95,7 @@ export default function ClientServicesPage() {
             <div className="flex items-center space-x-4">
               <Link href="/" className="text-2xl font-bold text-black">Rooted Voices</Link>
               <span className="text-gray-400">/</span>
-              <h1 className="text-2xl font-bold text-black">{t('clientServices.title')}</h1>
+              <h1 className="text-2xl font-bold text-black">Who Is Therapy For?</h1>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -121,10 +121,10 @@ export default function ClientServicesPage() {
               className="text-center mb-16"
             >
               <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-                {t('clientServices.title')}
+                Who Is Therapy For?
               </h1>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {t('clientServices.subtitle')}
+                Speech and language needs look different at every stage of life. Select the age group below to explore services tailored to you or your loved one.
               </p>
             </motion.div>
 
@@ -135,24 +135,25 @@ export default function ClientServicesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
                 onClick={() => setSelectedType('pediatric')}
-                className="bg-white p-12 rounded-2xl premium-shadow hover:shadow-xl transition-all duration-300 group text-left"
+                className="bg-white p-12 rounded-2xl premium-shadow hover:shadow-xl transition-all duration-300 group text-left flex flex-col items-center"
               >
-                <div className="flex flex-col items-center text-center">
+                <div className="flex flex-col items-center text-center w-full">
                   <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Baby className="w-12 h-12 text-blue-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-black mb-3">{t('clientServices.pediatric')}</h2>
+                  <h2 className="text-2xl font-bold text-black mb-3">Pediatric Services</h2>
                   <p className="text-gray-600 mb-6">
-                    {t('clientServices.subtitlePediatric')}
+                    Supporting communication growth from early childhood through adolescence.
                   </p>
-                  <div className="text-sm text-gray-500 space-y-1">
-                    <p>• {t('clientServices.earlyIntervention')}</p>
-                    <p>• {t('clientServices.languageDevelopment')}</p>
-                    <p>• {t('clientServices.articulationPhonology')}</p>
-                    <p>• {t('clientServices.academicLanguage')}</p>
+                  <div className="text-sm text-gray-500 space-y-1 text-left w-full pl-4 md:pl-0">
+                    <p>• Early intervention for speech, language, and feeding</p>
+                    <p>• Language development (vocabulary, grammar, comprehension)</p>
+                    <p>• Articulation and phonological disorders</p>
+                    <p>• Motor speech</p>
+                    <p>• Academic language skills (comprehension, writing, organization)</p>
                   </div>
-                  <div className="mt-6 flex items-center text-black group-hover:translate-x-2 transition-transform">
-                    <span className="font-semibold">{t('clientServices.exploreServices')}</span>
+                  <div className="mt-8 flex items-center text-black group-hover:translate-x-2 transition-transform self-center">
+                    <span className="font-semibold">Explore Pediatric Services</span>
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </div>
                 </div>
@@ -164,24 +165,24 @@ export default function ClientServicesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 onClick={() => setSelectedType('adult')}
-                className="bg-white p-12 rounded-2xl premium-shadow hover:shadow-xl transition-all duration-300 group text-left"
+                className="bg-white p-12 rounded-2xl premium-shadow hover:shadow-xl transition-all duration-300 group text-left flex flex-col items-center"
               >
-                <div className="flex flex-col items-center text-center">
+                <div className="flex flex-col items-center text-center w-full">
                   <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <User className="w-12 h-12 text-purple-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-black mb-3">{t('clientServices.adult')}</h2>
+                  <h2 className="text-2xl font-bold text-black mb-3">Adult Services</h2>
                   <p className="text-gray-600 mb-6">
-                    {t('clientServices.subtitleAdult')}
+                    Specialized care for adults navigating communication and swallowing changes.
                   </p>
-                  <div className="text-sm text-gray-500 space-y-1">
-                    <p>• {t('clientServices.aphasiaTherapy')}</p>
-                    <p>• {t('clientServices.voiceTherapy')}</p>
-                    <p>• {t('clientServices.cognitiveCommunication')}</p>
-                    <p>• {t('clientServices.swallowingDisorders')}</p>
+                  <div className="text-sm text-gray-500 space-y-1 text-left w-full pl-4 md:pl-0">
+                    <p>• Aphasia therapy (language loss after stroke or brain injury)</p>
+                    <p>• Voice therapy (hoarseness, vocal misuse)</p>
+                    <p>• Cognitive-communication therapy (attention, memory, problem-solving)</p>
+                    <p>• Swallowing disorders (dysphagia)</p>
                   </div>
-                  <div className="mt-6 flex items-center text-black group-hover:translate-x-2 transition-transform">
-                    <span className="font-semibold">{t('clientServices.exploreServices')}</span>
+                  <div className="mt-8 flex items-center text-black group-hover:translate-x-2 transition-transform self-center">
+                    <span className="font-semibold">Explore Adult Services</span>
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </div>
                 </div>
@@ -209,24 +210,19 @@ export default function ClientServicesPage() {
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {[
                   {
-                    icon: <Award className="w-8 h-8" />,
-                    title: 'Clinician-Founded & Led',
-                    description: 'Built by licensed SLPs who actively practice in clinical settings. Our structure prioritizes clinical integrity over volume-driven care.'
-                  },
-                  {
                     icon: <Globe className="w-8 h-8" />,
                     title: 'Multilingual & Accessible',
-                    description: 'Support for bilingual providers, real-time transcription during sessions, and a language-responsive platform designed to serve diverse populations.'
+                    description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
                   },
                   {
                     icon: <Target className="w-8 h-8" />,
-                    title: 'Evaluation-First Care Model',
-                    description: 'Therapy begins with appropriate diagnostic evaluation and clearly defined goals to ensure measurable progress.'
+                    title: 'Evaluation-First, Personalized Care',
+                    description: 'Every journey begins with a comprehensive evaluation so we can understand your unique needs and design a therapy plan tailored specifically to you.'
                   },
                   {
-                    icon: <Shield className="w-8 h-8" />,
-                    title: 'HIPAA Compliant',
-                    description: 'Secure, encrypted sessions that meet healthcare privacy standards.'
+                    icon: <Heart className="w-8 h-8" />,
+                    title: 'Clinically Sound & Compassionate',
+                    description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
                   }
                 ].map((feature, index) => (
                   <div key={index} className="text-center">

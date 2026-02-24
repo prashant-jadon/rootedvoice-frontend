@@ -93,11 +93,11 @@ export default function WhoWeArePage() {
 
   const certifications = [
     'ASHA Certified Speech-Language Pathologists (CCC-SLP)',
-    'State Licensed in Multiple States',
-    'HIPAA Compliant Platform',
-    'Continuing Education Requirements Met',
-    'Specialized Training in Various Disorders',
-    'Cultural Competency Training'
+    'State Licensed & Actively Practicing',
+    'HIPAA-Compliant & Secure Platform',
+    'Ongoing Clinical Education & Professional Development',
+    'Specialized Training Across Communication & Swallowing Disorders',
+    'Culturally Responsive & Inclusive Care'
   ]
 
   return (
@@ -203,54 +203,55 @@ export default function WhoWeArePage() {
           <h2 className="text-3xl font-bold text-black text-center mb-8">🌱 Who Is a Speech-Language Pathologist?</h2>
           <div className="max-w-4xl mx-auto space-y-6">
             <p className="text-lg text-gray-600 leading-relaxed">
-              A Speech-Language Pathologist (SLP) is a licensed clinician trained to assess, diagnose, and treat communication and swallowing needs across the lifespan — supporting how people connect and express themselves.
+              A Speech-Language Pathologist (SLP) is a licensed clinician trained to assess, diagnose, and treat communication and swallowing needs across the lifespan — supporting how people understand, express, and connect with the world around them.
             </p>
             <div>
-              <h3 className="text-xl font-semibold text-black mb-4">SLPs support skills such as:</h3>
+              <h3 className="text-xl font-semibold text-black mb-4">SLPs support areas including:</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🗣</span>
-                  <span className="text-gray-700">Speech sounds</span>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <span className="text-2xl">💬</span>
-                  <span className="text-gray-700">Language</span>
+                  <span className="text-2xl">🗣️</span>
+                  <span className="text-gray-700">Articulation & Phonological Development</span>
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="text-2xl">🧠</span>
-                  <span className="text-gray-700">Cognitive-communication</span>
+                  <span className="text-gray-700">Motor Speech (Apraxia, Dysarthria)</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">📖</span>
-                  <span className="text-gray-700">Literacy</span>
+                  <span className="text-2xl">💬</span>
+                  <span className="text-gray-700">Receptive & Expressive Language</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">✨</span>
-                  <span className="text-gray-700">Social communication</span>
+                  <span className="text-2xl">🤝</span>
+                  <span className="text-gray-700">Social Communication</span>
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="text-2xl">🧩</span>
+                  <span className="text-gray-700">Cognitive-Communication</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="text-2xl">🌊</span>
                   <span className="text-gray-700">Fluency</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🎤</span>
-                  <span className="text-gray-700">Voice</span>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🍽</span>
-                  <span className="text-gray-700">Swallowing & feeding</span>
+                  <span className="text-2xl">🎙️</span>
+                  <span className="text-gray-700">Voice & Resonance</span>
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="text-2xl">📱</span>
-                  <span className="text-gray-700">AAC</span>
+                  <span className="text-gray-700">Augmentative & Alternative Communication (AAC)</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="text-2xl">🍽️</span>
+                  <span className="text-gray-700">Swallowing & Feeding</span>
                 </div>
               </div>
             </div>
             <div className="pt-6 border-t border-gray-200">
               <p className="text-lg text-gray-600 leading-relaxed">
-                Some people communicate with spoken words.<br />
+                Some individuals communicate with spoken language.<br />
                 Others use AAC, gestures, text, movement, eye gaze, or emerging vocalizations.<br />
-                <span className="font-semibold text-black">SLPs are trained to honor all communication styles, meeting each person right where they are.</span>
+                <br />
+                <span className="font-semibold text-black">SLPs are trained to honor all communication styles — meeting each person where they are.</span>
               </p>
             </div>
           </div>
@@ -348,24 +349,19 @@ export default function WhoWeArePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                icon: <Award className="w-8 h-8" />,
-                title: 'Clinician-Founded & Led',
-                description: 'Built by licensed SLPs who actively practice in clinical settings. Our structure prioritizes clinical integrity over volume-driven care.'
-              },
-              {
                 icon: <Globe className="w-8 h-8" />,
                 title: 'Multilingual & Accessible',
-                description: 'Support for bilingual providers, real-time transcription during sessions, and a language-responsive platform designed to serve diverse populations.'
+                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
               },
               {
                 icon: <Target className="w-8 h-8" />,
-                title: 'Evaluation-First Care Model',
-                description: 'Therapy begins with appropriate diagnostic evaluation and clearly defined goals to ensure measurable progress.'
+                title: 'Evaluation-First, Personalized Care',
+                description: 'Every journey begins with a comprehensive evaluation so we can understand your unique needs and design a therapy plan tailored specifically to you.'
               },
               {
-                icon: <Shield className="w-8 h-8" />,
-                title: 'HIPAA Compliant',
-                description: 'Secure, encrypted sessions that meet healthcare privacy standards.'
+                icon: <Heart className="w-8 h-8" />,
+                title: 'Clinically Sound & Compassionate',
+                description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center">
