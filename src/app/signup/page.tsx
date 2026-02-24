@@ -1111,79 +1111,10 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {/* Working with Children Check */}
+                  {/* Police Check / Background Check (Optional) */}
                   <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.workingWithChildrenCheck')}</h3>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="wwccNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.wwccNumber')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
-                          </label>
-                          <input
-                            id="wwccNumber"
-                            type="text"
-                            value={formData.wwccNumber}
-                            onChange={(e) => setFormData({ ...formData, wwccNumber: e.target.value })}
-                            className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                            placeholder={t('signup.enterWwccNumber')}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="wwccState" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.wwccState')} <span className="text-red-500">*</span>
-                          </label>
-                          <select
-                            id="wwccState"
-                            value={formData.wwccState}
-                            onChange={(e) => setFormData({ ...formData, wwccState: e.target.value })}
-                            className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                          >
-                            <option value="">{t('signup.state')}</option>
-                            <option value="NSW">NSW</option>
-                            <option value="VIC">VIC</option>
-                            <option value="QLD">QLD</option>
-                            <option value="SA">SA</option>
-                            <option value="WA">WA</option>
-                            <option value="TAS">TAS</option>
-                            <option value="NT">NT</option>
-                            <option value="ACT">ACT</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div>
-                        <label htmlFor="wwccExpiration" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.expirationDate')}
-                        </label>
-                        <input
-                          id="wwccExpiration"
-                          type="date"
-                          value={formData.wwccExpiration}
-                          onChange={(e) => setFormData({ ...formData, wwccExpiration: e.target.value })}
-                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="wwccFile" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.uploadWwccCertificate')} <span className="text-gray-500 font-normal">({t('signup.optional')})</span>
-                        </label>
-                        <input
-                          id="wwccFile"
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          onChange={(e) => setFormData({ ...formData, wwccFile: e.target.files?.[0] || null })}
-                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-                        />
-                        {formData.wwccFile && (
-                          <p className="text-xs text-green-600 mt-1">✓ {formData.wwccFile.name}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Police Check */}
-                  <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.policeCheck')}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('signup.policeCheck')}</h3>
+                    <p className="text-sm text-gray-500 mb-4">Optional — you can submit this later</p>
                     <div className="space-y-4">
                       <div>
                         <label htmlFor="policeCheckNumber" className="block text-sm font-medium text-gray-700 mb-2">
