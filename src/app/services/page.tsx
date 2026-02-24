@@ -240,7 +240,7 @@ export default function ServicesPage() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-10 max-w-4xl mx-auto">
             {[
               {
                 icon: <Globe className="w-8 h-8" />,
@@ -258,11 +258,11 @@ export default function ServicesPage() {
                 description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
               }
             ].map((feature, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-black">
+              <div key={index} className="text-center flex flex-col items-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-black">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold text-black mb-2">{feature.title}</h3>
+                <h3 className="text-xl font-semibold text-black mb-3">{feature.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
               </div>
             ))}

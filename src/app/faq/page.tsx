@@ -286,22 +286,14 @@ export default function FAQPage() {
             We're here to help! Contact us directly and we'll get back to you within 24 hours.
           </p>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          <div className="flex justify-center">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                 <Mail className="w-6 h-6 text-black" />
               </div>
               <h3 className="font-semibold text-black mb-1">Email Us</h3>
               <p className="text-gray-600 text-sm">info@rootedvoices.com</p>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                <MessageCircle className="w-6 h-6 text-black" />
-              </div>
-              <h3 className="font-semibold text-black mb-1">{t('faq.visitUs')}</h3>
-              <p className="text-gray-600 text-sm">{t('faq.address')}</p>
-              <p className="text-gray-500 text-xs">{t('faq.cityState')}</p>
+              <p className="text-gray-500 text-xs mt-1">24-hour response</p>
             </div>
           </div>
         </motion.div>

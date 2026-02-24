@@ -459,13 +459,7 @@ export const translations = {
       contactHelp: 'We\'re here to help! Contact us directly and we\'ll get back to you within 24 hours.',
       callUs: 'Call Us',
       emailUs: 'Email Us',
-      visitUs: 'Visit Us',
-      phoneNumber: '',
-      emailAddress: 'info@rootedvoices.com',
-      officeHours: 'Mon-Fri, 8AM-6PM',
-      responseTime: '24-hour response',
-      address: '123 Therapy Lane, Suite 100',
-      cityState: 'City, State 12345',
+
     },
     // Cancellation Policy Page
     cancellationPolicy: {
