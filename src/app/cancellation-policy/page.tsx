@@ -131,7 +131,7 @@ export default function CancellationPolicyPage() {
           </p>
           <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
             <Shield className="w-4 h-4" />
-            <span>Last updated: December 2026</span>
+            <span>Last updated: February 2026</span>
           </div>
         </motion.div>
 
