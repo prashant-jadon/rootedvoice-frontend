@@ -29,10 +29,11 @@ export default function LoginPage() {
       const user = JSON.parse(localStorage.getItem('user') || '{}')
       if (user.role === 'therapist') {
         router.push('/dashboard')
-      } else if (user.role === 'client') {
-        router.push('/client-dashboard')
+      } else if (user.role === 'admin') {
+        router.push('/dashboard')
       } else {
-        router.push('/')
+        // client, user, or any other role → client dashboard
+        router.push('/client-dashboard')
       }
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check your credentials.')
