@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
                                 <div className="mb-10">
                                     <h1 className="text-3xl font-black text-[#132D22] mb-3 tracking-tight">Forgot password?</h1>
                                     <p className="text-[#203936]/70">
-                                        Enter your email address and we&apos;ll send you a link to reset your password.
+                                        Enter your email address and we&apos;ll send a password reset link to your phone via SMS.
                                     </p>
                                     {error && (
                                         <div className="mt-5 p-4 bg-red-50 border border-red-100 rounded-xl">
@@ -103,12 +103,12 @@ export default function ForgotPasswordPage() {
                                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 mb-6">
                                     <CheckCircle className="w-8 h-8 text-green-600" />
                                 </div>
-                                <h2 className="text-2xl font-black text-[#132D22] mb-3">Check your email</h2>
+                                <h2 className="text-2xl font-black text-[#132D22] mb-3">Check your phone</h2>
                                 <p className="text-[#203936]/70 mb-8">
-                                    We&apos;ve sent a password reset link to <strong>{email}</strong>. Please check your inbox and follow the instructions.
+                                    We&apos;ve sent a password reset link via SMS to the phone number associated with <strong>{email}</strong>.
                                 </p>
                                 <p className="text-sm text-[#203936]/50 mb-6">
-                                    The link will expire in 1 hour. If you don&apos;t see the email, check your spam folder.
+                                    The link will expire in 1 hour. If you didn&apos;t receive the SMS, make sure your phone number is on file.
                                 </p>
                                 <Link
                                     href="/login"
