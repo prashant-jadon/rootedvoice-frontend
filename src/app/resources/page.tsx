@@ -290,8 +290,8 @@ export default function ResourcesPage() {
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${selectedCategory === category.id
-                          ? 'bg-black text-white'
-                          : 'text-gray-600 hover:bg-gray-100'
+                        ? 'bg-black text-white'
+                        : 'text-gray-600 hover:bg-gray-100'
                         }`}
                     >
                       <span className="text-sm">{category.name}</span>
@@ -333,8 +333,8 @@ export default function ResourcesPage() {
                   <button
                     onClick={() => setView('grid')}
                     className={`p-2 rounded-lg transition-colors ${view === 'grid'
-                        ? 'bg-black text-white'
-                        : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                      ? 'bg-black text-white'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100'
                       }`}
                   >
                     <Grid className="w-5 h-5" />
@@ -342,8 +342,8 @@ export default function ResourcesPage() {
                   <button
                     onClick={() => setView('list')}
                     className={`p-2 rounded-lg transition-colors ${view === 'list'
-                        ? 'bg-black text-white'
-                        : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                      ? 'bg-black text-white'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100'
                       }`}
                   >
                     <List className="w-5 h-5" />
@@ -542,7 +542,7 @@ export default function ResourcesPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl p-6 w-full max-w-md mx-4"
+            className="bg-white rounded-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-black">Upload Resource</h3>
