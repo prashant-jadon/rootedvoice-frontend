@@ -332,7 +332,7 @@ export default function LandingPage() {
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section
         ref={heroRef}
-        className="relative min-h-screen flex items-end pb-24 overflow-hidden"
+        className="relative min-h-[100dvh] flex items-end pb-10 sm:pb-24 overflow-hidden"
         style={{ backgroundImage: 'url("/home-bg.jpeg")', backgroundSize: 'cover', backgroundPosition: 'center top' }}
       >
         {/* Gradient overlay — bottom-loaded like Bella Health */}
@@ -357,21 +357,6 @@ export default function LandingPage() {
           </div>
         </motion.div>
 
-        {/* Bottom live session indicator */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          style={{ opacity: heroOpacity }}
-          className="absolute bottom-36 left-8 sm:left-16 bg-white/12 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2.5 flex items-center gap-2 hidden md:flex"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
-          </span>
-          <span className="text-white/80 text-xs font-medium">1,240 sessions happening now</span>
-        </motion.div>
-
         <motion.div
           style={{ y: heroY, opacity: heroOpacity }}
           className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 w-full"
@@ -385,7 +370,7 @@ export default function LandingPage() {
 
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl md:text-7xl font-black text-white leading-[1.06] tracking-tight mb-6"
+              className="text-5xl sm:text-6xl md:text-7xl font-black text-white leading-[1.06] tracking-tight mb-4 sm:mb-6"
             >
               Find your voice.
               <br />
@@ -394,7 +379,7 @@ export default function LandingPage() {
 
             <motion.p
               variants={fadeUp}
-              className="text-lg text-white/75 leading-relaxed max-w-xl mb-10"
+              className="text-lg text-white/75 leading-relaxed max-w-xl mb-6 sm:mb-10"
             >
               At Rooted Voices, we believe communication holds power — the power to connect, advocate, grow, and thrive.
             </motion.p>
