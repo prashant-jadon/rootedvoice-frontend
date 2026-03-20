@@ -490,10 +490,6 @@ export default function MyPracticePage() {
                                 Full Client Profile
                               </h4>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-blue-50 p-4 rounded-lg">
-                                <div>
-                                  <span className="text-xs text-gray-500 uppercase tracking-wide">Email</span>
-                                  <p className="font-medium text-black">{details.clientInfo.email}</p>
-                                </div>
                                 {details.clientInfo.emergencyContact?.name && (
                                   <div>
                                     <span className="text-xs text-gray-500 uppercase tracking-wide">Emergency Contact</span>
@@ -839,7 +835,6 @@ export default function MyPracticePage() {
                           <h4 className="font-semibold text-black">
                             {client.userId?.firstName} {client.userId?.lastName}
                           </h4>
-                          <p className="text-sm text-gray-600">{client.userId?.email}</p>
                         </div>
                       </div>
                     </div>

@@ -9,6 +9,14 @@ const api = axios.create({
   },
 });
 
+function getCookie(name: string) {
+  if (typeof document === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift();
+  return null;
+}
+
 // Request interceptor to add JWT token
 api.interceptors.request.use(
   (config) => {
@@ -16,6 +24,13 @@ api.interceptors.request.use(
       const token = localStorage.getItem('token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+      const googtrans = getCookie('googtrans');
+      if (googtrans) {
+        const langCode = googtrans.split('/').pop();
+        if (langCode) {
+          config.headers['Accept-Language'] = langCode;
+        }
       }
     }
     return config;
@@ -46,9 +61,14 @@ api.interceptors.response.use(
 
 // API methods
 export const authAPI = {
-  login: (email: string, password: string) =>
-    api.post('/auth/login', { email, password }),
-  register: (data: any) => api.post('/auth/register', data),
+  login: (email: string, password: string) => {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return api.post('/auth/login', { email, password, timezone });
+  },
+  register: (data: any) => {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return api.post('/auth/register', { ...data, timezone });
+  },
   getMe: () => api.get('/auth/me'),
   logout: () => api.post('/auth/logout'),
   forgotPassword: (email: string) =>
@@ -287,6 +307,7 @@ export const healthCheck = () => api.get('/health');
 
 export const publicAPI = {
   getPlatformStats: () => api.get('/public/platform-stats'),
+  submitContactForm: (data: any) => api.post('/public/contact', data),
 };
 
 export default api;

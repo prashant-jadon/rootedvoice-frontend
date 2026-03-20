@@ -33,138 +33,90 @@ export default function FAQPage() {
 
   const faqCategories = [
     {
-      title: t('faq.gettingStarted'),
+      title: 'Getting Started & Evaluations',
       icon: <HelpCircle className="w-6 h-6" />,
       questions: [
         {
-          question: t('faq.howToGetStarted'),
-          answer: t('faq.getStartedAnswer')
+          question: 'How do I know if therapy is needed?',
+          answer: 'If you or a loved one is experiencing frustration communicating, feeling misunderstood, or noticing changes in speech or swallowing, an evaluation can provide clarity. We\'re here to help you figure out the best next steps.'
         },
         {
-          question: t('faq.freeConsultations'),
-          answer: t('faq.freeConsultationsAnswer')
+          question: 'Do I need a referral to get started?',
+          answer: 'Because we are a private-pay practice, you do not need a doctor\'s referral to schedule an evaluation or begin therapy with us.'
         },
         {
-          question: t('faq.ageGroups'),
-          answer: t('faq.ageGroupsAnswer')
+          question: 'What if therapy is not recommended after the evaluation?',
+          answer: 'That\'s a great outcome! If an evaluation shows that ongoing therapy isn\'t needed, we will provide you with peace of mind, a few helpful strategies for home, and guidance on what milestones to watch for.'
         },
         {
-          question: t('faq.acceptInsurance'),
-          answer: t('faq.acceptInsuranceAnswer')
+          question: 'What age groups do you serve?',
+          answer: 'We work with individuals across the entire lifespan—from infants and toddlers (through dedicated parent coaching) to school-aged children, adolescents, adults, and seniors.'
         }
       ]
     },
     {
-      title: t('faq.servicesTherapy'),
+      title: 'Therapy & Services',
       icon: <MessageCircle className="w-6 h-6" />,
       questions: [
         {
-          question: t('faq.typesOfServices'),
-          answer: t('faq.typesOfServicesAnswer')
+          question: 'What if my child has autism?',
+          answer: 'We warmly welcome autistic children and their families. Our approach focuses on connection, building upon your child\'s strengths, and supporting how they naturally communicate, rather than forcing them to communicate like neurotypical peers.'
         },
         {
-          question: t('faq.sessionLength'),
-          answer: t('faq.sessionLengthAnswer')
+          question: 'What if my loved one is aging?',
+          answer: 'We offer dedicated support for older adults experiencing voice changes, swallowing difficulties, or communication challenges after neurological events like a stroke. Our priority is preserving dignity, safety, and quality of life.'
         },
         {
-          question: t('faq.sessionFrequency'),
-          answer: t('faq.sessionFrequencyAnswer')
+          question: 'What if my child or family speaks more than one language?',
+          answer: 'We celebrate bilingualism! We offer multilingual care and never recommend dropping a home language. Our therapists are trained to differentiate natural language differences from language disorders.'
         },
         {
-          question: t('faq.multilingualTherapy'),
-          answer: t('faq.multilingualTherapyAnswer')
+          question: 'Can I switch therapists?',
+          answer: 'Yes. Your comfort and connection with your therapist are the most important parts of the process. If you feel another therapist might be a better fit, we\'ll help you transition smoothly.'
         }
       ]
     },
     {
-      title: t('faq.technologyPlatform'),
+      title: 'Technology & Security',
       icon: <Shield className="w-6 h-6" />,
       questions: [
         {
-          question: t('faq.telehealthEffective'),
-          answer: t('faq.telehealthEffectiveAnswer')
+          question: 'Is telehealth effective?',
+          answer: 'Yes! Research shows that telehealth speech therapy is just as effective as in-person visits for most individuals. We use engaging, interactive tools that make online sessions highly rewarding.'
         },
         {
-          question: t('faq.technologyNeeded'),
-          answer: t('faq.technologyNeededAnswer')
+          question: 'What technology do I need?',
+          answer: 'All you need is a computer, tablet, or smartphone with a microphone and camera, plus a reliable internet connection. We designed our platform to be simple to use.'
         },
         {
-          question: t('faq.platformSecure'),
-          answer: t('faq.platformSecureAnswer')
-        },
-        {
-          question: t('faq.recordSessions'),
-          answer: t('faq.recordSessionsAnswer')
+          question: 'Is my information secure?',
+          answer: 'Yes. Our platform is fully HIPAA-compliant, meaning your privacy, personal information, and video sessions are protected by the highest standard of security.'
         }
       ]
     },
     {
-      title: t('faq.pricingBilling'),
+      title: 'Pricing & Billing',
       icon: <CreditCard className="w-6 h-6" />,
       questions: [
         {
-          question: t('faq.pricingPlans'),
-          answer: t('faq.pricingPlansAnswer')
+          question: 'Is speech therapy covered by insurance?',
+          answer: 'We operate as an out-of-network, private-pay practice. This allows us to focus entirely on your care without insurance-dictated timelines or session caps. While we don\'t bill insurance directly, you may be eligible for out-of-network reimbursement.'
         },
         {
-          question: t('faq.paymentDue'),
-          answer: t('faq.paymentDueAnswer')
+          question: 'Can I use HSA or FSA funds?',
+          answer: 'Yes! We accept Health Savings Account (HSA) and Flexible Spending Account (FSA) cards for both evaluations and ongoing therapy sessions.'
         },
         {
-          question: t('faq.cancellationPolicy'),
-          answer: t('faq.cancellationPolicyAnswer')
+          question: 'Do you provide superbills?',
+          answer: 'Yes. Upon request, we provide detailed monthly superbills that you can submit directly to your insurance provider for potential out-of-network reimbursement.'
         },
         {
-          question: t('faq.paymentMethods'),
-          answer: t('faq.paymentMethodsAnswer')
+          question: 'What payment options are available?',
+          answer: 'We accept all major credit and debit cards, as well as HSA and FSA cards. Payments are processed securely online.'
         },
         {
-          question: t('faq.cancelSubscription'),
-          answer: t('faq.cancelSubscriptionAnswer')
-        }
-      ]
-    },
-    {
-      title: 'Scheduling & Appointments',
-      icon: <Calendar className="w-6 h-6" />,
-      questions: [
-        {
-          question: 'How do I schedule or reschedule an appointment?',
-          answer: 'You can schedule appointments through your client portal or by emailing your therapist directly. We offer flexible scheduling including evenings and weekends.'
-        },
-        {
-          question: 'What if I need to cancel or reschedule?',
-          answer: 'You can cancel or reschedule through your client portal or by emailing your therapist. We require 24-hour notice to avoid cancellation fees. Emergency situations are handled on a case-by-case basis.'
-        },
-        {
-          question: 'Do you offer evening or weekend appointments?',
-          answer: 'Yes! Many of our therapists offer evening and weekend appointments to accommodate busy schedules. Availability varies by therapist, so please check with your specific therapist.'
-        },
-        {
-          question: 'What happens if I miss an appointment?',
-          answer: 'Missed appointments without 24-hour notice may be subject to a cancellation fee. We understand that emergencies happen, so please contact us as soon as possible if you need to miss an appointment.'
-        }
-      ]
-    },
-    {
-      title: 'Therapist Information',
-      icon: <Users className="w-6 h-6" />,
-      questions: [
-        {
-          question: 'How do I verify my therapist\'s credentials?',
-          answer: 'All our therapists are licensed and certified. You can verify credentials through our therapist profiles, which include license numbers and certification details. We also provide links to state licensing boards for verification.'
-        },
-        {
-          question: 'Can I choose my therapist?',
-          answer: 'Yes! You can browse our therapist profiles and request a specific therapist. We\'ll do our best to match you with your preferred therapist based on availability and specialization.'
-        },
-        {
-          question: 'What if I\'m not satisfied with my therapist?',
-          answer: 'We want you to have the best possible experience. If you\'re not satisfied, please let us know and we\'ll work to find a better match or address any concerns you may have.'
-        },
-        {
-          question: 'Do therapists specialize in specific areas?',
-          answer: 'Yes! Our therapists have various specializations including early intervention, adult neurogenic disorders, voice therapy, fluency, AAC, and more. Check individual profiles for specific expertise areas.'
+          question: 'Can I stop therapy at any time?',
+          answer: 'Yes, absolutely. You can cancel or pause your subscription at any time. We want therapy to fit comfortably into your life and budget.'
         }
       ]
     }

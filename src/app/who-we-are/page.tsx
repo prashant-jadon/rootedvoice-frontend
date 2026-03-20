@@ -23,49 +23,7 @@ import { publicAPI } from '@/lib/api'
 
 export default function WhoWeArePage() {
   const t = useTranslation()
-  const [teamStats, setTeamStats] = useState([
-    { number: '50+', label: t('whoWeAre.therapists'), context: 'Licensed and verified therapists across multiple states' },
-    { number: '15+', label: t('whoWeAre.experience'), context: 'Combined years of clinical experience from our team' },
-    { number: '10,000+', label: t('whoWeAre.sessions'), context: 'Total therapy sessions completed on our platform' },
-    { number: '95%', label: t('whoWeAre.satisfaction'), context: t('whoWeAre.satisfactionContext') }
-  ])
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await publicAPI.getPlatformStats()
-        const stats = response.data.data
-        if (stats?.whoWeAreStats) {
-          setTeamStats([
-            {
-              number: stats.whoWeAreStats.licensedTherapists.number,
-              label: stats.whoWeAreStats.licensedTherapists.label,
-              context: stats.whoWeAreStats.licensedTherapists.context
-            },
-            {
-              number: stats.whoWeAreStats.yearsExperience.number,
-              label: stats.whoWeAreStats.yearsExperience.label,
-              context: stats.whoWeAreStats.yearsExperience.context
-            },
-            {
-              number: stats.whoWeAreStats.sessionsCompleted.number,
-              label: stats.whoWeAreStats.sessionsCompleted.label,
-              context: stats.whoWeAreStats.sessionsCompleted.context
-            },
-            {
-              number: stats.whoWeAreStats.clientSatisfaction.number,
-              label: stats.whoWeAreStats.clientSatisfaction.label,
-              context: stats.whoWeAreStats.clientSatisfaction.context
-            }
-          ])
-        }
-      } catch (error) {
-        console.error('Failed to fetch platform stats:', error)
-        // Keep default stats on error
-      }
-    }
-    fetchStats()
-  }, [])
+  // Removed stats block as per user request
 
   const values = [
     {
@@ -81,12 +39,12 @@ export default function WhoWeArePage() {
     {
       icon: <Heart className="w-8 h-8" />,
       title: '💚 Compassionate Care',
-      description: 'We lead with compassion that honors the whole person, not just a diagnosis. Rooted Voices is a space where individuals and families feel safe, respected, and seen. We recognize communication is deeply tied to identity, culture, and lived experience.'
+      description: 'We lead with compassion that honors the whole person, not just a diagnosis. Rooted Voices is a space where individuals and families feel safe, respected, and seen. We recognize that how a person communicates is deeply personal — shaped by who they are, where they come from, and the life they have lived. We honor all of it.'
     },
     {
       icon: <Target className="w-8 h-8" />,
-      title: '🎯 Evidence-Based Practice',
-      description: 'Our care is grounded in evidence-based practice while remaining flexible and human. We combine research, clinical expertise, and lived experience to create therapy that is effective, meaningful, and responsive.'
+      title: '🎯 Research-Informed Care',
+      description: 'Everything we do is grounded in the latest research — so you can trust that the therapy your family receives is not only compassionate, but proven to work.'
     }
   ]
 
@@ -97,7 +55,7 @@ export default function WhoWeArePage() {
     'HIPAA-Compliant & Secure Platform',
     'Ongoing Clinical Education & Professional Development',
     'Specialized Training Across Communication & Swallowing Disorders',
-    'Culturally Responsive & Inclusive Care'
+    'Care that Understands Who You Are & Inclusive Care'
   ]
 
   return (
@@ -168,19 +126,7 @@ export default function WhoWeArePage() {
             <h2 className="text-3xl font-bold text-black mb-6 text-center">🌱 A Note From Our Founder</h2>
             <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
               <p>
-                Rooted Voices was created from both professional experience and lived understanding.
-              </p>
-              <p>
-                As a speech-language pathologist, I've witnessed the power of communication to transform lives — from first words spoken to confidence restored, from being misunderstood to finally being heard. I've also seen where traditional systems fall short, particularly for individuals and communities who are too often overlooked.
-              </p>
-              <p className="font-semibold text-black">
-                Rooted Voices exists to do things differently.
-              </p>
-              <p>
-                This is a space built with intention — where clinical excellence and humanity coexist, and where care is grounded in compassion, cultural humility, and respect for each person's identity and lived experience. We believe communication is more than a skill; it is a bridge to connection, dignity, and belonging.
-              </p>
-              <p>
-                At Rooted Voices, no voice is overlooked. Every story matters. If you've found your way here, know this space was created with you in mind.
+                My grandmother experienced multiple strokes during my undergraduate years — and lost her ability to communicate. I watched a Black male speech-language pathologist not only help restore her voice, but become a meaningful part of her healing. That moment changed everything for me. It showed me that this work is not just clinical. It is deeply human. I now serve elder populations every day, and every patient carries a piece of that mission — to provide the care I would have wanted my own grandparents to receive. That is the heart of Rooted Voices.
               </p>
               <div className="pt-6 border-t border-gray-200 mt-8">
                 <p className="text-black font-semibold mb-2">With intention and care,</p>
@@ -203,55 +149,82 @@ export default function WhoWeArePage() {
           <h2 className="text-3xl font-bold text-black text-center mb-8">🌱 Who Is a Speech-Language Pathologist?</h2>
           <div className="max-w-4xl mx-auto space-y-6">
             <p className="text-lg text-gray-600 leading-relaxed">
-              A Speech-Language Pathologist (SLP) is a licensed clinician trained to assess, diagnose, and treat communication and swallowing needs across the lifespan — supporting how people understand, express, and connect with the world around them.
+              A Speech-Language Pathologist (SLP) is a licensed specialist trained to evaluate and support how people communicate and swallow — from the first words a child speaks, to helping an adult find their voice again after a stroke, to supporting someone who communicates without spoken words at all.
             </p>
             <div>
               <h3 className="text-xl font-semibold text-black mb-4">SLPs support areas including:</h3>
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-8">
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🗣️</span>
-                  <span className="text-gray-700">Articulation & Phonological Development</span>
+                  <span className="text-2xl pt-1">🗣️</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">How Clearly You Speak</span>
+                    <span className="text-gray-600 text-sm">Helping people be understood — whether a child is learning to say sounds correctly or an adult wants to feel more confident in how they come across.</span>
+                  </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🧠</span>
-                  <span className="text-gray-700">Motor Speech (Apraxia, Dysarthria)</span>
+                  <span className="text-2xl pt-1">🧠</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">When the Brain Affects Speech</span>
+                    <span className="text-gray-600 text-sm">Supporting people whose speech has been affected by neurological conditions — where words are hard to find, hard to form, or come out differently than intended.</span>
+                  </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">💬</span>
-                  <span className="text-gray-700">Receptive & Expressive Language</span>
+                  <span className="text-2xl pt-1">💬</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">Understanding & Expressing Language</span>
+                    <span className="text-gray-600 text-sm">Helping people make sense of what they hear and read, and find the words to say what they mean — in conversations, at school, and in everyday life.</span>
+                  </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🤝</span>
-                  <span className="text-gray-700">Social Communication</span>
+                  <span className="text-2xl pt-1">🤝</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">Connecting With Others</span>
+                    <span className="text-gray-600 text-sm">Supporting people who find social situations, reading the room, or building conversation challenging — so connection feels less overwhelming.</span>
+                  </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🧩</span>
-                  <span className="text-gray-700">Cognitive-Communication</span>
+                  <span className="text-2xl pt-1">🧩</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">Thinking & Communication Together</span>
+                    <span className="text-gray-600 text-sm">Helping people whose memory, attention, or thinking affects how they communicate — often after a brain injury, stroke, or neurological diagnosis.</span>
+                  </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🌊</span>
-                  <span className="text-gray-700">Fluency</span>
+                  <span className="text-2xl pt-1">🌊</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">Fluency & Flow</span>
+                    <span className="text-gray-600 text-sm">Supporting people who stutter or experience interruptions in the rhythm of their speech — with strategies that build confidence and ease.</span>
+                  </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🎙️</span>
-                  <span className="text-gray-700">Voice & Resonance</span>
+                  <span className="text-2xl pt-1">🎙️</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">Voice</span>
+                    <span className="text-gray-600 text-sm">Helping people whose voice — its sound, strength, or quality — has changed or no longer feels like them.</span>
+                  </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">📱</span>
-                  <span className="text-gray-700">Augmentative & Alternative Communication (AAC)</span>
+                  <span className="text-2xl pt-1">📱</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">Communicating in Every Way</span>
+                    <span className="text-gray-600 text-sm">Supporting people who use devices, pictures, gestures, eye gaze, or any other method to communicate — because speech is not the only valid voice.</span>
+                  </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-2xl">🍽️</span>
-                  <span className="text-gray-700">Swallowing & Feeding</span>
+                  <span className="text-2xl pt-1">🍽️</span>
+                  <div>
+                    <span className="font-semibold text-gray-900 block mb-1">Eating & Swallowing</span>
+                    <span className="text-gray-600 text-sm">Helping people for whom eating, drinking, or swallowing has become difficult, uncomfortable, or unsafe.</span>
+                  </div>
                 </div>
               </div>
             </div>
             <div className="pt-6 border-t border-gray-200">
-              <p className="text-lg text-gray-600 leading-relaxed">
-                Some individuals communicate with spoken language.<br />
-                Others use AAC, gestures, text, movement, eye gaze, or emerging vocalizations.<br />
-                <br />
-                <span className="font-semibold text-black">SLPs are trained to honor all communication styles — meeting each person where they are.</span>
+              <p className="text-lg text-gray-600 leading-relaxed text-center font-medium">
+                Some people communicate with spoken words.<br />
+                Others use devices, gestures, movement, pictures, or a look in their eyes.<br />
+                A great SLP honors every single one of those languages.<br />
+                We meet each person exactly where they are. 🌱
               </p>
             </div>
           </div>
@@ -288,7 +261,7 @@ export default function WhoWeArePage() {
             </div>
             <h2 className="text-2xl font-bold text-black mb-4 text-center">🌿 Mission Statement</h2>
             <p className="text-gray-600 leading-relaxed text-center">
-              Our mission is to provide safe, evidence-based, and culturally inclusive speech-language care that empowers individuals to communicate with confidence. We honor each voice and build care plans rooted in strengths, identity, and lived experience.
+              To deliver exceptional, personalized speech-language therapy to every person who needs it — regardless of where they live, what language they speak, or how they communicate. We believe access to great care should never depend on geography, background, or circumstance.
             </p>
           </div>
 
@@ -297,9 +270,10 @@ export default function WhoWeArePage() {
               <Lightbulb className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-black mb-4 text-center">🌿 Vision Statement</h2>
-            <p className="text-gray-600 leading-relaxed text-center">
-              Our vision is a world where no voice is overlooked and communication differences are met with understanding, not judgment. We are building a platform where clinical expertise, humanity, and technology come together to help voices grow freely and confidently.
-            </p>
+            <div className="text-gray-600 leading-relaxed text-center space-y-4">
+              <p>A world where no voice is overlooked, and where communication differences are met with understanding, not judgment.</p>
+              <p>Where every person — at every stage of life, in every corner of the world — has access to care that is exceptional, human, and built for them.</p>
+            </div>
           </div>
         </motion.div>
 
@@ -342,7 +316,7 @@ export default function WhoWeArePage() {
                 Rooted Voices was founded by a practicing Speech-Language Pathologist who understands firsthand the gaps in access, representation, and quality care within our field.
               </p>
               <p>
-                We combine evidence-based practice with culturally responsive, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized and clinically sound therapy.
+                We combine approaches supported by science with care that understands who you are and where you come from, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized therapy that is proven to work.
               </p>
             </div>
           </div>
@@ -351,7 +325,7 @@ export default function WhoWeArePage() {
               {
                 icon: <Globe className="w-8 h-8" />,
                 title: 'Multilingual & Accessible',
-                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
+                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure care that comes to you.'
               },
               {
                 icon: <Target className="w-8 h-8" />,
@@ -360,8 +334,8 @@ export default function WhoWeArePage() {
               },
               {
                 icon: <Heart className="w-8 h-8" />,
-                title: 'Clinically Sound & Compassionate',
-                description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
+                title: 'Rooted in Skill. Delivered with Heart.',
+                description: 'Therapy grounded in the latest research, delivered by clinicians who treat every person as a whole human being — not a diagnosis.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center flex flex-col items-center">
@@ -375,25 +349,24 @@ export default function WhoWeArePage() {
           </div>
         </motion.div>
 
-        {/* 8. Impact / Commitment (Stats) */}
+        {/* 8. Clinician Recruitment Block (Replaces Stats) */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-20"
+          className="mb-20 bg-[#132D22] text-[#F7EBD3] rounded-2xl p-10 md:p-14 text-center mx-auto max-w-5xl shadow-xl shadow-[#203936]/10"
         >
-          <h2 className="text-3xl font-bold text-black text-center mb-8">{t('whoWeAre.statsTitle')}</h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            {teamStats.map((stat, index) => (
-              <div key={index} className="text-center bg-white rounded-2xl premium-shadow p-6">
-                <div className="text-4xl font-bold text-black mb-2">{stat.number}</div>
-                <div className="text-gray-700 font-semibold mb-2">{stat.label}</div>
-                {stat.context && (
-                  <div className="text-sm text-gray-500 mt-2">{stat.context}</div>
-                )}
-              </div>
-            ))}
+          <div className="w-16 h-16 bg-[#F7EBD3]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Users className="w-8 h-8 text-[#B97B40]" />
           </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Join Our Growing Practice</h2>
+          <p className="text-lg md:text-xl text-[#F7EBD3]/80 leading-relaxed max-w-3xl mx-auto mb-10">
+            Rooted Voices is currently welcoming licensed speech-language pathologists who share our commitment to accessible, compassionate care. We are growing intentionally — because who joins this platform matters as much as what we build. If you are a licensed SLP ready to be part of something meaningful, we would love to hear from you.
+          </p>
+          <a href="/for-therapists" className="inline-flex items-center gap-2 bg-[#B97B40] text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-[#A06A36] transition-all shadow-lg shadow-[#B97B40]/20 hover:-translate-y-1">
+            Learn More About Joining
+            <ArrowRight className="w-5 h-5" />
+          </a>
         </motion.div>
 
         {/* 9. CTA Section */}

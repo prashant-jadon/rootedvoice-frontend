@@ -149,7 +149,7 @@ export default function CommunityPage() {
       attendees: 45
     },
     {
-      title: 'Teletherapy Best Practices',
+      title: 'Teletherapy Proven Methods',
       date: 'Feb 1, 2026',
       time: '1:00 PM EST',
       instructor: 'Michael Rodriguez',

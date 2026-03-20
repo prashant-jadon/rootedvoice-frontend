@@ -24,85 +24,65 @@ export default function ServicesPage() {
   const t = useTranslation()
   const services = [
     {
-      id: 'infants-toddlers',
-      title: 'Infants & Toddlers',
-      ageRange: '0–3 years',
+      id: 'pediatric',
+      title: 'Pediatric',
+      ageRange: '0–12 years',
       icon: <Baby className="w-8 h-8" />,
-      color: 'bg-pink-500',
-      description: 'Early intervention and foundational communication development',
-      features: [
-        'Early intervention for speech, language, and feeding',
-        'Parent coaching on communication strategies',
-        'Feeding and swallowing therapy (latching, bottle feeding, transitioning to solids)',
-        'Assessment of developmental milestones',
-        'Augmentative and alternative communication (AAC) introduction if needed'
-      ]
-    },
-    {
-      id: 'preschool-school',
-      title: 'Preschool & School-Age Children',
-      ageRange: '3–12 years',
-      icon: <Users className="w-8 h-8" />,
       color: 'bg-blue-500',
-      description: 'Comprehensive speech and language development for growing minds',
+      description: 'Support for early milestones, language development, and school success.',
       features: [
-        'Articulation and phonological disorder treatment',
-        'Language development (vocabulary, grammar, sentence structure)',
-        'Social communication and pragmatic skills training',
-        'Stuttering/fluency therapy',
-        'Literacy support (reading, writing, phonological awareness)',
-        'Voice therapy (hoarseness, vocal misuse)',
-        'Feeding and swallowing therapy (oral-motor skills, picky eating)',
-        'AAC assessment and training for complex needs'
+        'Children who are late to talk',
+        'Children who are hard to understand (articulation)',
+        'Struggles with reading, writing, and language at school',
+        'Feeding or swallowing challenges, including picky eating',
+        'Support for children with autism',
+        'Children who use alternative ways to communicate (AAC)',
+        'Parent coaching for infants and toddlers'
       ]
     },
     {
-      id: 'adolescents',
-      title: 'Adolescents',
+      id: 'adolescent',
+      title: 'Adolescent',
       ageRange: '13–18 years',
       icon: <GraduationCap className="w-8 h-8" />,
       color: 'bg-green-500',
-      description: 'Advanced communication skills for academic and social success',
+      description: 'Advanced communication skills for academic, social, and personal confidence.',
       features: [
-        'Academic language skills (comprehension, writing, organization)',
-        'Fluency and stuttering therapy',
-        'Voice therapy (including gender-affirming voice services)',
-        'Social communication skills (peer interaction, conflict resolution)',
-        'Executive function support (organization, planning, memory strategies)',
-        'AAC device customization and training',
-        'Feeding/swallowing if medically needed'
+        'Academic language skills (reading comprehension, writing)',
+        'Social communication and peer interaction',
+        'Executive functioning (organization, planning, focus)',
+        'Stuttering and fluency support',
+        'Voice therapy (including gender-affirming care)',
+        'Alternative communication methods (AAC)'
       ]
     },
     {
-      id: 'adults',
-      title: 'Adults',
-      ageRange: '18+ years',
+      id: 'adult',
+      title: 'Adult',
+      ageRange: '18–64 years',
       icon: <User className="w-8 h-8" />,
       color: 'bg-purple-500',
-      description: 'Professional and personal communication enhancement',
+      description: 'Professional, medical, and personal communication enhancement.',
       features: [
-        'Aphasia therapy (language loss after stroke or brain injury)',
-        'Cognitive-communication therapy (attention, memory, problem-solving)',
-        'Speech and intelligibility therapy (Parkinson\'s, ALS, TBI)',
-        'Voice therapy (vocal strain, nodules, professional voice users)',
-        'Fluency therapy for adults who stutter',
-        'Swallowing and feeding therapy (dysphagia management)',
-        'Accent modification (if desired)',
-        'AAC services for complex communication needs'
+        'Rebuilding communication after a stroke, brain injury, or neurological diagnosis',
+        'Swallowing safety and dysphagia management',
+        'Voice therapy for vocal strain or professional voice users',
+        'Stuttering support for adults',
+        'Cognitive-communication therapy'
       ]
     },
     {
-      id: 'older-adults',
-      title: 'Older Adults & Geriatrics',
+      id: 'geriatric',
+      title: 'Geriatric',
       ageRange: '65+ years',
       icon: <Heart className="w-8 h-8" />,
       color: 'bg-orange-500',
-      description: 'Maintaining communication and quality of life in golden years',
+      description: 'Maintaining communication, safety, and quality of life in later years.',
       features: [
-        'Cognitive-communication therapy for dementia and memory decline',
-        'Compensatory strategies for daily living communication',
-        'Swallowing therapy (safe eating and drinking strategies)',
-        'Voice care for age-related changes (presbyphonia)',
+        'Rebuilding communication after a stroke, brain injury, or neurological diagnosis',
+        'Swallowing safety and safe eating and drinking strategies',
+        'Voice changes with aging (presbyphonia)',
+        'Cognitive-communication therapy for memory or neurological changes',
         'Support for maintaining social connection and quality of life'
       ]
     }
@@ -163,6 +143,33 @@ export default function ServicesPage() {
             </Link>
           </div>
         </motion.div>
+
+        {/* Telehealth Age & Scope Clarifications */}
+        <div className="bg-[#132D22] text-[#F7EBD3] rounded-2xl p-8 mb-16 shadow-xl border border-white/10">
+          <h2 className="text-2xl font-bold mb-8 text-white text-center flex items-center justify-center gap-3">
+            <Baby className="w-6 h-6 text-[#B97B40]" /> Ages We Serve & Telehealth Clarity
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+              <h3 className="font-bold text-white mb-3 text-lg">Do you work with infants?</h3>
+              <p className="text-[#F7EBD3]/90 text-sm leading-relaxed">
+                Yes, we do. While a 2-month-old cannot participate in traditional screen-based telehealth, we provide <strong>dedicated parent coaching</strong>. We guide you, the caregiver, step-by-step through strategies to support your baby&apos;s early communication and development right at home.
+              </p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+              <h3 className="font-bold text-white mb-3 text-lg">Do you offer feeding therapy?</h3>
+              <p className="text-[#F7EBD3]/90 text-sm leading-relaxed">
+                Absolutely. We offer specialized feeding and swallowing therapy across the lifespan. This includes support for infant latching and bottle feeding, transitioning to solids, picky eating in childhood, and safe swallowing strategies for adults and elders.
+              </p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+              <h3 className="font-bold text-white mb-3 text-lg">What is the minimum age for direct telehealth?</h3>
+              <p className="text-[#F7EBD3]/90 text-sm leading-relaxed">
+                Direct one-on-one telehealth therapy typically begins around <strong>age 3</strong>, depending on the child&apos;s attention span. For children under 3, our primary and most effective approach is empowering parents and caregivers through active coaching.
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Services Grid */}
         <div className="space-y-16">
@@ -235,7 +242,7 @@ export default function ServicesPage() {
                 Rooted Voices was founded by a practicing Speech-Language Pathologist who understands firsthand the gaps in access, representation, and quality care within our field.
               </p>
               <p>
-                We combine evidence-based practice with culturally responsive, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized and clinically sound therapy.
+                We combine approaches supported by science with care that understands who you are and where you come from, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized therapy that is proven to work.
               </p>
             </div>
           </div>
@@ -245,7 +252,7 @@ export default function ServicesPage() {
               {
                 icon: <Globe className="w-8 h-8" />,
                 title: 'Multilingual & Accessible',
-                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
+                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure care that comes to you.'
               },
               {
                 icon: <Target className="w-8 h-8" />,
@@ -254,8 +261,8 @@ export default function ServicesPage() {
               },
               {
                 icon: <Heart className="w-8 h-8" />,
-                title: 'Clinically Sound & Compassionate',
-                description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
+                title: 'Grounded in Research & Compassionate',
+                description: 'Therapy methods backed by research delivered with warmth, respect, and care that understands who you are and where you come from — honoring your communication style and the life you have lived.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center flex flex-col items-center">

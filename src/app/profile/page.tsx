@@ -284,6 +284,21 @@ export default function ProfilePage() {
   const stateLicensures = formData.stateLicensures || therapist.complianceDocuments?.stateLicensures ||
     (therapist.complianceDocuments?.stateLicensure?.licenseNumber ? [therapist.complianceDocuments.stateLicensure] : [])
 
+  const calculateCompletion = () => {
+    let score = 0
+    if (therapist?.userId?.firstName && therapist?.userId?.lastName) score += 10
+    if (therapist?.userId?.phone) score += 10
+    if (therapist?.location) score += 10
+    if (therapist?.bio) score += 20
+    if (therapist?.specializations?.length > 0) score += 10
+    if (therapist?.spokenLanguages?.length > 0) score += 10
+    if (therapist?.education?.length > 0) score += 10
+    if (therapist?.workExperience?.length > 0) score += 10
+    if (therapist?.complianceDocuments?.stateLicensures?.length > 0 || therapist?.complianceDocuments?.stateLicensure?.licenseNumber) score += 10
+    return Math.min(100, score)
+  }
+  const completionPercentage = calculateCompletion()
+
   const stats = [
     { label: 'Total Sessions', value: therapist.totalSessions || 0, icon: <Video className="w-5 h-5" /> },
     { label: 'Active Clients', value: therapist.activeClients?.length || 0, icon: <Users className="w-5 h-5" /> },
@@ -324,42 +339,9 @@ export default function ProfilePage() {
               <h1 className="text-2xl font-bold text-black">Profile</h1>
             </div>
 
+            {/* Removed Edit Button from navbar, moved it to the profile card for better context */}
             <div className="flex items-center space-x-4">
-              {isEditing ? (
-                <>
-                  <button
-                    onClick={handleCancel}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2 disabled:opacity-50"
-                  >
-                    {isSaving ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Saving...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        <span>Save Changes</span>
-                      </>
-                    )}
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
-                >
-                  <Edit className="w-4 h-4" />
-                  <span>Edit Profile</span>
-                </button>
-              )}
+              <span className="text-gray-600 text-sm">Therapist Portal</span>
             </div>
           </div>
         </div>
@@ -432,16 +414,60 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <div className="flex items-center space-x-1 mb-2">
-                    <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                    <span className="text-lg font-semibold">{therapist.rating?.toFixed(1) || '0.0'}</span>
+                <div className="text-right flex flex-col items-end gap-4">
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2">
+                    {isEditing ? (
+                      <>
+                        <button
+                          onClick={handleCancel}
+                          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSave}
+                          disabled={isSaving}
+                          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2 disabled:opacity-50 text-sm font-medium"
+                        >
+                          {isSaving ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          ) : (
+                            <Save className="w-4 h-4" />
+                          )}
+                          <span>Save Settings</span>
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="bg-gray-100 text-black px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2 text-sm font-medium border border-gray-200"
+                      >
+                        <Edit className="w-4 h-4" />
+                        <span>Edit Profile</span>
+                      </button>
+                    )}
                   </div>
-                  {therapist.createdAt && (
-                    <p className="text-sm text-gray-600">
-                      Member since {new Date(therapist.createdAt).toLocaleDateString()}
-                    </p>
-                  )}
+
+                  {/* Profile Completion Indicator */}
+                  <div className="w-48 bg-white p-3 rounded-xl border border-gray-100 premium-shadow">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-gray-700">Profile Completion</span>
+                      <span className="text-sm font-bold text-green-600">{completionPercentage}%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-green-500 h-2 rounded-full transition-all duration-500 ease-out"
+                        style={{ width: `${completionPercentage}%` }}
+                      ></div>
+                    </div>
+                    {completionPercentage < 100 && (
+                      <p className="text-xs text-gray-500 mt-2 flex items-center">
+                        <CheckCircle className="w-3 h-3 mr-1 text-gray-400" />
+                        Add missing details
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -583,7 +609,15 @@ export default function ProfilePage() {
                           </span>
                         ))
                       ) : (
-                        <p className="text-gray-500 text-sm">No specialties added yet</p>
+                        <div className="flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
+                          <CheckCircle className="w-8 h-8 text-gray-300 mb-2" />
+                          <p className="text-gray-500 font-medium">No specialties added yet</p>
+                          {isEditing ? (
+                            <p className="text-xs text-gray-400 mt-1">Select from the options above</p>
+                          ) : (
+                            <button onClick={() => setIsEditing(true)} className="text-sm text-blue-600 hover:underline mt-2">Edit profile to add specialties</button>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
@@ -621,7 +655,15 @@ export default function ProfilePage() {
                           </span>
                         ))
                       ) : (
-                        <p className="text-gray-500 text-sm">No languages added yet</p>
+                        <div className="flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
+                          <Languages className="w-8 h-8 text-gray-300 mb-2" />
+                          <p className="text-gray-500 font-medium">No languages added yet</p>
+                          {isEditing ? (
+                            <p className="text-xs text-gray-400 mt-1">Select from the options above</p>
+                          ) : (
+                            <button onClick={() => setIsEditing(true)} className="text-sm text-blue-600 hover:underline mt-2">Edit profile to add languages</button>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
@@ -686,7 +728,18 @@ export default function ProfilePage() {
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-500 text-sm">No education added yet</p>
+                      <div className="flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
+                        <GraduationCap className="w-8 h-8 text-gray-300 mb-2" />
+                        <p className="text-gray-500 font-medium">No education history added</p>
+                        {isEditing ? (
+                          <button onClick={addEducation} className="mt-3 flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800">
+                            <Plus className="w-4 h-4" />
+                            <span>Add your first degree</span>
+                          </button>
+                        ) : (
+                          <button onClick={() => setIsEditing(true)} className="text-sm text-blue-600 hover:underline mt-2">Edit profile to add education</button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -750,7 +803,18 @@ export default function ProfilePage() {
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-500 text-sm">No certifications added yet</p>
+                      <div className="flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
+                        <Award className="w-8 h-8 text-gray-300 mb-2" />
+                        <p className="text-gray-500 font-medium">No certifications added</p>
+                        {isEditing ? (
+                          <button onClick={addCertification} className="mt-3 flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800">
+                            <Plus className="w-4 h-4" />
+                            <span>Add a certification</span>
+                          </button>
+                        ) : (
+                          <button onClick={() => setIsEditing(true)} className="text-sm text-blue-600 hover:underline mt-2">Edit profile to add certifications</button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -848,7 +912,18 @@ export default function ProfilePage() {
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-500 text-sm">No work experience added yet</p>
+                      <div className="flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
+                        <Briefcase className="w-8 h-8 text-gray-300 mb-2" />
+                        <p className="text-gray-500 font-medium">No work experience added</p>
+                        {isEditing ? (
+                          <button onClick={addWorkExperience} className="mt-3 flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800">
+                            <Plus className="w-4 h-4" />
+                            <span>Add your experience</span>
+                          </button>
+                        ) : (
+                          <button onClick={() => setIsEditing(true)} className="text-sm text-blue-600 hover:underline mt-2">Edit profile to add experience</button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

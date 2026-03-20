@@ -32,12 +32,13 @@ export default function MeetOurTherapistsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLanguage, setSelectedLanguage] = useState('all')
   const [bilingualOnly, setBilingualOnly] = useState(false)
+  const [selectedTier, setSelectedTier] = useState('all')
   const [therapists, setTherapists] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     fetchTherapists()
-  }, [selectedSpecialty, selectedState, selectedLanguage, bilingualOnly])
+  }, [selectedSpecialty, selectedState, selectedLanguage, bilingualOnly, selectedTier])
 
   const fetchTherapists = async () => {
     try {
@@ -145,7 +146,9 @@ export default function MeetOurTherapistsPage() {
       fullName.includes(searchTerm.toLowerCase()) ||
       therapist.specializations?.some((s: string) => s.toLowerCase().includes(searchTerm.toLowerCase()))
 
-    return matchesSearch
+    const matchesTier = selectedTier === 'all' || therapist.credentials === selectedTier;
+
+    return matchesSearch && matchesTier;
   })
 
   return (
@@ -197,7 +200,7 @@ export default function MeetOurTherapistsPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="bg-white rounded-2xl premium-shadow p-6 mb-8"
         >
-          <div className="grid md:grid-cols-5 gap-4">
+          <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -249,6 +252,17 @@ export default function MeetOurTherapistsPage() {
               ))}
             </select>
 
+            {/* Provider Tier Filter */}
+            <select
+              value={selectedTier}
+              onChange={(e) => setSelectedTier(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+            >
+              <option value="all">All Rates / Tiers</option>
+              <option value="SLP">SLP ($40-$80/hr)</option>
+              <option value="SLPA">SLPA ($35-$60/hr)</option>
+            </select>
+
             {/* Bilingual Toggle & Results Count */}
             <div className="flex flex-col items-center justify-center space-y-2">
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -282,6 +296,7 @@ export default function MeetOurTherapistsPage() {
                 setSelectedSpecialty('all')
                 setSelectedState('all')
                 setSelectedLanguage('all')
+                setSelectedTier('all')
                 setBilingualOnly(false)
                 setSearchTerm('')
               }}
@@ -452,7 +467,7 @@ export default function MeetOurTherapistsPage() {
               {
                 icon: <Globe className="w-8 h-8" />,
                 title: 'Multilingual & Accessible',
-                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
+                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure care that comes to you.'
               },
               {
                 icon: <Target className="w-8 h-8" />,
@@ -461,8 +476,8 @@ export default function MeetOurTherapistsPage() {
               },
               {
                 icon: <Heart className="w-8 h-8" />,
-                title: 'Clinically Sound & Compassionate',
-                description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
+                title: 'Grounded in Research & Compassionate',
+                description: 'Therapy methods backed by research delivered with warmth, respect, and care that understands who you are and where you come from — honoring your communication style and the life you have lived.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center">
@@ -485,7 +500,7 @@ export default function MeetOurTherapistsPage() {
         >
           <h2 className="text-2xl font-bold text-black mb-4">Begin with a Comprehensive Evaluation</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Every care plan at Rooted Voices starts with a structured evaluation to ensure therapy is intentional, personalized, and clinically appropriate.
+                We combine approaches supported by science with care that understands who you are and where you come from, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized therapy that is proven to work.propriate.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/pricing" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">

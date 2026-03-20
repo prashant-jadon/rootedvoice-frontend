@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+// import Link from "next/link"
 import { Heart, Mail } from 'lucide-react'
 
 export default function Footer() {
@@ -22,108 +22,68 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 2 - Get Care */}
+          {/* Column 2 - FOR CLIENTS */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Get Care</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h4 className="font-semibold text-white mb-4 uppercase tracking-wider text-xs">For Clients</h4>
+            <ul className="space-y-3 text-sm text-gray-400">
               <li>
-                <Link href="/services" className="hover:text-white transition-colors">
-                  All Services
-                </Link>
+                <a href="/services" className="hover:text-white transition-colors">Services</a>
               </li>
               <li>
-                <Link href="/client-services" className="hover:text-white transition-colors">
-                  Pediatric Services
-                </Link>
+                <a href="/meet-our-therapists" className="hover:text-white transition-colors">Meet Our Therapists</a>
               </li>
               <li>
-                <Link href="/client-services" className="hover:text-white transition-colors">
-                  Adult Services
-                </Link>
+                <a href="/pricing" className="hover:text-white transition-colors">Pricing</a>
               </li>
               <li>
-                <Link href="/meet-our-therapists" className="hover:text-white transition-colors">
-                  Find a Therapist
-                </Link>
+                <a href="/faq" className="hover:text-white transition-colors">FAQ</a>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-white transition-colors">
-                  Pricing Plans
-                </Link>
+                <a href="/evaluation-booking" className="hover:text-white transition-colors">Schedule Evaluation</a>
               </li>
               <li>
-                <Link href="/faq" className="hover:text-white transition-colors">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/cancellation-policy" className="hover:text-white transition-colors">
-                  Cancellation Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/telehealth-consent" className="hover:text-white transition-colors">
-                  Telehealth Consent
-                </Link>
+                <a href="/login?role=client" className="hover:text-white transition-colors">Client Login</a>
               </li>
             </ul>
           </div>
 
-          {/* Column 3 - Access Your Account */}
+          {/* Column 3 - FOR CLINICIANS */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Access Your Account</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h4 className="font-semibold text-white mb-4 uppercase tracking-wider text-xs">For Clinicians</h4>
+            <ul className="space-y-3 text-sm text-gray-400">
               <li>
-                <Link href="/client-dashboard" className="hover:text-white transition-colors">
-                  Client Dashboard
-                </Link>
+                <a href="/for-therapists" className="hover:text-white transition-colors">Join Our Team</a>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-white transition-colors">
-                  Therapist Dashboard
-                </Link>
+                <a href="/for-therapists" className="hover:text-white transition-colors">For Therapists</a>
               </li>
               <li>
-                <Link href="/login" className="hover:text-white transition-colors">
-                  Sign In
-                </Link>
-              </li>
-              <li>
-                <Link href="/resources" className="hover:text-white transition-colors">
-                  Resource Library
-                </Link>
-              </li>
-              <li>
-                <Link href="/community" className="hover:text-white transition-colors">
-                  Community Forum
-                </Link>
+                <a href="/login?role=therapist" className="hover:text-white transition-colors">Therapist Portal</a>
               </li>
             </ul>
           </div>
 
           {/* Column 4 - About Rooted Voices */}
           <div>
-            <h4 className="font-semibold text-white mb-4">About Rooted Voices</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h4 className="font-semibold text-white mb-4 uppercase tracking-wider text-xs">About Rooted Voices</h4>
+            <ul className="space-y-3 text-sm text-gray-400">
               <li>
-                <Link href="/who-we-are" className="hover:text-white transition-colors">
-                  Who We Are
-                </Link>
+                <a href="/who-we-are" className="hover:text-white transition-colors">Who We Are</a>
               </li>
               <li>
-                <Link href="/for-therapists" className="hover:text-white transition-colors">
-                  For Therapists
-                </Link>
+                <a href="/cancellation-policy" className="hover:text-white transition-colors">Cancellation Policy</a>
               </li>
               <li>
-                <Link href="/privacy-policy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
+                <a href="/telehealth-consent" className="hover:text-white transition-colors">Telehealth Consent</a>
               </li>
               <li>
-                <Link href="/terms-of-service" className="hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
+                <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</a>
+              </li>
+              <li>
+                <a href="/contact" className="hover:text-white transition-colors">Contact Us</a>
               </li>
             </ul>
           </div>

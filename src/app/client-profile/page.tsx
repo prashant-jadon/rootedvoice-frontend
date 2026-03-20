@@ -1,24 +1,24 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Edit, 
-  Save, 
-  Camera, 
-  Award, 
-  Target, 
-  TrendingUp, 
-  Clock, 
-  Star, 
-  MessageCircle, 
-  Settings, 
-  Bell, 
-  Shield, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Edit,
+  Save,
+  Camera,
+  Award,
+  Target,
+  TrendingUp,
+  Clock,
+  Star,
+  MessageCircle,
+  Settings,
+  Bell,
+  Shield,
   Heart,
   CheckCircle,
   X,
@@ -49,7 +49,7 @@ export default function ClientProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('personal')
   const [isLoading, setIsLoading] = useState(true)
-  
+
   // Real data from API
   const [clientProfile, setClientProfile] = useState<any>(null)
   const [therapist, setTherapist] = useState<any>(null)
@@ -66,7 +66,7 @@ export default function ClientProfilePage() {
       router.push('/login')
       return
     }
-    
+
     fetchClientData()
   }, [isAuthenticated, user, authLoading])
 
@@ -80,8 +80,8 @@ export default function ClientProfilePage() {
 
       // Get assigned therapist if exists
       if (clientRes.data.data.assignedTherapist) {
-        const therapistId = typeof clientRes.data.data.assignedTherapist === 'string' 
-          ? clientRes.data.data.assignedTherapist 
+        const therapistId = typeof clientRes.data.data.assignedTherapist === 'string'
+          ? clientRes.data.data.assignedTherapist
           : clientRes.data.data.assignedTherapist._id
 
         if (therapistId) {
@@ -148,7 +148,7 @@ export default function ClientProfilePage() {
         ...clientProfile,
         assignedTherapist: null
       })
-      
+
       setTherapist(null)
       alert('Therapist unassigned successfully. You can now browse and select a new therapist.')
       router.push('/meet-our-therapists')
@@ -173,6 +173,17 @@ export default function ClientProfilePage() {
   const userFullName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim()
   const userInitials = `${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`.toUpperCase()
 
+  const calculateCompletion = () => {
+    let score = 0
+    if (user?.firstName && user?.lastName) score += 20
+    if (user?.email) score += 20
+    if (clientProfile?.userId?.phone) score += 20
+    if (clientProfile?.dateOfBirth) score += 20
+    if (clientProfile?.intake?.intakeCompleted) score += 20
+    return Math.min(100, score)
+  }
+  const completionPercentage = calculateCompletion()
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -181,38 +192,30 @@ export default function ClientProfilePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/client-dashboard" className="flex items-center">
-                <img 
-                  src="/logorooted 1.png" 
-                  alt="Rooted Voices Speech & Language Therapy" 
-                   className="w-18 h-20 mr-2"
+                <img
+                  src="/logorooted 1.png"
+                  alt="Rooted Voices Speech & Language Therapy"
+                  className="w-18 h-20 mr-2"
                 />
                 <span className="text-2xl font-bold text-black">Rooted Voices</span>
               </Link>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button className="relative p-2 text-gray-600 hover:text-black transition-colors">
                 <Bell className="w-6 h-6" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </button>
-              
+
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-semibold">{userInitials}</span>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-black">{userFullName}</p>
-                  <p className="text-xs text-gray-600">Client</p>
+                  <p className="text-xs text-gray-600">Client Portal</p>
                 </div>
               </div>
-              
-              <button 
-                onClick={() => setIsEditing(!isEditing)}
-                className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
-              >
-                {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
-                <span>{isEditing ? t('clientProfile.saveChanges') : t('clientProfile.editProfile')}</span>
-              </button>
             </div>
           </div>
         </div>
@@ -245,7 +248,7 @@ export default function ClientProfilePage() {
                 <div>
                   <h1 className="text-3xl font-bold text-black mb-2">{userFullName}</h1>
                   <p className="text-lg text-gray-600 mb-4">Speech Therapy Client</p>
-                  
+
                   <div className="flex items-center space-x-6 text-sm text-gray-600 mb-4">
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4" />
@@ -286,7 +289,7 @@ export default function ClientProfilePage() {
                   ) : (
                     <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                       <p className="text-sm text-yellow-800 mb-2">{t('clientProfile.therapist.notAssigned')}</p>
-                      <Link 
+                      <Link
                         href="/meet-our-therapists"
                         className="text-yellow-900 font-semibold underline hover:text-yellow-700"
                       >
@@ -320,6 +323,42 @@ export default function ClientProfilePage() {
                     </div>
                   </div>
                 </div>
+
+                <div className="text-right flex flex-col items-end gap-4 ml-6">
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setIsEditing(!isEditing)}
+                      className={isEditing
+                        ? "bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2 text-sm font-medium"
+                        : "bg-gray-100 text-black px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2 text-sm font-medium border border-gray-200"
+                      }
+                    >
+                      {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                      <span>{isEditing ? t('clientProfile.saveChanges', 'Save Settings') : t('clientProfile.editProfile', 'Edit Profile')}</span>
+                    </button>
+                  </div>
+
+                  {/* Profile Completion Indicator */}
+                  <div className="w-48 bg-white p-3 rounded-xl border border-gray-100 premium-shadow">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-gray-700">Profile Completion</span>
+                      <span className="text-sm font-bold text-green-600">{completionPercentage}%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-green-500 h-2 rounded-full transition-all duration-500 ease-out"
+                        style={{ width: `${completionPercentage}%` }}
+                      ></div>
+                    </div>
+                    {completionPercentage < 100 && (
+                      <p className="text-xs text-gray-500 mt-2 flex items-center">
+                        <CheckCircle className="w-3 h-3 mr-1 text-gray-400" />
+                        Complete intake to reach 100%
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -343,11 +382,10 @@ export default function ClientProfilePage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                      activeTab === tab.id
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
                         ? 'bg-black text-white'
                         : 'text-gray-600 hover:text-black hover:bg-gray-100'
-                    }`}
+                      }`}
                   >
                     {tab.icon}
                     <span>{tab.label}</span>
@@ -365,52 +403,52 @@ export default function ClientProfilePage() {
                 className="bg-white rounded-2xl premium-shadow p-6"
               >
                 <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.personalInfo.title')}</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.firstName')}</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue={user?.firstName || ''}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.lastName')}</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue={user?.lastName || ''}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.email')}</label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       defaultValue={user?.email || ''}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.phone')}</label>
-                    <input 
-                      type="tel" 
+                    <input
+                      type="tel"
                       defaultValue={clientProfile.userId?.phone || ''}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.dateOfBirth')}</label>
-                    <input 
-                      type="date" 
+                    <input
+                      type="date"
                       defaultValue={clientProfile.dateOfBirth ? new Date(clientProfile.dateOfBirth).toISOString().split('T')[0] : ''}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
@@ -419,8 +457,8 @@ export default function ClientProfilePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.personalInfo.guardianName')}</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue={clientProfile.guardianName || 'N/A'}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
@@ -437,7 +475,7 @@ export default function ClientProfilePage() {
                 transition={{ duration: 0.6 }}
                 className="bg-white rounded-2xl premium-shadow p-6"
               >
-                  <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-black">{t('clientProfile.intake.title')}</h2>
                   {clientProfile?.intake?.intakeCompleted ? (
                     <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium flex items-center space-x-1">
@@ -582,7 +620,7 @@ export default function ClientProfilePage() {
                 className="bg-white rounded-2xl premium-shadow p-6"
               >
                 <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.sessions.title')}</h2>
-                
+
                 {sessions.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
                     <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
@@ -604,16 +642,15 @@ export default function ClientProfilePage() {
                             <p className="text-sm text-gray-600">{t('clientProfile.sessions.duration')}: {session.duration} {t('clientProfile.sessions.minutes')}</p>
                           </div>
                           <div className="text-right">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              session.status === 'completed' ? 'bg-green-100 text-green-800' :
-                              session.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
-                              session.status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${session.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                session.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                                  session.status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-gray-100 text-gray-800'
+                              }`}>
                               {t(`clientProfile.sessions.status.${session.status}`) || session.status}
                             </span>
                             {(session.status === 'confirmed' || session.status === 'scheduled') && (
-                              <Link 
+                              <Link
                                 href={`/video-call?session=${session._id}`}
                                 className="mt-2 block text-blue-600 hover:underline text-sm"
                               >
@@ -648,7 +685,7 @@ export default function ClientProfilePage() {
               >
                 <div className="bg-white rounded-2xl premium-shadow p-6">
                   <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.assignments.title')}</h2>
-                  
+
                   {assignments.length === 0 ? (
                     <div className="text-center py-12 text-gray-500">
                       <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
@@ -660,17 +697,16 @@ export default function ClientProfilePage() {
                       {assignments.map((assignment) => {
                         const isOverdue = !assignment.completed && new Date(assignment.dueDate) < new Date();
                         const dueDate = new Date(assignment.dueDate);
-                        
+
                         return (
                           <div
                             key={assignment._id}
-                            className={`border rounded-lg p-4 ${
-                              assignment.completed
+                            className={`border rounded-lg p-4 ${assignment.completed
                                 ? 'border-green-200 bg-green-50'
                                 : isOverdue
-                                ? 'border-red-200 bg-red-50'
-                                : 'border-gray-200 bg-white'
-                            }`}
+                                  ? 'border-red-200 bg-red-50'
+                                  : 'border-gray-200 bg-white'
+                              }`}
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
@@ -789,7 +825,7 @@ export default function ClientProfilePage() {
                           <span>{t('clientProfile.familyCoaching.scheduleSession')}</span>
                         </button>
                       </div>
-                      
+
                       <FamilyCoachingList clientId={clientProfile._id} />
                     </div>
 
@@ -853,11 +889,11 @@ export default function ClientProfilePage() {
                 {/* Session Preferences */}
                 <div className="bg-white rounded-2xl premium-shadow p-6">
                   <h2 className="text-xl font-bold text-black mb-6">{t('clientProfile.preferences.title')}</h2>
-                  
+
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.preferences.sessionReminders', 'Preferred Session Time')}</label>
-                      <select 
+                      <select
                         disabled={!isEditing}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                       >
@@ -866,10 +902,10 @@ export default function ClientProfilePage() {
                         <option>Evening (5 PM - 8 PM)</option>
                       </select>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">{t('clientProfile.preferences.sessionLength', 'Session Length')}</label>
-                      <select 
+                      <select
                         disabled={!isEditing}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                       >

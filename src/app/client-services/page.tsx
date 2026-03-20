@@ -203,7 +203,7 @@ export default function ClientServicesPage() {
                     Rooted Voices was founded by a practicing Speech-Language Pathologist who understands firsthand the gaps in access, representation, and quality care within our field.
                   </p>
                   <p>
-                    We combine evidence-based practice with culturally responsive, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized and clinically sound therapy.
+                    We combine approaches supported by science with care that understands who you are and where you come from, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized therapy that is proven to work.
                   </p>
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default function ClientServicesPage() {
                   {
                     icon: <Globe className="w-8 h-8" />,
                     title: 'Multilingual & Accessible',
-                    description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
+                    description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure care that comes to you.'
                   },
                   {
                     icon: <Target className="w-8 h-8" />,
@@ -221,8 +221,8 @@ export default function ClientServicesPage() {
                   },
                   {
                     icon: <Heart className="w-8 h-8" />,
-                    title: 'Clinically Sound & Compassionate',
-                    description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
+                    title: 'Grounded in Research & Compassionate',
+                    description: 'Therapy methods backed by research delivered with warmth, respect, and care that understands who you are and where you come from — honoring your communication style and the life you have lived.'
                   }
                 ].map((feature, index) => (
                   <div key={index} className="text-center flex flex-col items-center">

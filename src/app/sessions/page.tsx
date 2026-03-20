@@ -18,11 +18,12 @@ import {
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { sessionAPI, clientAPI, therapistAPI, stripeAPI, calendarAPI } from '@/lib/api'
+import { sessionAPI, clientAPI, therapistAPI, stripeAPI, calendarAPI, evaluationAPI } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import PaymentModal from '@/components/PaymentModal'
+import { formatSessionTimes } from '@/lib/timeUtils'
 
 export default function SessionsPage() {
   const [sessions, setSessions] = useState<any[]>([])
@@ -65,17 +66,58 @@ export default function SessionsPage() {
     if (user?.role === 'therapist') {
       fetchClients()
     }
+
+    // Set up polling for real-time session management (every 15 seconds)
+    const intervalId = setInterval(() => {
+      fetchSessions(false)
+    }, 15000)
+
+    return () => clearInterval(intervalId)
   }, [isAuthenticated, user, authLoading])
 
-  const fetchSessions = async () => {
+  const fetchSessions = async (showLoading = true) => {
     try {
-      setIsLoading(true)
-      const response = await sessionAPI.getAll()
-      setSessions(response.data.data.sessions || [])
+      if (showLoading) setIsLoading(true)
+      
+      const [sessionsRes, evalsRes] = await Promise.all([
+        sessionAPI.getAll(),
+        user?.role === 'therapist' ? evaluationAPI.getTherapistAssignments() : evaluationAPI.getMyEvaluation()
+      ])
+
+      const normalSessions = sessionsRes.data?.data?.sessions || []
+      const evalsData = evalsRes.data?.data
+      const evals = Array.isArray(evalsData) ? evalsData : (evalsData ? [evalsData] : [])
+
+      // Map evaluations to session-like structure
+      const mappedEvals = evals.map((e: any) => ({
+        _id: e._id,
+        status: ['ready_for_meeting', 'meeting_scheduled'].includes(e.status) ? 'scheduled' : 
+                e.status === 'in_progress' ? 'in-progress' :
+                ['completed', 'recommendations_sent'].includes(e.status) ? 'completed' : 
+                ['cancelled', 'no-show'].includes(e.status) ? e.status : 'pending',
+        scheduledDate: e.scheduledDate || e.createdAt, // Fallback if not scheduled yet
+        scheduledTime: e.scheduledTime || 'TBD',
+        duration: e.duration || 60,
+        sessionType: 'evaluation',
+        price: e.amountPaid || 195,
+        paymentStatus: ['paid', 'completed'].includes(e.status) ? 'paid' : 'pending',
+        clientId: user?.role === 'client' ? user : (e.clientId || null),
+        therapistId: user?.role === 'therapist' ? user : (e.therapistId || null),
+        isEvaluation: true
+      }))
+
+      // Combine and sort
+      const allSessions = [...normalSessions, ...mappedEvals].sort((a: any, b: any) => {
+        if (!a.scheduledDate) return 1
+        if (!b.scheduledDate) return -1
+        return new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime()
+      })
+
+      setSessions(allSessions)
     } catch (error) {
       console.error('Failed to fetch sessions:', error)
     } finally {
-      setIsLoading(false)
+      if (showLoading) setIsLoading(false)
     }
   }
 
@@ -466,9 +508,26 @@ export default function SessionsPage() {
                               <p className="font-semibold text-black">
                                 {formatDate(session.scheduledDate)}
                               </p>
-                              <p className="text-sm text-gray-600">
-                                {session.scheduledTime} • {session.duration} min
-                              </p>
+                              {(() => {
+                                const role = user?.role === 'client' ? 'client' : 'therapist';
+                                const therapistTz = session.therapistId?.userId?.timezone;
+                                const timeDisplay = formatSessionTimes(
+                                  session.scheduledDate,
+                                  session.scheduledTime,
+                                  therapistTz,
+                                  role
+                                );
+                                return (
+                                  <>
+                                    <p className="text-sm font-medium text-gray-800">
+                                      {timeDisplay.primaryText} • {session.duration} min
+                                    </p>
+                                    {timeDisplay.secondaryText && (
+                                      <p className="text-xs text-gray-500">{timeDisplay.secondaryText}</p>
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </div>
 
                             <div className="flex items-center space-x-2">
@@ -576,9 +635,26 @@ export default function SessionsPage() {
                               <p className="font-semibold text-gray-700">
                                 {formatDate(session.scheduledDate)}
                               </p>
-                              <p className="text-sm text-gray-500">
-                                {session.scheduledTime} • {session.duration} min
-                              </p>
+                              {(() => {
+                                const role = user?.role === 'client' ? 'client' : 'therapist';
+                                const therapistTz = session.therapistId?.userId?.timezone;
+                                const timeDisplay = formatSessionTimes(
+                                  session.scheduledDate,
+                                  session.scheduledTime,
+                                  therapistTz,
+                                  role
+                                );
+                                return (
+                                  <>
+                                    <p className="text-sm font-medium text-gray-800">
+                                      {timeDisplay.primaryText} • {session.duration} min
+                                    </p>
+                                    {timeDisplay.secondaryText && (
+                                      <p className="text-xs text-gray-500">{timeDisplay.secondaryText}</p>
+                                    )}
+                                  </>
+                                );
+                              })()}
                               {session.price && (
                                 <p className="text-sm font-medium text-gray-700 mt-1">
                                   ${session.price}
@@ -661,7 +737,26 @@ export default function SessionsPage() {
                           <div className="flex items-center space-x-6">
                             <div className="text-right">
                               <p className="font-semibold text-black">{formatDate(session.scheduledDate)}</p>
-                              <p className="text-sm text-gray-600">{session.scheduledTime} • {session.duration} min</p>
+                              {(() => {
+                                const role = user?.role === 'client' ? 'client' : 'therapist';
+                                const therapistTz = session.therapistId?.userId?.timezone;
+                                const timeDisplay = formatSessionTimes(
+                                  session.scheduledDate,
+                                  session.scheduledTime,
+                                  therapistTz,
+                                  role
+                                );
+                                return (
+                                  <>
+                                    <p className="text-sm font-medium text-gray-800">
+                                      {timeDisplay.primaryText} • {session.duration} min
+                                    </p>
+                                    {timeDisplay.secondaryText && (
+                                      <p className="text-xs text-gray-500">{timeDisplay.secondaryText}</p>
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </div>
                             <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
                               {session.status}
@@ -840,19 +935,6 @@ export default function SessionsPage() {
                     <option value="assessment">Assessment</option>
                     <option value="maintenance">Maintenance</option>
                   </select>
-                </div>
-
-                {/* Price */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Session Price
-                  </label>
-                  <input
-                    type="number"
-                    value={newSession.price}
-                    onChange={(e) => setNewSession({ ...newSession, price: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                  />
                 </div>
 
                 {/* Buttons */}

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+// import Link from "next/link"
 import { useAuth } from '@/contexts/AuthContext'
 import { Bell, Settings, LogOut, X, ExternalLink } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -119,42 +119,44 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-2">
             <div className="flex items-center space-x-8">
-              <Link href="/" className="flex items-center gap-3 group">
+              <a href="/" className="flex items-center gap-3 group">
                 <img
                   src="/logorooted 1.png"
                   alt="Rooted Voices"
                   className="h-[80px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
                 />
                 <span className="text-2xl font-bold text-gray-900 tracking-tight">Rooted Voices</span>
-              </Link>
+              </a>
 
-              {/* Navigation Links for Unauthenticated Users */}
               <nav className="hidden md:flex items-center space-x-6">
-                <Link href="/services" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                <a href="/" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  Home
+                </a>
+                <a href="/services" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
                   Services
-                </Link>
-                <Link href="/who-we-are" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
-                  Who We Are
-                </Link>
-                <Link href="/for-therapists" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
-                  For Therapists
-                </Link>
-                <Link href="/meet-our-therapists" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
-                  {t('nav.therapists')}
-                </Link>
-                <Link href="/pricing" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
-                  {t('nav.pricing')}
-                </Link>
+                </a>
+                <a href="/meet-our-therapists" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  Meet Our Therapists
+                </a>
+                <a href="/pricing" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  Pricing
+                </a>
+                <a href="/faq" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  FAQ
+                </a>
+                <a href="/evaluation-booking" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                  Schedule Evaluation
+                </a>
               </nav>
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href="/login" className="text-gray-600 hover:text-black transition-colors">
-                {t('nav.signIn')}
-              </Link>
-              <Link href="/signup" className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
-                {t('nav.signUp')}
-              </Link>
+              <a href="/login?role=client" className="text-gray-600 hover:text-black transition-colors font-medium text-sm">
+                Client Login
+              </a>
+              <a href="/evaluation-booking" className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
+                Start Your Evaluation
+              </a>
             </div>
           </div>
         </div>
@@ -167,24 +169,24 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center gap-3 group">
+            <a href="/" className="flex items-center gap-3 group">
               <img
                 src="/logorooted 1.png"
                 alt="Rooted Voices"
                 className="h-[104px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
               />
               <span className="text-2xl font-bold text-gray-900 tracking-tight hidden sm:block">Rooted Voices</span>
-            </Link>
+            </a>
 
             <nav className="hidden md:flex items-center space-x-6">
               {links.map((link) => (
-                <Link
+                <a
                   key={link.href}
                   href={link.href}
                   className="text-gray-600 hover:text-black transition-colors text-sm font-medium"
                 >
                   {link.label}
-                </Link>
+                </a>
               ))}
             </nav>
           </div>
@@ -258,7 +260,7 @@ export default function Header() {
                         }
                         const isRead = n.read || readIds.has(n.id)
                         return (
-                          <Link
+                          <a
                             key={n.id}
                             href={n.link}
                             onClick={() => setShowNotifications(false)}
@@ -277,7 +279,7 @@ export default function Header() {
                               </p>
                             </div>
                             <ExternalLink className="w-3 h-3 text-gray-300 flex-shrink-0 mt-1" />
-                          </Link>
+                          </a>
                         )
                       })
                     )}
@@ -285,13 +287,13 @@ export default function Header() {
 
                   {/* Footer */}
                   <div className="border-t border-gray-100 px-4 py-2 bg-gray-50">
-                    <Link
+                    <a
                       href="/sessions"
                       onClick={() => setShowNotifications(false)}
                       className="text-xs text-blue-600 hover:text-blue-800 font-medium"
                     >
                       View all sessions →
-                    </Link>
+                    </a>
                   </div>
                 </div>
               )}

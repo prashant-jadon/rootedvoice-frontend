@@ -231,10 +231,11 @@ export default function SignupPage() {
       //   }
       // }
 
-      // Insurance is optional at signup — therapists can add it later
-
-
-
+      if (!formData.insuranceFile || !formData.insuranceProvider || !formData.insurancePolicyNumber) {
+        setError('Professional liability insurance details and document are required');
+        setIsLoading(false);
+        return;
+      }
     }
 
     try {
@@ -1394,17 +1395,6 @@ export default function SignupPage() {
               </Link>
             </p>
 
-            <div className="mt-10 pt-8 border-t border-gray-100">
-              <p className="text-center text-xs uppercase tracking-wider font-semibold text-[#203936]/40 mb-4">{t('signup.demoAccess')}</p>
-              <div className="flex space-x-3">
-                <Link href="/dashboard" className="flex-1 bg-gray-50 border border-gray-100 text-[#132D22] px-4 py-2.5 rounded-lg text-center text-sm font-semibold hover:bg-gray-100 transition-colors">
-                  {t('signup.therapistDemo')}
-                </Link>
-                <Link href="/client-dashboard" className="flex-1 bg-gray-50 border border-gray-100 text-[#132D22] px-4 py-2.5 rounded-lg text-center text-sm font-semibold hover:bg-gray-100 transition-colors">
-                  {t('signup.clientDemo')}
-                </Link>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>

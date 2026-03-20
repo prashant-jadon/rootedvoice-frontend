@@ -10,7 +10,7 @@ interface DemoModalProps {
 }
 
 export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
-  const [activeTab, setActiveTab] = useState<'watch' | 'schedule'>('watch')
+  const [activeTab, setActiveTab] = useState<'schedule'>('schedule')
   const [scheduleForm, setScheduleForm] = useState({
     name: '',
     email: '',
@@ -51,23 +51,11 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
             {/* Tabs */}
             <div className="flex border-b border-gray-200">
               <button
-                onClick={() => setActiveTab('watch')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
-                  activeTab === 'watch'
-                    ? 'text-black border-b-2 border-black'
-                    : 'text-gray-500 hover:text-black'
-                }`}
-              >
-                <Video className="w-5 h-5 inline mr-2" />
-                Watch Demo
-              </button>
-              <button
                 onClick={() => setActiveTab('schedule')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
-                  activeTab === 'schedule'
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${activeTab === 'schedule'
                     ? 'text-black border-b-2 border-black'
                     : 'text-gray-500 hover:text-black'
-                }`}
+                  }`}
               >
                 <Calendar className="w-5 h-5 inline mr-2" />
                 Schedule Demo
@@ -76,40 +64,6 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
 
             {/* Content */}
             <div className="p-6">
-              {activeTab === 'watch' && (
-                <div className="space-y-6">
-                  <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600 mb-4">Demo Video Coming Soon</p>
-                      <p className="text-sm text-gray-500">
-                        In the meantime, explore our platform with demo access
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <a
-                      href="/dashboard"
-                      className="p-6 border-2 border-gray-200 rounded-lg hover:border-black transition-colors text-center"
-                    >
-                      <h3 className="font-semibold text-black mb-2">Therapist Demo</h3>
-                      <p className="text-sm text-gray-600">
-                        Explore therapist dashboard and features
-                      </p>
-                    </a>
-                    <a
-                      href="/client-dashboard"
-                      className="p-6 border-2 border-gray-200 rounded-lg hover:border-black transition-colors text-center"
-                    >
-                      <h3 className="font-semibold text-black mb-2">Client Demo</h3>
-                      <p className="text-sm text-gray-600">
-                        See the client experience
-                      </p>
-                    </a>
-                  </div>
-                </div>
-              )}
 
               {activeTab === 'schedule' && (
                 <form onSubmit={handleScheduleSubmit} className="space-y-6">

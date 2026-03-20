@@ -76,18 +76,16 @@ export default function GoogleTranslateWidget() {
             className={`google-translate-widget ${isOpen ? 'is-open' : 'is-closed'}`}
             onClick={() => !isOpen && setIsOpen(true)}
         >
-            <div className="translate-widget-header" onClick={() => isOpen && setIsOpen(false)}>
-                <Globe className="translate-icon" />
+            <div className="translate-widget-header flex items-center gap-2" onClick={() => isOpen && setIsOpen(false)}>
+                <Globe className="translate-icon w-5 h-5 text-gray-700" />
+                <span className="translate-label text-sm font-semibold text-gray-700">Translate</span>
                 {isOpen && (
-                    <>
-                        <span className="translate-label">Translate</span>
-                        <button
-                            className="ml-auto p-1 text-gray-400 hover:text-black hover:bg-gray-100 rounded-full transition-colors"
-                            onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </>
+                    <button
+                        className="ml-auto p-1 text-gray-400 hover:text-black hover:bg-gray-100 rounded-full transition-colors"
+                        onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
                 )}
             </div>
             <div id="google_translate_element" className={isOpen ? 'block' : 'hidden'}></div>

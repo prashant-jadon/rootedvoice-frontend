@@ -193,7 +193,12 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
                 Dr. {therapistName}
               </h1>
               <p className="text-xl text-gray-600 mb-2">Speech-Language Pathologist</p>
-              <p className="text-gray-500 mb-4">{therapist.credentials || 'CCC-SLP'}</p>
+              <div className="flex items-center gap-3 mb-4">
+                <p className="text-gray-500 font-medium">{therapist.credentials || 'CCC-SLP'}</p>
+                <div className="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-sm font-bold flex items-center border border-green-200">
+                  ${therapist.hourlyRate || (therapist.credentials === 'SLPA' ? 60 : 75)}/hr
+                </div>
+              </div>
 
               {/* Rating */}
               <div className="flex items-center space-x-2 mb-4">
@@ -302,7 +307,7 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
             >
               <h2 className="text-2xl font-bold text-black mb-6">About Dr. {therapistName}</h2>
               <p className="text-gray-600 leading-relaxed mb-8">
-                {therapist.bio || `Dr. ${therapistName} is an experienced speech-language pathologist dedicated to providing evidence-based therapy and personalized care. With ${therapist.experience || 0} years of experience, they specialize in helping clients achieve their communication goals through compassionate and effective treatment approaches.`}
+                {therapist.bio || `Dr. ${therapistName} is an experienced speech-language pathologist dedicated to providing therapy methods backed by research and personalized care. With ${therapist.experience || 0} years of experience, they specialize in helping clients achieve their communication goals through compassionate and effective treatment approaches.`}
               </p>
 
               <div className="grid md:grid-cols-2 gap-8">
@@ -399,11 +404,16 @@ export default function TherapistProfilePage({ params }: { params: { id: string 
               <div>
                 <h3 className="text-lg font-semibold text-black mb-4">Licensed States</h3>
                 <div className="flex flex-wrap gap-2">
-                  {(therapist.licensedStates || []).map((state: string, index: number) => (
-                    <span key={index} className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium">
-                      {state}
-                    </span>
-                  ))}
+                  {(therapist.licensedStates || []).map((state: string, index: number) => {
+                    const isVerified = therapist.complianceDocuments?.stateLicensures?.some((l: any) => l.state === state && l.verified) ||
+                                       (therapist.complianceDocuments?.stateLicensure?.state === state && therapist.complianceDocuments?.stateLicensure?.verified);
+                    return (
+                      <span key={index} className={`px-4 py-2 flex items-center gap-2 rounded-lg font-medium border ${isVerified ? 'bg-green-50 text-green-800 border-green-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                        {state}
+                        {isVerified && <span title="Verified License"><CheckCircle className="w-4 h-4 text-green-600" /></span>}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             </motion.div>

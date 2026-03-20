@@ -16,29 +16,29 @@ export default function CompensationChart({
 }: CompensationChartProps) {
   // Compensation tiers configuration
   const SLP_TIERS = [
+    { hours: 0, rate: 40 },
+    { hours: 5, rate: 45 },
+    { hours: 10, rate: 50 },
+    { hours: 15, rate: 55 },
+    { hours: 20, rate: 60 },
+    { hours: 25, rate: 65 },
+    { hours: 30, rate: 70 },
+    { hours: 35, rate: 75 },
+    { hours: 40, rate: 80 },
+  ]
+
+  const SLPA_TIERS = [
     { hours: 0, rate: 35 },
     { hours: 5, rate: 40 },
     { hours: 10, rate: 45 },
     { hours: 15, rate: 50 },
     { hours: 20, rate: 55 },
     { hours: 25, rate: 60 },
-    { hours: 30, rate: 65 },
-    { hours: 35, rate: 70 },
-    { hours: 40, rate: 75 },
-  ]
-
-  const SLPA_TIERS = [
-    { hours: 0, rate: 30 },
-    { hours: 5, rate: 35 },
-    { hours: 10, rate: 40 },
-    { hours: 15, rate: 45 },
-    { hours: 20, rate: 50 },
-    { hours: 25, rate: 55 },
   ]
 
   const tiers = credentialType === 'SLP' ? SLP_TIERS : SLPA_TIERS
-  const maxRate = credentialType === 'SLP' ? 75 : 55
-  const startingRate = credentialType === 'SLP' ? 35 : 30
+  const maxRate = credentialType === 'SLP' ? 80 : 60
+  const startingRate = credentialType === 'SLP' ? 40 : 35
 
   // Find current tier
   const currentTierIndex = tiers.findIndex((tier, index) => {

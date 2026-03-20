@@ -18,7 +18,8 @@ import {
   Mail,
   HelpCircle,
   Globe,
-  Target
+  Target,
+  CreditCard
 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
@@ -334,20 +335,24 @@ function PricingContent() {
 
   const faqItems = [
     {
-      question: 'What\'s included in each pricing tier?',
-      answer: 'Each tier includes different levels of support, session frequency, and additional services. Rooted focuses on foundational care, Flourish provides comprehensive support, and Bloom offers flexible maintenance sessions.'
+      question: 'Is speech therapy covered by insurance?',
+      answer: 'At this time, Rooted Voices operates as a private-pay practice. This allows us to provide high-quality, flexible care—free from insurance-dictated timelines, session limits, or mandatory diagnoses.'
     },
     {
-      question: 'Can I change my plan later?',
-      answer: 'Yes! You can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle.'
+      question: 'Can I use HSA or FSA funds?',
+      answer: 'Yes! You can use your Health Savings Account (HSA) or Flexible Spending Account (FSA) cards to pay for evaluations and ongoing therapy subscriptions.'
     },
     {
-      question: 'Do you accept insurance?',
-      answer: 'At this time, Rooted Voices operates as a private-pay practice. This allows us to provide high-quality, flexible, and affirming care while building sustainable systems that support both clients and clinicians.\n\nWe also offer multiple pathways to care, including tiered options and pay-as-you-go services, so individuals and families can choose support that aligns with their needs and circumstances. As our ecosystem grows, we remain committed to expanding access through additional offerings, partnerships, and community-based initiatives.'
+      question: 'Do you provide superbills?',
+      answer: 'Yes. Upon request, we provide detailed monthly superbills. You can submit these directly to your insurance provider for potential out-of-network reimbursement.'
     },
     {
-      question: 'What if I need to cancel?',
-      answer: 'You can cancel your subscription at any time. Please see our Cancellation Policy for details about notice requirements and any applicable fees.'
+      question: 'What payment options are available?',
+      answer: 'We accept all major credit and debit cards, as well as HSA and FSA cards. Payments are processed securely via our platform.'
+    },
+    {
+      question: 'Can I stop therapy at any time?',
+      answer: 'Yes! You can cancel or change your subscription at any time. Changes will be reflected in your next billing cycle, without long-term lock-in contracts.'
     }
   ]
 
@@ -577,9 +582,27 @@ function PricingContent() {
                     </span>
                   </div>
 
-                  <p className="text-lg text-[#203936]/80 font-medium mb-4 max-w-xl mx-auto leading-relaxed">
-                    Clinical assessment, goal-setting, and personalized care recommendation.
-                  </p>
+                  <div className="text-left max-w-2xl mx-auto mb-8 bg-[#132D22]/5 p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm mt-6">
+                    <h4 className="font-bold text-[#132D22] mb-4 text-lg">What an evaluation includes:</h4>
+                    <ul className="space-y-4">
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0 mt-0.5" />
+                        <span className="text-gray-700 font-medium">Clinical assessment using structured tools to understand how you communicate and what support would help most</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0 mt-0.5" />
+                        <span className="text-gray-700 font-medium">A look at how communication challenges show up in everyday life — at home, at school, or at work</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0 mt-0.5" />
+                        <span className="text-gray-700 font-medium">Comprehensive written report detailing findings</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0 mt-0.5" />
+                        <span className="text-gray-700 font-medium">Consultation / review session to discuss next steps</span>
+                      </li>
+                    </ul>
+                  </div>
 
                   <div className="bg-[#132D22]/5 rounded-xl p-4 mb-8 inline-block">
                     <p className="text-sm font-bold text-[#132D22]">
@@ -800,6 +823,56 @@ function PricingContent() {
           </div>
         </motion.div>
 
+        {/* Financial Accessibility */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-[#132D22] text-[#F7EBD3] rounded-2xl p-8 lg:p-12 mb-16 shadow-xl relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+          
+          <div className="max-w-4xl mx-auto relative z-10">
+            <h2 className="text-3xl font-bold mb-8 text-white text-center">Financial Accessibility & Private Pay</h2>
+            
+            <p className="text-[#F7EBD3]/90 text-lg mb-10 text-center max-w-2xl mx-auto">
+              We operate as an out-of-network, private-pay practice. This model allows us to focus entirely on what's best for you—free from insurance-dictated timelines, session limits, or mandatory diagnoses.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <CreditCard className="w-6 h-6 text-[#B97B40]" />
+                  <h3 className="text-xl font-semibold text-white">HSA & FSA Eligible</h3>
+                </div>
+                <p className="text-[#F7EBD3]/80 leading-relaxed">
+                  You can use your Health Savings Account (HSA) or Flexible Spending Account (FSA) cards to pay for your evaluations and ongoing therapy sessions seamlessly.
+                </p>
+              </div>
+
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <FileText className="w-6 h-6 text-[#B97B40]" />
+                  <h3 className="text-xl font-semibold text-white">Superbills Provided</h3>
+                </div>
+                <p className="text-[#F7EBD3]/80 leading-relaxed">
+                  Upon request, we provide detailed monthly superbills. You can submit these directly to your insurance provider for potential out-of-network reimbursement.
+                </p>
+              </div>
+              
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10 md:col-span-2">
+                <div className="flex items-center gap-3 mb-4">
+                  <Heart className="w-6 h-6 text-[#B97B40]" />
+                  <h3 className="text-xl font-semibold text-white">Cost & Flexibility Options</h3>
+                </div>
+                <p className="text-[#F7EBD3]/80 leading-relaxed">
+                  "What if I want the service but cannot afford to pay?" We recognize that private-pay isn't accessible for everyone. While we do not currently offer direct financial assistance programs or sliding scales at launch, we purposefully structured our <strong>pay-as-you-go</strong> tier to offer maximum flexibility without a monthly commitment. Additionally, our initial evaluations give you actionable strategies you can implement on your own right away.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* FAQ Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -832,7 +905,7 @@ function PricingContent() {
                 Rooted Voices was founded by a practicing Speech-Language Pathologist who understands firsthand the gaps in access, representation, and quality care within our field.
               </p>
               <p>
-                We combine evidence-based practice with culturally responsive, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized and clinically sound therapy.
+                We combine approaches supported by science with care that understands who you are and where you come from, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized therapy that is proven to work.
               </p>
             </div>
           </div>
@@ -841,7 +914,7 @@ function PricingContent() {
               {
                 icon: <Globe className="w-8 h-8" />,
                 title: 'Multilingual & Accessible',
-                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure therapy meets you where you are.'
+                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure care that comes to you.'
               },
               {
                 icon: <Target className="w-8 h-8" />,
@@ -850,8 +923,8 @@ function PricingContent() {
               },
               {
                 icon: <Heart className="w-8 h-8" />,
-                title: 'Clinically Sound & Compassionate',
-                description: 'Evidence-based therapy delivered with warmth, respect, and cultural responsiveness — honoring your communication style and lived experience.'
+                title: 'Grounded in Research & Compassionate',
+                description: 'Therapy methods backed by research delivered with warmth, respect, and care that understands who you are and where you come from — honoring your communication style and the life you have lived.'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center flex flex-col items-center">

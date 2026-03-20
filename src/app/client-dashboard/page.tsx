@@ -640,6 +640,54 @@ export default function ClientDashboardPage() {
 
             {/* Sidebar */}
             <div className="space-y-6">
+              {/* My Care Team */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.35 }}
+                className="bg-white rounded-2xl premium-shadow p-6"
+              >
+                <h2 className="text-xl font-bold text-black mb-4 flex items-center gap-2">
+                  <User className="w-5 h-5 text-purple-600" />
+                  My Care Team
+                </h2>
+
+                {clientProfile?.therapist && clientProfile.therapist !== 'Not assigned yet' ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                      <div className="w-12 h-12 bg-white rounded-full flex flex-shrink-0 items-center justify-center text-xl font-bold text-purple-700 shadow-sm border border-purple-100 uppercase">
+                        {clientProfile.therapist.replace('Dr. ', '').split(' ').map((n: string) => n[0]).join('').substring(0, 2)}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-black">{clientProfile.therapist}</p>
+                        <p className="text-xs text-gray-600">Speech-Language Pathologist</p>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-2 flex flex-col gap-2">
+                      <Link
+                        href="/meet-our-therapists"
+                        className="w-full py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-sm font-medium"
+                        title="Looking for a better match? Browse our directory."
+                      >
+                        Find a New Therapist
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-gray-500">
+                    <User className="w-10 h-10 mx-auto mb-3 opacity-50 text-gray-400" />
+                    <p className="text-sm">You haven't selected a therapist yet.</p>
+                    <Link
+                      href="/meet-our-therapists"
+                      className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors inline-block text-sm font-medium"
+                    >
+                      Browse Directory
+                    </Link>
+                  </div>
+                )}
+              </motion.div>
+
               {/* Current Goals */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

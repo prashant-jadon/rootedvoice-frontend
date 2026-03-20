@@ -22,7 +22,7 @@ import {
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { sessionAPI, therapistAPI, clientAPI } from '@/lib/api'
+import { sessionAPI, therapistAPI, clientAPI, evaluationAPI } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -33,6 +33,9 @@ export default function DashboardPage() {
   const [upcomingSessions, setUpcomingSessions] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
   const [clients, setClients] = useState<any[]>([])
+  const [activeEvaluations, setActiveEvaluations] = useState<any[]>([])
+  const [unbookedClients, setUnbookedClients] = useState<any[]>([])
+  const [missedSessions, setMissedSessions] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [therapistProfile, setTherapistProfile] = useState<any>(null)
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
@@ -77,11 +80,51 @@ export default function DashboardPage() {
       // Fetch clients
       const clientsRes = await clientAPI.getAll()
       const clientsData = clientsRes.data.data || []
-      setClients(clientsData.slice(0, 3)) // Get first 3 clients
+      
+      // Determine unbooked clients (clients with no upcoming sessions)
+      const clientIdsWithSessions = new Set(sessionsData.map((s: any) => s.clientId?._id || s.clientId))
+      const unbooked = clientsData.filter((c: any) => !clientIdsWithSessions.has(c._id))
+      
+      setUnbookedClients(unbooked)
+      setClients(clientsData) // We will slice it in the UI when rendering Recent Clients
+
+      // Fetch evaluations
+      try {
+        const evalsRes = await evaluationAPI.getTherapistAssignments()
+        const activeEvals = (evalsRes.data.data || []).filter((e: any) => 
+          !['recommendations_sent', 'cancelled'].includes(e.status)
+        )
+        setActiveEvaluations(activeEvals)
+      } catch (e) {
+        console.error('Failed to load evaluations')
+      }
+
+      // Fetch all sessions to find missed/cancelled requiring follow-up
+      try {
+        const allSessionsRes = await sessionAPI.getAll()
+        const allSessions = allSessionsRes.data?.data?.sessions || []
+        const missed = allSessions.filter((s: any) => s.status === 'cancelled' || s.status === 'missed')
+        setMissedSessions(missed)
+      } catch (e) {
+        console.error('Failed to load all sessions')
+      }
 
       // Fetch therapist profile
       const therapistRes = await therapistAPI.getMyProfile()
-      setTherapistProfile(therapistRes.data.data)
+      const profile = therapistRes.data.data
+      
+      // Onboarding Gateways
+      if (profile.onboardingStatus === 'PENDING') {
+        router.push('/therapist-pending-approval')
+        return
+      }
+
+      if (profile.onboardingStatus === 'APPROVED' && (!profile.complianceItems || !profile.complianceItems.icaSigned)) {
+        router.push('/therapist/ica-agreement')
+        return
+      }
+
+      setTherapistProfile(profile)
 
       // Fetch therapist stats
       if (therapistRes.data.data?._id) {
@@ -235,6 +278,67 @@ export default function DashboardPage() {
 
           {activeTab === 'overview' && (
             <div className="space-y-8">
+              {/* Pending Activity Alerts */}
+              {(activeEvaluations.length > 0 || unbookedClients.length > 0 || missedSessions.length > 0) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="bg-white rounded-2xl premium-shadow p-6 border-l-4 border-orange-500"
+                >
+                  <h2 className="text-xl font-bold text-black mb-4 flex items-center gap-2">
+                    <Bell className="w-5 h-5 text-orange-500" />
+                    Pending Activity
+                  </h2>
+                  <div className="space-y-3">
+                    {activeEvaluations.length > 0 && (
+                      <Link href="/my-practice" className="flex items-center justify-between p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-orange-700" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-orange-900 group-hover:underline">Awaiting Evaluation</p>
+                            <p className="text-sm text-orange-700">{activeEvaluations.length} client{activeEvaluations.length !== 1 ? 's' : ''} awaiting evaluation review or meeting</p>
+                          </div>
+                        </div>
+                        <div className="text-orange-900 font-medium whitespace-nowrap hidden sm:block">Action Required</div>
+                      </Link>
+                    )}
+                    
+                    {unbookedClients.length > 0 && (
+                      <Link href="/dashboard?tab=clients" className="flex items-center justify-between p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
+                            <Users className="w-4 h-4 text-blue-700" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-blue-900 group-hover:underline">Unscheduled Matched Clients</p>
+                            <p className="text-sm text-blue-700">{unbookedClients.length} client{unbookedClients.length !== 1 ? 's' : ''} matched but no session scheduled</p>
+                          </div>
+                        </div>
+                        <div className="text-blue-900 font-medium whitespace-nowrap hidden sm:block">Schedule Now</div>
+                      </Link>
+                    )}
+
+                    {missedSessions.length > 0 && (
+                      <Link href="/sessions" className="flex items-center justify-between p-3 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-red-200 rounded-full flex items-center justify-center">
+                            <Settings className="w-4 h-4 text-red-700" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-red-900 group-hover:underline">Missed / Cancelled Sessions</p>
+                            <p className="text-sm text-red-700">{missedSessions.length} session{missedSessions.length !== 1 ? 's' : ''} missed or cancelled recently</p>
+                          </div>
+                        </div>
+                        <div className="text-red-900 font-medium whitespace-nowrap hidden sm:block">Requires Follow-up</div>
+                      </Link>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
               {/* Compensation Chart */}
               {therapistProfile && (
                 <motion.div
@@ -245,7 +349,7 @@ export default function DashboardPage() {
                   <CompensationChart
                     credentialType={therapistProfile.credentials || 'SLP'}
                     hoursAccumulated={therapistProfile.totalHoursWorked || 0}
-                    currentHourlyRate={therapistProfile.hourlyRate || (therapistProfile.credentials === 'SLPA' ? 30 : 35)}
+                    currentHourlyRate={therapistProfile.hourlyRate || (therapistProfile.credentials === 'SLPA' ? 35 : 40)}
                   />
                 </motion.div>
               )}
@@ -342,7 +446,7 @@ export default function DashboardPage() {
 
                     <div className="space-y-4">
                       {clients.length > 0 ? (
-                        clients.map((client) => (
+                        clients.slice(0, 5).map((client) => (
                           <div key={client._id} className="flex items-center space-x-3">
                             <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                               <span className="text-sm font-semibold text-gray-600">

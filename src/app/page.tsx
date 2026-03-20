@@ -5,9 +5,9 @@ import {
   ArrowRight, Play, Users, Calendar, Shield, Star, CheckCircle,
   Video, FileText, CreditCard, Menu, X, Heart, Mic, Brain, ChevronRight
 } from 'lucide-react'
-import Link from 'next/link'
+// import Link from "next/link"
 import { useState, useEffect, useRef } from 'react'
-import DemoModal from '../components/DemoModal'
+
 import { useTranslation } from '@/hooks/useTranslation'
 import { subscriptionAPI, publicAPI } from '@/lib/api'
 
@@ -128,17 +128,10 @@ function TestimonialCard({
 
 /* ═══════════════════════════════════════════════════════════════ */
 export default function LandingPage() {
-  const [showDemoModal, setShowDemoModal] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [pricingTiers, setPricingTiers] = useState<any[]>([])
   const [loadingPricing, setLoadingPricing] = useState(true)
-  const [landingStats, setLandingStats] = useState([
-    { number: '10,000+', label: 'Active Therapists', icon: '🎯' },
-    { number: '50,000+', label: 'Sessions Completed', icon: '⚡' },
-    { number: '99.9%', label: 'Platform Uptime', icon: '🛡️' },
-    { number: '4.9/5', label: 'Client Rating', icon: '⭐' }
-  ])
   const t = useTranslation()
   const heroRef = useRef<HTMLElement>(null)
   const { scrollY } = useScroll()
@@ -153,25 +146,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     fetchPricing()
-    fetchLandingStats()
   }, [])
-
-  const fetchLandingStats = async () => {
-    try {
-      const response = await publicAPI.getPlatformStats()
-      const stats = response.data.data
-      if (stats?.landingPageStats) {
-        setLandingStats([
-          { number: stats.landingPageStats.activeTherapists.number, label: stats.landingPageStats.activeTherapists.label, icon: stats.landingPageStats.activeTherapists.icon },
-          { number: stats.landingPageStats.sessionsCompleted.number, label: stats.landingPageStats.sessionsCompleted.label, icon: stats.landingPageStats.sessionsCompleted.icon },
-          { number: stats.landingPageStats.platformUptime.number, label: stats.landingPageStats.platformUptime.label, icon: stats.landingPageStats.platformUptime.icon },
-          { number: stats.landingPageStats.clientRating.number, label: stats.landingPageStats.clientRating.label, icon: stats.landingPageStats.clientRating.icon }
-        ])
-      }
-    } catch {
-      // keep defaults
-    }
-  }
 
   const fetchPricing = async () => {
     try {
@@ -243,45 +218,45 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-[68px]">
 
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
+            <a href="/" className="flex items-center gap-3 group">
               <img src="/logorooted 1.png" alt="Rooted Voices" className="h-[80px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105" />
-            </Link>
+            </a>
 
             {/* Desktop nav */}
             <div className="hidden lg:flex items-center gap-8">
               {[
+                { href: '/', label: 'Home' },
                 { href: '/services', label: 'Services' },
-                { href: '/who-we-are', label: 'Who We Are' },
-                { href: '/for-therapists', label: 'For Therapists' },
-                { href: '/meet-our-therapists', label: t('nav.therapists') },
-                { href: '/pricing', label: t('nav.pricing') }
+                { href: '/meet-our-therapists', label: 'Meet Our Therapists' },
+                { href: '/pricing', label: 'Pricing' },
+                { href: '/faq', label: 'FAQ' },
+                { href: '/evaluation-booking', label: 'Schedule Evaluation' }
               ].map(({ href, label }) => (
-                <Link
+                <a
                   key={href}
                   href={href}
                   className="text-sm font-semibold text-[#203936]/70 hover:text-[#203936] transition-colors duration-200 relative group"
                 >
                   {label}
                   <span className="absolute -bottom-0.5 left-0 w-0 h-[1.5px] bg-[#203936] group-hover:w-full transition-all duration-300" />
-                </Link>
+                </a>
               ))}
             </div>
 
             {/* Right actions */}
             <div className="flex items-center gap-3">
-
-              <Link
-                href="/login"
+              <a
+                href="/login?role=client"
                 className="hidden sm:block text-sm font-semibold text-[#203936]/70 hover:text-[#203936] transition-colors px-3 py-2"
               >
-                {t('nav.signIn')}
-              </Link>
-              <Link
-                href="/signup"
+                Client Login
+              </a>
+              <a
+                href="/evaluation-booking"
                 className="bg-[#203936] text-[#F7EBD3] text-sm font-bold px-5 py-2.5 rounded-full hover:bg-[#132D22] hover:scale-[1.03] active:scale-100 transition-all duration-200 shadow-md shadow-[#203936]/20"
               >
-                {t('nav.getStarted')}
-              </Link>
+                Start Your Evaluation
+              </a>
               {/* Mobile menu toggle */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -302,45 +277,43 @@ export default function LandingPage() {
             className="lg:hidden bg-[#F7EBD3] border-t border-[#203936]/10 px-5 py-4 space-y-1"
           >
             {[
+              { href: '/', label: 'Home' },
               { href: '/services', label: 'Services' },
-              { href: '/who-we-are', label: 'Who We Are' },
-              { href: '/for-therapists', label: 'For Therapists' },
-              { href: '/meet-our-therapists', label: t('nav.therapists') },
-              { href: '/pricing', label: t('nav.pricing') }
+              { href: '/meet-our-therapists', label: 'Meet Our Therapists' },
+              { href: '/pricing', label: 'Pricing' },
+              { href: '/faq', label: 'FAQ' },
+              { href: '/evaluation-booking', label: 'Schedule Evaluation' }
             ].map(({ href, label }) => (
-              <Link
+              <a
                 key={href}
                 href={href}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block px-3 py-2.5 text-sm font-semibold text-[#203936] hover:bg-[#203936]/6 rounded-lg transition-colors"
               >
                 {label}
-              </Link>
+              </a>
             ))}
             <div className="pt-3 border-t border-[#203936]/10 flex flex-col gap-2">
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 text-sm font-semibold text-[#203936]/70 hover:text-[#203936]">
-                {t('nav.signIn')}
-              </Link>
-              <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="bg-[#203936] text-[#F7EBD3] text-sm font-bold px-4 py-2.5 rounded-full text-center">
-                {t('nav.getStarted')}
-              </Link>
+              <a href="/login?role=client" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 text-sm font-semibold text-[#203936]/70 hover:text-[#203936]">
+                Client Login
+              </a>
+              <a href="/evaluation-booking" onClick={() => setMobileMenuOpen(false)} className="bg-[#203936] text-[#F7EBD3] text-sm font-bold px-4 py-2.5 rounded-full text-center">
+                Start Your Evaluation
+              </a>
             </div>
           </motion.div>
         )}
       </nav>
 
-      {/* ── HERO ─────────────────────────────────────────────────── */}
+      {/* ── 1. HERO ─────────────────────────────────────────────────── */}
       <section
         ref={heroRef}
         className="relative min-h-[100dvh] flex items-end pb-8 sm:pb-24 overflow-hidden"
         style={{ backgroundImage: 'url("/home-bg.jpeg")', backgroundSize: 'cover', backgroundPosition: 'center top' }}
       >
-        {/* Gradient overlay — bottom-loaded like Bella Health */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#132D22]/85 via-[#132D22]/30 to-transparent" />
-        {/* Subtle vignette on sides */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#132D22]/30 via-transparent to-transparent" />
 
-        {/* Floating trust badge */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -348,12 +321,12 @@ export default function LandingPage() {
           style={{ opacity: heroOpacity }}
           className="absolute top-28 right-8 sm:right-16 bg-white/15 backdrop-blur-xl border border-white/25 rounded-2xl px-5 py-3 flex items-center gap-3 shadow-xl hidden md:flex"
         >
-          <div className="w-8 h-8 bg-[#B97B40] rounded-full flex items-center justify-center">
-            <Shield className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 bg-[#203936] rounded-full flex items-center justify-center text-xl">
+            🌍
           </div>
           <div>
-            <div className="text-white text-xs font-bold">HIPAA Compliant</div>
-            <div className="text-white/60 text-[10px]">Enterprise Security</div>
+            <div className="text-white text-xs font-bold">Available in 20+ Languages</div>
+            <div className="text-white/60 text-[10px]">Multilingual Care</div>
           </div>
         </motion.div>
 
@@ -367,66 +340,108 @@ export default function LandingPage() {
             variants={{ show: { transition: { staggerChildren: 0.12 } } }}
             className="max-w-3xl"
           >
-
             <motion.h1
               variants={fadeUp}
               className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.06] tracking-tight mb-3 sm:mb-6"
             >
-              Find your voice.
-              <br />
-              <span className="text-[#B97B40]">On your terms.</span>
+              From first words to restored ones —<br />
+              <span className="text-[#B97B40]">we show up for every stage of the journey.</span>
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
               className="text-base sm:text-lg text-white/75 leading-relaxed max-w-xl mb-5 sm:mb-10"
             >
-              At Rooted Voices, we believe communication holds power — the power to connect, advocate, grow, and thrive.
+              Care that honors where you come from — and meets you wherever you are.
+            </motion.p>
+            
+            <motion.p variants={fadeUp} className="text-sm text-white/60 mb-3 font-semibold tracking-wider uppercase">
+              Your journey starts here.
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start">
-              <Link
-                href="/signup"
-                className="inline-flex items-center gap-2.5 bg-[#F7EBD3] text-[#132D22] text-sm font-black px-7 py-4 rounded-full hover:bg-white hover:scale-[1.03] active:scale-100 transition-all duration-200 shadow-xl shadow-black/30 group"
+              <a
+                href="/evaluation-booking"
+                className="inline-flex items-center justify-center gap-2.5 bg-[#F7EBD3] text-[#132D22] text-sm font-black px-7 py-4 rounded-full hover:bg-white hover:scale-[1.03] active:scale-100 transition-all duration-200 shadow-xl shadow-black/30 group"
               >
-                {t('landing.hero.cta')}
+                Start Your Evaluation
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <button
-                onClick={() => setShowDemoModal(true)}
-                className="inline-flex items-center gap-2.5 text-white text-sm font-semibold px-6 py-4 rounded-full border border-white/30 hover:bg-white/10 hover:border-white/50 transition-all duration-200 backdrop-blur-sm group"
+              </a>
+              <a
+                href="/for-therapists"
+                className="inline-flex items-center justify-center gap-2.5 text-white text-sm font-semibold px-6 py-4 rounded-full border border-white/30 hover:bg-white/10 hover:border-white/50 transition-all duration-200 backdrop-blur-sm group"
               >
-                <span className="w-7 h-7 rounded-full bg-white/15 border border-white/25 flex items-center justify-center group-hover:bg-white/25 transition-colors">
-                  <Play className="w-3 h-3 fill-white ml-0.5" />
-                </span>
-                {t('landing.hero.watchDemo')}
-              </button>
+                Join as a Clinician
+              </a>
             </motion.div>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* ── STATS TICKER ─────────────────────────────────────────── */}
-      <section className="bg-[#203936] py-7">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="max-w-7xl mx-auto px-5 sm:px-8"
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 rounded-xl overflow-hidden">
-            {landingStats.map((s, i) => (
-              <div key={i} className="bg-[#203936] px-8 py-5 text-center">
-                <div className="text-2xl font-black text-[#F7EBD3]">{s.number}</div>
-                <div className="text-xs text-[#F7EBD3]/50 font-medium mt-0.5">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+      {/* ── MISSION ANCHOR (New) ─────────────────────────────────────── */}
+      <section className="bg-[#132D22] text-[#F7EBD3] py-16 px-5 sm:px-8 text-center border-y border-[#203936]/20 shadow-inner">
+        <div className="max-w-4xl mx-auto flex flex-col items-center">
+          <Heart className="w-8 h-8 text-[#B97B40] mb-6 animate-pulse" />
+          <p className="text-2xl sm:text-3xl font-medium leading-relaxed italic">
+            "The care I would have wanted my grandparents to receive — that is the standard we hold ourselves to at Rooted Voices."
+          </p>
+        </div>
       </section>
 
-      {/* ── INTRO / SPLIT ────────────────────────────────────────── */}
-      <section className="py-28 px-5 sm:px-8">
+      {/* ── 2. WHO WE SUPPORT ─────────────────────────────────────────── */}
+      <section className="py-24 px-5 sm:px-8 bg-white" id="who-we-support">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-3xl mb-12">
+            <SectionLabel>Who We Support</SectionLabel>
+            <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-6">Care for every stage of life.</h2>
+            <p className="text-xl text-[#203936]/80 leading-relaxed font-medium">
+              Rooted Voices was built to serve people across the full lifespan — from children finding their first words, to adults reclaiming their voice after illness or injury, to elders who deserve care that sees them fully. Wherever you are in your journey, there is a place for you here.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              "Children who are late to talk, hard to understand, or struggling to keep up in school",
+              "Adults rebuilding their voice and confidence after a stroke, injury, or neurological change",
+              "People who want to feel more confident and clear in how they speak and express themselves",
+              "Families who speak more than one language and want care that genuinely understands their background",
+              "Children and adults with autism who communicate differently and deserve support that honors that",
+              "Elders navigating changes in swallowing, memory, or communication as they age"
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="bg-[#F7EBD3]/30 p-8 rounded-2xl border border-[#203936]/10 hover:-translate-y-1 transition-transform duration-300"
+              >
+                <Heart className="w-8 h-8 text-[#B97B40] mb-4" />
+                <p className="text-[#132D22] font-medium leading-relaxed">{item}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. REASSURANCE BLOCK ──────────────────────────────────────── */}
+      <section className="py-20 px-5 sm:px-8 bg-[#F7EBD3]">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-black text-[#132D22] mb-6">Not Sure Where to Start?</h2>
+          <p className="text-lg text-[#203936] leading-relaxed mb-8">
+            You're not alone. Many families and adults come to us unsure where to begin — and that's completely okay. Our first step is a guided evaluation designed to understand your specific situation and goals. From there, we walk with you through every step of the process. You don't have to figure it out alone.
+          </p>
+          <a
+            href="/evaluation-booking"
+            className="inline-flex items-center gap-2 bg-[#203936] text-white text-sm font-bold px-8 py-4 rounded-full hover:bg-[#132D22] transition-colors shadow-lg group"
+          >
+            Start Your Evaluation
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </div>
+      </section>
+
+      {/* ── 4. HOW IT WORKS ───────────────────────────────────────────── */}
+      <section className="py-28 px-5 sm:px-8 bg-white" id="how-it-works">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
             initial="hidden"
@@ -435,64 +450,35 @@ export default function LandingPage() {
             variants={{ show: { transition: { staggerChildren: 0.1 } } }}
           >
             <motion.div variants={fadeUp}>
-              <SectionLabel>Our Platform</SectionLabel>
+              <SectionLabel>How It Works</SectionLabel>
             </motion.div>
             <motion.h2
               variants={fadeUp}
               className="text-4xl md:text-5xl font-black text-[#132D22] leading-tight mb-6"
             >
-              Therapy that&nbsp;works —
-              <br />
-              <span className="text-[#203936]">wherever you are</span>
+              Your path to care.
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-[#203936]/65 leading-relaxed mb-8 max-w-lg">
-              Rooted Voices combines licensed expertise with powerful technology to create therapy
-              experiences that deliver real, lasting results. Whether you're a client on your growth
-              journey or a clinician building your practice — we're built for both.
+            <motion.p variants={fadeUp} className="text-[#203936]/65 leading-relaxed max-w-lg mb-8">
+              We've made finding the right therapist and starting your journey as simple and supportive as possible. Our process is designed to center your specific needs from day one.
             </motion.p>
-            <motion.div variants={fadeUp} className="space-y-3">
-              {[
-                'Licensed, certified therapists in every specialty',
-                'HIPAA-secure video sessions from home',
-                'Flexible plans with no long-term contracts',
-                'Progress tracking and session resources included'
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 text-sm text-[#203936]">
-                  <CheckCircle className="w-4 h-4 text-[#203936] flex-shrink-0" />
-                  <span className="font-medium">{item}</span>
-                </div>
-              ))}
-            </motion.div>
-            <motion.div variants={fadeUp} className="mt-10">
-              <Link
-                href="/who-we-are"
-                className="inline-flex items-center gap-2 text-sm font-bold text-[#203936] border-b-2 border-[#203936]/30 hover:border-[#203936] pb-0.5 transition-colors group"
-              >
-                Learn our story
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </motion.div>
           </motion.div>
 
-          {/* Visual — how it works */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
-            className="bg-white rounded-3xl p-8 shadow-xl border border-[#203936]/6"
+            className="bg-[#F7EBD3]/30 rounded-3xl p-8 shadow-sm border border-[#203936]/10"
           >
-            <SectionLabel>How It Works</SectionLabel>
-            <h3 className="text-2xl font-black text-[#132D22] mb-8">Three steps to better communication</h3>
-            <HowStep number="01" title="Complete Your Evaluation" desc="Answer a short intake questionnaire so we can understand your needs and match you with the right therapist." />
-            <HowStep number="02" title="Get Matched & Book" desc="Review your matched therapists, see their specialties and availability, then book your first session instantly." />
-            <HowStep number="03" title="Start Your Journey" desc="Attend sessions from home, access your resource library, and track your progress every step of the way." last />
+            <HowStep number="01" title="Complete a Guided Intake" desc="Complete a guided intake so we can understand your goals and match you with the right therapist." />
+            <HowStep number="02" title="Find Your Perfect Match" desc="Get matched with a licensed speech-language pathologist who understands your unique needs." />
+            <HowStep number="03" title="Start Growing" desc="Begin virtual therapy tailored to your goals in a supportive environment that understands who you are and where you come from." last />
           </motion.div>
         </div>
       </section>
 
-      {/* ── FEATURES ─────────────────────────────────────────────── */}
-      <section id="features" className="py-28 px-5 sm:px-8 bg-white">
+      {/* ── 5. WHY ROOTED VOICES ──────────────────────────────────────── */}
+      <section className="py-28 px-5 sm:px-8 bg-gray-50 border-t border-[#203936]/5" id="why-rooted-voices">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
@@ -502,11 +488,11 @@ export default function LandingPage() {
             className="text-center max-w-2xl mx-auto mb-16"
           >
             <motion.div variants={fadeUp}>
-              <SectionLabel>Platform Features</SectionLabel>
+              <SectionLabel>Why Rooted Voices</SectionLabel>
             </motion.div>
             <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-black text-[#132D22] leading-tight mb-4">
               Everything you need.<br />
-              <span className="text-[#203936]">Nothing you don't.</span>
+              <span className="text-[#B97B40]">Nothing you don't.</span>
             </motion.h2>
             <motion.p variants={fadeUp} className="text-[#203936]/60 leading-relaxed">
               Built with clinicians in mind and designed for clients who deserve a seamless experience.
@@ -521,105 +507,77 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── PRICING ──────────────────────────────────────────────── */}
-      <section id="pricing" className="py-28 px-5 sm:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-            className="text-center max-w-xl mx-auto mb-16"
-          >
-            <motion.div variants={fadeUp}>
-              <SectionLabel>Pricing</SectionLabel>
-            </motion.div>
-            <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-black text-[#132D22] leading-tight mb-4">
-              {t('landing.pricingTitle')}
-            </motion.h2>
-            <motion.p variants={fadeUp} className="text-[#203936]/60 leading-relaxed">
-              {t('landing.pricingSubtitle')}
-            </motion.p>
-          </motion.div>
-
-          {loadingPricing ? (
-            <div className="flex items-center justify-center py-24">
-              <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#203936]/20 border-t-[#203936]" />
-            </div>
-          ) : pricingTiers.length === 0 ? (
-            <div className="text-center py-24 text-[#203936]/40 font-medium">No plans available right now.</div>
-          ) : (
-            <div className="grid md:grid-cols-3 gap-6">
-              {pricingTiers.map((plan, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 32 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  viewport={{ once: true }}
-                  className={`relative rounded-2xl border flex flex-col ${plan.popular
-                    ? 'bg-[#203936] border-[#203936] shadow-2xl shadow-[#203936]/25'
-                    : 'bg-white border-[#203936]/12 hover:border-[#203936]/25 hover:shadow-lg'
-                    } transition-all duration-300`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <span className="bg-[#B97B40] text-white text-[11px] font-black uppercase tracking-wider px-4 py-1.5 rounded-full shadow-lg">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <div className="p-8 flex-1">
-                    <div className="text-3xl mb-4">{plan.icon}</div>
-                    <div className={`text-xs font-bold uppercase tracking-widest mb-2 ${plan.popular ? 'text-[#F7EBD3]/50' : 'text-[#203936]/40'}`}>
-                      {plan.name} Tier
-                    </div>
-                    <div className="flex items-baseline gap-1 mb-1">
-                      <span className={`text-4xl font-black ${plan.popular ? 'text-[#F7EBD3]' : 'text-[#132D22]'}`}>
-                        {plan.price}
-                      </span>
-                      <span className={`text-sm font-medium ${plan.popular ? 'text-[#F7EBD3]/60' : 'text-[#203936]/45'}`}>
-                        {plan.period}
-                      </span>
-                    </div>
-                    <div className={`text-xs mb-1 ${plan.popular ? 'text-[#F7EBD3]/50' : 'text-[#203936]/40'}`}>{plan.billing}</div>
-                    {plan.sessionsPerMonth > 0 && (
-                      <div className={`text-xs font-semibold mb-4 ${plan.popular ? 'text-[#F7EBD3]/70' : 'text-[#203936]/60'}`}>
-                        {plan.sessionsPerMonth} session{plan.sessionsPerMonth > 1 ? 's' : ''}/month · {plan.duration} min each
-                      </div>
-                    )}
-                    <p className={`text-sm leading-relaxed mb-6 ${plan.popular ? 'text-[#F7EBD3]/70' : 'text-[#203936]/60'}`}>
-                      {plan.tagline}
-                    </p>
-                    <ul className="space-y-2.5">
-                      {plan.features.map((feat: string, fi: number) => (
-                        <li key={fi} className="flex items-start gap-2.5 text-sm">
-                          <CheckCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-[#B97B40]' : 'text-[#203936]'}`} />
-                          <span className={plan.popular ? 'text-[#F7EBD3]/75' : 'text-[#203936]/70'}>{feat}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="p-8 pt-0">
-                    <Link
-                      href="/pricing"
-                      className={`block w-full py-3.5 rounded-full text-sm font-bold text-center transition-all duration-200 hover:scale-[1.02] active:scale-100 ${plan.popular
-                        ? 'bg-[#F7EBD3] text-[#132D22] hover:bg-white shadow-lg'
-                        : 'bg-[#203936] text-[#F7EBD3] hover:bg-[#132D22]'
-                        }`}
-                    >
-                      Get Started
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+      {/* ── 6. CARE IN YOUR LANGUAGE ──────────────────────────────────── */}
+      <section className="py-32 px-5 sm:px-8 bg-[#203936] text-white overflow-hidden relative" id="multilingual-support">
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <div className="mx-auto w-16 h-16 bg-[#F7EBD3]/10 rounded-full flex items-center justify-center mb-6 border border-[#F7EBD3]/20">
+            <span className="text-2xl">🌍</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black text-[#F7EBD3] mb-6">🌱 Speech Therapy in Your Language.</h2>
+          <p className="text-lg text-[#F7EBD3]/80 leading-relaxed max-w-3xl mx-auto mb-16">
+            Rooted Voices is available in 20+ languages — so that every family, in every community, can access the care they deserve without a language barrier standing in the way. Our site, our sessions, and our care are built to meet you where you are.
+          </p>
+          
+          <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
+            {['Español', 'Français', 'العربية', 'Português', '中文', 'Tagalog', 'Tiếng Việt', '한국어', 'Русский', 'Deutsch', '日本語', 'Italiano', 'Polski', 'हिन्दी', 'اردو'].map((lang, i) => (
+              <span key={i} className="px-5 py-2.5 bg-white/10 rounded-full text-[#F7EBD3] font-medium border border-white/20 backdrop-blur-sm shadow-sm hover:bg-white/20 transition-colors cursor-default">
+                {lang}
+              </span>
+            ))}
+            <span className="px-5 py-2.5 bg-[#B97B40] rounded-full text-white font-bold shadow-lg">
+              + More
+            </span>
+          </div>
         </div>
       </section>
 
-      {/* ── FOR THERAPISTS STRIP ─────────────────────────────────── */}
-      <section className="py-24 px-5 sm:px-8 bg-[#132D22]">
+      {/* ── 7. TESTIMONIALS ────────────────────────────────────────────── */}
+      <section className="py-28 px-5 sm:px-8 bg-white" id="testimonials">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <SectionLabel>Rooted Stories</SectionLabel>
+            <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-4">Real Families. Real Progress.</h2>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TestimonialCard 
+              quote="Finding a therapist who truly understands our cultural background and speaks our language made all the difference for my son. He's thriving!" 
+              author="Maria V." 
+              role="Parent of a pediatric client" 
+              rating={5} 
+            />
+            <TestimonialCard 
+              quote="After my stroke, I lost my confidence. My Rooted Voices therapist didn't just help me speak again; they helped me find me again." 
+              author="David L." 
+              role="Adult client" 
+              rating={5} 
+            />
+            <TestimonialCard 
+              quote="The therapy structure and personalized approach has been incredible for our autistic daughter. They really honor how she communicates." 
+              author="Sarah & Tom" 
+              role="Parents" 
+              rating={5} 
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. FINAL CTA ──────────────────────────────────────────────── */}
+      <section className="py-24 px-5 sm:px-8 bg-[#F7EBD3] border-t border-[#203936]/10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-6">Ready to find your voice?</h2>
+          <p className="text-lg text-[#203936]/80 mb-10">Join the thousands of clients who have discovered life-changing care.</p>
+          <a
+            href="/evaluation-booking"
+            className="inline-flex items-center gap-2 bg-[#203936] text-white text-sm font-black px-8 py-4 rounded-full hover:bg-[#132D22] hover:scale-105 transition-all duration-200 shadow-xl group"
+          >
+            Start Your Evaluation
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </div>
+      </section>
+
+      {/* ── 9. CLINICIAN RECRUITMENT CONTENT ───────────────────────────── */}
+      <section className="py-24 px-5 sm:px-8 bg-[#132D22]" id="for-clinicians">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-14 items-center">
           <motion.div
             initial="hidden"
@@ -642,19 +600,19 @@ export default function LandingPage() {
               Rooted Voices lets you focus on what you love: helping people find their voice.
             </motion.p>
             <motion.div variants={fadeUp} className="flex gap-4 flex-wrap">
-              <Link
+              <a
                 href="/for-therapists"
                 className="inline-flex items-center gap-2 bg-[#F7EBD3] text-[#132D22] text-sm font-black px-6 py-3 rounded-full hover:bg-white transition-colors group"
               >
-                Join as a Therapist
+                Join as a Clinician
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/meet-our-therapists"
                 className="inline-flex items-center gap-2 text-[#F7EBD3]/70 text-sm font-semibold px-6 py-3 rounded-full border border-[#F7EBD3]/20 hover:border-[#F7EBD3]/40 hover:text-[#F7EBD3] transition-all"
               >
                 Meet our therapists
-              </Link>
+              </a>
             </motion.div>
           </motion.div>
 
@@ -686,10 +644,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-
-
-      {/* Demo modal */}
-      <DemoModal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} />
     </div>
   )
 }

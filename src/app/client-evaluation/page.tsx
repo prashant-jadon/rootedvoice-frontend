@@ -24,6 +24,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { evaluationAPI } from '@/lib/api'
+import { formatSessionTimes } from '@/lib/timeUtils'
 
 const STEPS = [
     { key: 'paid', label: 'Payment Complete', icon: DollarSign },
@@ -182,8 +183,8 @@ export default function ClientEvaluationPage() {
                             return (
                                 <div key={step.key} className="relative z-10 flex flex-col items-center" style={{ flex: 1 }}>
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${status === 'completed' ? 'bg-green-500 text-white' :
-                                            status === 'current' ? 'bg-blue-500 text-white ring-4 ring-blue-100' :
-                                                'bg-gray-200 text-gray-400'
+                                        status === 'current' ? 'bg-blue-500 text-white ring-4 ring-blue-100' :
+                                            'bg-gray-200 text-gray-400'
                                         }`}>
                                         {status === 'completed' ? <CheckCircle className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                                     </div>
@@ -436,7 +437,22 @@ export default function ClientEvaluationPage() {
                                         <Calendar className="w-5 h-5 text-gray-400" />
                                         <div>
                                             <p className="font-medium text-black">{formatDate(evaluation.scheduledDate)}</p>
-                                            <p className="text-sm text-gray-500">{evaluation.scheduledTime || 'Time TBD'}</p>
+                                            {(() => {
+                                                const timeDisplay = formatSessionTimes(
+                                                    evaluation.scheduledDate,
+                                                    evaluation.scheduledTime,
+                                                    therapistUser?.timezone,
+                                                    'client'
+                                                );
+                                                return (
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-800">{timeDisplay.primaryText}</p>
+                                                        {timeDisplay.secondaryText && (
+                                                            <p className="text-xs text-gray-500">{timeDisplay.secondaryText}</p>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
                                     </div>
                                 )}
