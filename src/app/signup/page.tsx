@@ -77,7 +77,6 @@ export default function SignupPage() {
 
   const handleLicenseChange = (index: number, field: string, value: any) => {
     const newLicensures = [...formData.stateLicensures]
-    // @ts-ignore
     newLicensures[index] = { ...newLicensures[index], [field]: value }
 
     // Sync the first license with legacy fields for backward compatibility
@@ -113,7 +112,6 @@ export default function SignupPage() {
   // Practice Location Handlers
   const handleLocationChange = (index: number, field: string, value: string) => {
     const newLocations = [...formData.practiceLocations]
-    // @ts-ignore
     newLocations[index] = { ...newLocations[index], [field]: value }
 
     // Sync the first location with the legacy fields for backward compatibility
@@ -465,8 +463,12 @@ export default function SignupPage() {
             transition={{ duration: 0.6, ease: 'easeOut' as const }}
           >
             <div className="mb-10">
-              <h1 className="text-3xl font-black text-[#132D22] mb-3 tracking-tight">{t('signup.title')}</h1>
-              <p className="text-[#203936]/70">{t('signup.subtitle')}</p>
+              <h1 className="text-3xl font-black text-[#132D22] mb-3 tracking-tight">
+                {userType === 'therapist' ? "Join the Rooted Voices Community" : t('signup.title')}
+              </h1>
+              <p className="text-[#203936]/70">
+                {userType === 'therapist' ? "Build a purposeful practice with the structure, support, and flexibility you deserve." : t('signup.subtitle')}
+              </p>
               {error && (
                 <div className="mt-5 p-4 bg-red-50 border border-red-100 rounded-xl">
                   <p className="text-sm text-red-600 font-medium">{error}</p>
@@ -1413,12 +1415,12 @@ export default function SignupPage() {
         >
           <div className="bg-[#132D22]/5 border border-[#132D22]/10 rounded-2xl p-8 backdrop-blur-sm">
             <h2 className="text-3xl font-black text-[#132D22] mb-4 leading-tight">
-              {userType === 'client' ? t('signup.findRightTherapist') : t('signup.growYourPractice')}
+              {userType === 'client' ? t('signup.findRightTherapist') : "A Practice That Supports You"}
             </h2>
             <p className="text-[#203936]/80 text-lg mb-8 leading-relaxed">
               {userType === 'client'
                 ? t('signup.clientDescription')
-                : t('signup.therapistDescription')
+                : "Join a community of clinicians dedicated to providing intentional, high-quality care. We provide the infrastructure—you provide the care."
               }
             </p>
 

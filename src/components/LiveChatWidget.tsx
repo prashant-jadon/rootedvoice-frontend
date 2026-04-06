@@ -177,7 +177,7 @@ export default function LiveChatWidget() {
       setIsUploading(true)
       
       // Upload files if any
-      let attachments: any[] = []
+      const attachments: any[] = []
       if (selectedFiles.length > 0) {
         const formData = new FormData()
         formData.append('receiverId', supportUserId)

@@ -59,8 +59,8 @@ export default function LoginPage() {
             transition={{ duration: 0.6, ease: 'easeOut' as const }}
           >
             <div className="mb-10">
-              <h1 className="text-3xl font-black text-[#132D22] mb-3 tracking-tight">Welcome back.</h1>
-              <p className="text-[#203936]/70">Sign in to your Rooted Voices account.</p>
+              <h1 className="text-3xl font-black text-[#132D22] mb-3 tracking-tight">Welcome Back</h1>
+              <p className="text-[#203936]/70">Access your Rooted Voices portal to manage appointments, messages, and secure documentation.</p>
               {error && (
                 <div className="mt-5 p-4 bg-red-50 border border-red-100 rounded-xl">
                   <p className="text-sm text-red-600 font-medium">{error}</p>
@@ -208,10 +208,10 @@ export default function LoginPage() {
         >
           <div className="bg-[#132D22]/5 border border-[#132D22]/10 rounded-2xl p-8 backdrop-blur-sm">
             <h2 className="text-3xl font-black text-[#132D22] mb-4 leading-tight">
-              Where growth happens.
+              Your Portal to Better Care
             </h2>
             <p className="text-[#203936]/80 text-lg mb-8 leading-relaxed">
-              Log in to seamlessly manage your sessions, access resources, and continue your journey to better communication.
+              Access your secure portal to join telehealth sessions, manage your schedule, and review important clinical documents. We’re glad you’re here.
             </p>
 
             <div className="space-y-4 pt-6 border-t border-[#132D22]/10">

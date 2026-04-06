@@ -37,7 +37,11 @@ export default function ServicesPage() {
         'Feeding or swallowing challenges, including picky eating',
         'Support for children with autism',
         'Children who use alternative ways to communicate (AAC)',
-        'Parent coaching for infants and toddlers'
+        'Parent coaching for infants and toddlers',
+        'Early intervention services (birth to age 3)',
+        'Accent modification',
+        'Voice modification and voice therapy',
+        'Social skills and pragmatic language development'
       ]
     },
     {
@@ -53,7 +57,9 @@ export default function ServicesPage() {
         'Executive functioning (organization, planning, focus)',
         'Stuttering and fluency support',
         'Voice therapy (including gender-affirming care)',
-        'Alternative communication methods (AAC)'
+        'Alternative communication methods (AAC)',
+        'Accent modification',
+        'Voice modification'
       ]
     },
     {
@@ -68,7 +74,10 @@ export default function ServicesPage() {
         'Swallowing safety and dysphagia management',
         'Voice therapy for vocal strain or professional voice users',
         'Stuttering support for adults',
-        'Cognitive-communication therapy'
+        'Cognitive-communication therapy',
+        'Accent modification',
+        'Voice modification (professional voice users, singers, public speakers)',
+        'Gender-affirming voice therapy'
       ]
     },
     {
@@ -83,7 +92,9 @@ export default function ServicesPage() {
         'Swallowing safety and safe eating and drinking strategies',
         'Voice changes with aging (presbyphonia)',
         'Cognitive-communication therapy for memory or neurological changes',
-        'Support for maintaining social connection and quality of life'
+        'Support for maintaining social connection and quality of life',
+        'Accent modification',
+        'Early communication support related to dementia and cognitive decline'
       ]
     }
   ]
@@ -128,18 +139,23 @@ export default function ServicesPage() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-            {t('services.heroTitle')}
+            Speech &amp; Language Care, Rooted in You
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            {t('services.heroSubtitle')}
-          </p>
+          <div className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 space-y-4">
+            <p>
+              Communication is deeply personal — and the care you receive should be too.
+            </p>
+            <p>
+              At Rooted Voices, we provide individualized speech and language services that honor your experiences, your identity, and your goals. We are here to bridge the gaps in communication, creating space for connection, confidence, and meaningful progress at every stage of life.
+            </p>
+          </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/meet-our-therapists" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">
-              {t('nav.therapists')}
+              Meet Our Therapists
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link href="/pricing" className="border border-gray-300 text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300">
-              {t('nav.pricing')}
+              View Pricing
             </Link>
           </div>
         </motion.div>
@@ -153,7 +169,7 @@ export default function ServicesPage() {
             <div className="bg-white/5 p-6 rounded-xl border border-white/10">
               <h3 className="font-bold text-white mb-3 text-lg">Do you work with infants?</h3>
               <p className="text-[#F7EBD3]/90 text-sm leading-relaxed">
-                Yes, we do. While a 2-month-old cannot participate in traditional screen-based telehealth, we provide <strong>dedicated parent coaching</strong>. We guide you, the caregiver, step-by-step through strategies to support your baby&apos;s early communication and development right at home.
+                Yes, we do! We provide services across the full lifespan, starting from birth. Even though a young infant won&apos;t be saying words yet, there are important communication and developmental milestones we can support from day one — including cooing, social smiling, eye contact, feeding, and early sound-making. Early intervention begins at birth, and the earlier we start, the better the outcomes. For our youngest clients, we provide dedicated parent and caregiver coaching, guiding you step by step through strategies you can use at home to support your baby&apos;s development every single day.
               </p>
             </div>
             <div className="bg-white/5 p-6 rounded-xl border border-white/10">
@@ -165,7 +181,7 @@ export default function ServicesPage() {
             <div className="bg-white/5 p-6 rounded-xl border border-white/10">
               <h3 className="font-bold text-white mb-3 text-lg">What is the minimum age for direct telehealth?</h3>
               <p className="text-[#F7EBD3]/90 text-sm leading-relaxed">
-                Direct one-on-one telehealth therapy typically begins around <strong>age 3</strong>, depending on the child&apos;s attention span. For children under 3, our primary and most effective approach is empowering parents and caregivers through active coaching.
+                There is no strict minimum age for telehealth services. We have worked directly with infants as young as 9 to 10 months old via telehealth. The approach simply looks different depending on the child&apos;s age and developmental stage. For infants and very young children, sessions are caregiver-supported, meaning a parent or caregiver is actively involved and guided throughout. As children grow and their attention and engagement develop, sessions gradually shift toward more direct, one-on-one interaction. Every child is different, and we tailor our approach accordingly.
               </p>
             </div>
           </div>
@@ -236,13 +252,16 @@ export default function ServicesPage() {
           className="mt-20 bg-white rounded-2xl premium-shadow p-8"
         >
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-black mb-6">Why Choose Rooted Voices?</h2>
+            <h2 className="text-3xl font-bold text-black mb-6">Why Rooted Voices</h2>
             <div className="max-w-3xl mx-auto space-y-4 text-lg text-gray-600">
               <p>
-                Rooted Voices was founded by a practicing Speech-Language Pathologist who understands firsthand the gaps in access, representation, and quality care within our field.
+                Rooted Voices was created from both professional experience and lived understanding — with a deep awareness of the gaps that exist in access, representation, and quality care within our field.
               </p>
               <p>
-                We combine approaches supported by science with care that understands who you are and where you come from, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized therapy that is proven to work.
+                We believe communication is more than a skill — it is a bridge to connection, identity, and belonging. Our approach brings together evidence-based practice with a deep respect for who you are, where you come from, and how you experience the world.
+              </p>
+              <p>
+                Every part of what we do is designed to feel intentional, supportive, and aligned with your needs — so you receive care that truly sees you.
               </p>
             </div>
           </div>
@@ -251,18 +270,18 @@ export default function ServicesPage() {
             {[
               {
                 icon: <Globe className="w-8 h-8" />,
-                title: 'Multilingual & Accessible',
-                description: 'Support available in multiple languages, with bilingual clinicians and real-time transcription options to ensure care that comes to you.'
+                title: 'Accessible & Multilingual Care',
+                description: 'Support available in multiple languages, with clinicians who understand that culture, identity, and communication go far beyond translation'
               },
               {
                 icon: <Target className="w-8 h-8" />,
                 title: 'Evaluation-First, Personalized Care',
-                description: 'Every journey begins with a comprehensive evaluation so we can understand your unique needs and design a therapy plan tailored specifically to you.'
+                description: 'Every journey begins with a thoughtful, comprehensive evaluation so we can understand you fully and build a plan tailored specifically to your needs and goals'
               },
               {
                 icon: <Heart className="w-8 h-8" />,
-                title: 'Grounded in Research & Compassionate',
-                description: 'Therapy methods backed by research delivered with warmth, respect, and care that understands who you are and where you come from — honoring your communication style and the life you have lived.'
+                title: 'Grounded in Research, Led with Care',
+                description: 'Evidence-based therapy delivered with warmth, genuine respect, and a deep understanding of your lived experience'
               }
             ].map((feature, index) => (
               <div key={index} className="text-center flex flex-col items-center">
@@ -283,17 +302,20 @@ export default function ServicesPage() {
           transition={{ duration: 0.6 }}
           className="mt-16 text-center"
         >
-          <h2 className="text-3xl font-bold text-black mb-6">Start with Care That's Built Differently</h2>
+          <h2 className="text-3xl font-bold text-black mb-6">Start with Care That&apos;s Built Differently</h2>
           <div className="max-w-3xl mx-auto space-y-4 text-lg text-gray-600 mb-8">
             <p>
-              At Rooted Voices, therapy is structured, intentional, and led by licensed clinicians who prioritize clinical integrity over volume.
+              At Rooted Voices, therapy is intentional, personalized, and led by licensed clinicians who value quality care and meaningful human connection above all else.
             </p>
             <p>
-              Whether you're seeking services for yourself or a loved one, every plan of care begins with an appropriate evaluation, clearly defined goals, and measurable outcomes.
+              Whether you are seeking support for yourself or a loved one, every journey begins with a thoughtful evaluation — designed to truly understand your communication, your experiences, and your goals. Not just your symptoms. Not just a referral form. You.
+            </p>
+            <p>
+              From there, we build a plan that is clear, supportive, and aligned with exactly what you need — because communication is more than a skill. It is a bridge to connection, confidence, and belonging.
             </p>
             <p className="font-medium text-black pt-4">
               This is not quick-access therapy.<br />
-              This is care designed to create lasting communication change.
+              This is care designed to create lasting, meaningful change.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

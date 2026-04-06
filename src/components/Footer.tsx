@@ -90,13 +90,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center mb-16 md:mb-6 md:pr-24 relative z-10">
           <p className="text-sm text-gray-400">
             © {new Date().getFullYear()} Rooted Voices. All rights reserved.
           </p>
-          <div className="flex items-center space-x-4 mt-4 md:mt-0 text-sm text-gray-400">
+          <div className="flex items-center space-x-4 mt-6 md:mt-0 text-sm text-gray-400">
             <span className="flex items-center">
-              Made with <Heart className="w-3 h-3 mx-1 text-red-500" /> for therapists
+              Made with <Heart className="w-3 h-3 mx-1 text-red-500" /> for better connections
             </span>
           </div>
         </div>

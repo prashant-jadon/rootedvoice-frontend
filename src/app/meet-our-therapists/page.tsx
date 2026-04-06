@@ -184,13 +184,19 @@ export default function MeetOurTherapistsPage() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-            Meet Our Licensed
-            <br />
-            <span className="gradient-text">Clinicians</span>
+            Meet the Clinicians Behind the Care
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Rooted Voices clinicians are licensed professionals committed to structured, evaluation-first care. Each therapist is selected for clinical excellence, ethical practice, and dedication to lasting communication progress.
-          </p>
+          <div className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 space-y-4">
+            <p>
+              At Rooted Voices, our therapists are more than licensed professionals — they are individuals who are deeply committed to providing care that is thoughtful, culturally responsive, and centered entirely around you.
+            </p>
+            <p>
+              Each clinician is carefully selected not only for their clinical expertise, but for their ability to genuinely connect with, understand, and support the individuals and families they serve.
+            </p>
+            <p>
+              We take an evaluation-first approach to ensure that every client receives care that is intentional, personalized, and aligned with their unique communication needs, experiences, and goals.
+            </p>
+          </div>
         </motion.div>
 
         {/* Filters */}
@@ -461,8 +467,8 @@ export default function MeetOurTherapistsPage() {
             {[
               {
                 icon: <Award className="w-8 h-8" />,
-                title: 'Clinician-Founded',
-                description: 'Rooted Voices was founded by a practicing Speech-Language Pathologist and built from firsthand clinical experience.'
+                title: 'Lifespan Expertise',
+                description: 'We provide services from birth through end of life — across every stage of communication development. Whether you\'re supporting a newborn, navigating school years, building a career, or aging with dignity, we meet you exactly where you are.'
               },
               {
                 icon: <Globe className="w-8 h-8" />,

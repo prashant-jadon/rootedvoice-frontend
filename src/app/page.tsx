@@ -5,7 +5,7 @@ import {
   ArrowRight, Play, Users, Calendar, Shield, Star, CheckCircle,
   Video, FileText, CreditCard, Menu, X, Heart, Mic, Brain, ChevronRight
 } from 'lucide-react'
-// import Link from "next/link"
+import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 
 import { useTranslation } from '@/hooks/useTranslation'
@@ -201,12 +201,12 @@ export default function LandingPage() {
   ]
 
   const features = [
-    { icon: <Video className="w-5 h-5" />, title: 'Secure Video Sessions', description: 'HD video calls with end-to-end encryption, screen sharing, and session recordings built for clinical settings.' },
-    { icon: <Calendar className="w-5 h-5" />, title: 'Smart Scheduling', description: 'Integrated calendar with automated reminders, rescheduling, and intelligent timezone management.' },
-    { icon: <FileText className="w-5 h-5" />, title: 'Resource Library', description: 'Upload and share worksheets, guides, and practice materials directly with your clients.' },
-    { icon: <CreditCard className="w-5 h-5" />, title: 'Automated Billing', description: 'Secure payments, subscription management, and automatic invoice generation — zero admin hassle.' },
-    { icon: <Shield className="w-5 h-5" />, title: 'HIPAA Compliant', description: 'Enterprise-grade security with full HIPAA compliance and end-to-end data protection.' },
-    { icon: <Users className="w-5 h-5" />, title: 'Client Management', description: 'Comprehensive profiles, session notes, progress tracking, and client history in one place.' }
+    { icon: <Video className="w-5 h-5" />, title: 'Secure, Comfortable Sessions', description: 'Virtual sessions that are private, reliable, and designed to help you feel at ease and fully present — from wherever you are' },
+    { icon: <Calendar className="w-5 h-5" />, title: 'Flexible, Stress-Free Scheduling', description: 'Easily book, reschedule, and manage your sessions in a way that actually works for your life' },
+    { icon: <FileText className="w-5 h-5" />, title: 'Personalized Resources', description: 'Access materials, tools, and guidance tailored to support your progress beyond each session' },
+    { icon: <CreditCard className="w-5 h-5" />, title: 'Simple, Transparent Billing', description: 'Clear, secure payments with no surprises, no confusion, and no added stress' },
+    { icon: <Shield className="w-5 h-5" />, title: 'Safe and Protected Care', description: 'Your information and sessions are handled with the highest standard of privacy, security, and care' },
+    { icon: <Users className="w-5 h-5" />, title: 'Ongoing Support and Connection', description: 'Stay connected with your therapist and track your growth every step of the way' }
   ]
 
   return (
@@ -218,9 +218,9 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-[68px]">
 
             {/* Logo */}
-            <a href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-3 group">
               <img src="/logorooted 1.png" alt="Rooted Voices" className="h-[80px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105" />
-            </a>
+            </Link>
 
             {/* Desktop nav */}
             <div className="hidden lg:flex items-center gap-8">
@@ -392,20 +392,39 @@ export default function LandingPage() {
       <section className="py-24 px-5 sm:px-8 bg-white" id="who-we-support">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mb-12">
-            <SectionLabel>Who We Support</SectionLabel>
-            <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-6">Care for every stage of life.</h2>
-            <p className="text-xl text-[#203936]/80 leading-relaxed font-medium">
-              Rooted Voices was built to serve people across the full lifespan — from children finding their first words, to adults reclaiming their voice after illness or injury, to elders who deserve care that sees them fully. Wherever you are in your journey, there is a place for you here.
-            </p>
+            <SectionLabel>WHO WE SUPPORT</SectionLabel>
+            <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-6">Care for Every Stage of Life</h2>
+            <div className="text-xl text-[#203936]/80 leading-relaxed font-medium space-y-4">
+              <p>Communication looks different for everyone — and so does the support you deserve.</p>
+              <p>At Rooted Voices, we provide care across the full lifespan with intention, cultural awareness, and a deep respect for each person’s lived experience. Whether you are just beginning, rebuilding, or simply ready to feel more confident in your voice, there is space for you here.</p>
+            </div>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              "Children who are late to talk, hard to understand, or struggling to keep up in school",
-              "Adults rebuilding their voice and confidence after a stroke, injury, or neurological change",
-              "People who want to feel more confident and clear in how they speak and express themselves",
-              "Families who speak more than one language and want care that genuinely understands their background",
-              "Children and adults with autism who communicate differently and deserve support that honors that",
-              "Elders navigating changes in swallowing, memory, or communication as they age"
+              {
+                title: "Children",
+                desc: "Who are learning to communicate, struggling to be understood, or needing support to thrive at home, in school, or in their community"
+              },
+              {
+                title: "Adults",
+                desc: "Rebuilding their voice and confidence after a stroke, injury, or neurological change — reclaiming not just speech, but themselves"
+              },
+              {
+                title: "Individuals Seeking Confidence",
+                desc: "Those who want to feel clearer, more empowered, and more fully heard in how they express themselves every day"
+              },
+              {
+                title: "Multilingual Families",
+                desc: "Who deserve care that genuinely respects and understands their language, culture, and identity — not just their diagnosis"
+              },
+              {
+                title: "Autistic Individuals",
+                desc: "Who communicate differently and deserve support that honors, affirms, and celebrates who they are"
+              },
+              {
+                title: "Older Adults",
+                desc: "Navigating changes in memory, swallowing, or communication — with care that always prioritizes dignity, safety, and quality of life"
+              }
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -416,7 +435,8 @@ export default function LandingPage() {
                 className="bg-[#F7EBD3]/30 p-8 rounded-2xl border border-[#203936]/10 hover:-translate-y-1 transition-transform duration-300"
               >
                 <Heart className="w-8 h-8 text-[#B97B40] mb-4" />
-                <p className="text-[#132D22] font-medium leading-relaxed">{item}</p>
+                <h3 className="text-xl font-bold text-[#132D22] mb-2">{item.title}</h3>
+                <p className="text-[#132D22] font-medium leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -427,9 +447,13 @@ export default function LandingPage() {
       <section className="py-20 px-5 sm:px-8 bg-[#F7EBD3]">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-black text-[#132D22] mb-6">Not Sure Where to Start?</h2>
-          <p className="text-lg text-[#203936] leading-relaxed mb-8">
-            You're not alone. Many families and adults come to us unsure where to begin — and that's completely okay. Our first step is a guided evaluation designed to understand your specific situation and goals. From there, we walk with you through every step of the process. You don't have to figure it out alone.
-          </p>
+          <div className="text-lg text-[#203936] leading-relaxed mb-8 space-y-4">
+            <p>It is okay to not have all the answers — many of the individuals and families we work with begin in this exact place.</p>
+            <p>At Rooted Voices, we start with a thoughtful, guided evaluation designed to understand you — your communication, your experiences, and your goals. Not just your symptoms. Not just a checklist. You, as a whole person.</p>
+            <p>From there, we walk alongside you in building a care plan that feels supportive, clear, and aligned with exactly what you need.</p>
+            <p className="font-bold">You do not have to figure this out on your own.</p>
+          </div>
+
           <a
             href="/evaluation-booking"
             className="inline-flex items-center gap-2 bg-[#203936] text-white text-sm font-bold px-8 py-4 rounded-full hover:bg-[#132D22] transition-colors shadow-lg group"
@@ -450,16 +474,16 @@ export default function LandingPage() {
             variants={{ show: { transition: { staggerChildren: 0.1 } } }}
           >
             <motion.div variants={fadeUp}>
-              <SectionLabel>How It Works</SectionLabel>
+              <SectionLabel>HOW IT WORKS</SectionLabel>
             </motion.div>
             <motion.h2
               variants={fadeUp}
               className="text-4xl md:text-5xl font-black text-[#132D22] leading-tight mb-6"
             >
-              Your path to care.
+              Your Journey Starts Here
             </motion.h2>
             <motion.p variants={fadeUp} className="text-[#203936]/65 leading-relaxed max-w-lg mb-8">
-              We've made finding the right therapist and starting your journey as simple and supportive as possible. Our process is designed to center your specific needs from day one.
+              Starting speech therapy does not have to feel overwhelming. At Rooted Voices, we have created a process that is thoughtful, supportive, and centered around you from the very first step.
             </motion.p>
           </motion.div>
 
@@ -470,9 +494,9 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="bg-[#F7EBD3]/30 rounded-3xl p-8 shadow-sm border border-[#203936]/10"
           >
-            <HowStep number="01" title="Complete a Guided Intake" desc="Complete a guided intake so we can understand your goals and match you with the right therapist." />
-            <HowStep number="02" title="Find Your Perfect Match" desc="Get matched with a licensed speech-language pathologist who understands your unique needs." />
-            <HowStep number="03" title="Start Growing" desc="Begin virtual therapy tailored to your goals in a supportive environment that understands who you are and where you come from." last />
+            <HowStep number="01" title="Share Your Story" desc="Complete a guided intake so we can understand your communication needs, your experiences, and your goals. This is not just paperwork — it is the beginning of your care." />
+            <HowStep number="02" title="Find the Right Fit" desc="We thoughtfully match you with a licensed Speech-Language Pathologist who aligns with your needs, your background, and your preferences. The right fit matters, and we take that seriously." />
+            <HowStep number="03" title="Begin Your Journey" desc="Start therapy in a warm, supportive space designed to help you grow, feel confident, and be fully understood — on your terms, at your pace." last />
           </motion.div>
         </div>
       </section>
@@ -488,14 +512,13 @@ export default function LandingPage() {
             className="text-center max-w-2xl mx-auto mb-16"
           >
             <motion.div variants={fadeUp}>
-              <SectionLabel>Why Rooted Voices</SectionLabel>
+              <SectionLabel>WHY ROOTED VOICES</SectionLabel>
             </motion.div>
             <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-black text-[#132D22] leading-tight mb-4">
-              Everything you need.<br />
-              <span className="text-[#B97B40]">Nothing you don't.</span>
+              Care Designed With Intention — For You
             </motion.h2>
             <motion.p variants={fadeUp} className="text-[#203936]/60 leading-relaxed">
-              Built with clinicians in mind and designed for clients who deserve a seamless experience.
+              Every part of the Rooted Voices experience is built to feel supportive, seamless, and centered around your needs — so you can focus on what matters most: growth, connection, and being fully understood.
             </motion.p>
           </motion.div>
 
@@ -513,10 +536,13 @@ export default function LandingPage() {
           <div className="mx-auto w-16 h-16 bg-[#F7EBD3]/10 rounded-full flex items-center justify-center mb-6 border border-[#F7EBD3]/20">
             <span className="text-2xl">🌍</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-[#F7EBD3] mb-6">🌱 Speech Therapy in Your Language.</h2>
-          <p className="text-lg text-[#F7EBD3]/80 leading-relaxed max-w-3xl mx-auto mb-16">
-            Rooted Voices is available in 20+ languages — so that every family, in every community, can access the care they deserve without a language barrier standing in the way. Our site, our sessions, and our care are built to meet you where you are.
-          </p>
+          <h2 className="text-4xl md:text-5xl font-black text-[#F7EBD3] mb-6">Care That Speaks Your Language</h2>
+          <div className="text-lg text-[#F7EBD3]/80 leading-relaxed max-w-3xl mx-auto mb-16 space-y-4">
+            <p>At Rooted Voices, communication is more than words — it is culture, identity, and connection.</p>
+            <p>We offer services in 20+ languages so that individuals and families can receive care in the language that feels most natural to them — without barriers, without translation gaps, and without anything lost in between.</p>
+            <p>Because you deserve to be understood fully — not just clinically, but personally.</p>
+            <p>Our platform, our therapists, and our entire approach are designed to meet you where you are — honoring your voice, your background, and your lived experience every step of the way.</p>
+          </div>
           
           <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
             {['Español', 'Français', 'العربية', 'Português', '中文', 'Tagalog', 'Tiếng Việt', '한국어', 'Русский', 'Deutsch', '日本語', 'Italiano', 'Polski', 'हिन्दी', 'اردو'].map((lang, i) => (
@@ -534,29 +560,40 @@ export default function LandingPage() {
       {/* ── 7. TESTIMONIALS ────────────────────────────────────────────── */}
       <section className="py-28 px-5 sm:px-8 bg-white" id="testimonials">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <SectionLabel>Rooted Stories</SectionLabel>
-            <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-4">Real Families. Real Progress.</h2>
+          <div className="text-center mb-16 max-w-3xl mx-auto">
+            <div className="flex justify-center mb-4"><SectionLabel>ROOTED STORIES</SectionLabel></div>
+            <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-4">Real Voices. Real Growth. Real Impact.</h2>
+            <h3 className="text-2xl font-bold text-[#B97B40] mb-6">Because being heard changes everything.</h3>
+            <p className="text-lg text-[#203936] leading-relaxed">
+              Every journey looks different, but the goal is always the same — to feel understood, supported, and confident in how you communicate. Here is what that experience has meant for the individuals and families we have had the honor of walking alongside.
+            </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
             <TestimonialCard 
-              quote="Finding a therapist who truly understands our cultural background and speaks our language made all the difference for my son. He's thriving!" 
+              quote="Finding a therapist who truly understands our culture and speaks our language changed everything for our family. For the first time, my child felt comfortable, confident, and excited to communicate. We finally feel seen — not just supported." 
               author="Maria V." 
-              role="Parent of a pediatric client" 
+              role="Parent" 
               rating={5} 
             />
             <TestimonialCard 
-              quote="After my stroke, I lost my confidence. My Rooted Voices therapist didn't just help me speak again; they helped me find me again." 
+              quote="After my stroke, I didn’t just lose my ability to speak — I lost a part of myself. My therapist at Rooted Voices didn’t just help me communicate again. They helped me reconnect with who I am. That meant everything." 
               author="David L." 
-              role="Adult client" 
+              role="Adult Client" 
               rating={5} 
             />
             <TestimonialCard 
-              quote="The therapy structure and personalized approach has been incredible for our autistic daughter. They really honor how she communicates." 
+              quote="What stood out most was how much care and intention went into understanding our daughter as a whole person. They didn’t try to change how she communicates — they supported her in a way that honors who she is. That is something we had never experienced before." 
               author="Sarah & Tom" 
               role="Parents" 
               rating={5} 
             />
+          </div>
+          <div className="text-center max-w-2xl mx-auto">
+            <p className="font-bold text-[#132D22] text-xl mb-4">Your story matters here, too.</p>
+            <p className="text-lg text-[#203936]/80 mb-8">
+              Whether you are just beginning your journey or searching for support that truly aligns with your needs, Rooted Voices is here to walk alongside you.<br/><br/>
+              Start with a comprehensive evaluation and let us build a plan that supports your voice, your goals, and your growth.
+            </p>
           </div>
         </div>
       </section>
@@ -564,8 +601,12 @@ export default function LandingPage() {
       {/* ── 8. FINAL CTA ──────────────────────────────────────────────── */}
       <section className="py-24 px-5 sm:px-8 bg-[#F7EBD3] border-t border-[#203936]/10">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-6">Ready to find your voice?</h2>
-          <p className="text-lg text-[#203936]/80 mb-10">Join the thousands of clients who have discovered life-changing care.</p>
+          <h2 className="text-4xl md:text-5xl font-black text-[#132D22] mb-6">Ready to Feel Heard and Supported?</h2>
+          <div className="text-lg text-[#203936]/80 mb-10 space-y-4">
+            <p>Starting speech therapy can feel like a big step — but you don’t have to navigate it alone.</p>
+            <p>At Rooted Voices, we take the time to truly understand you — your experiences, your background, and your goals — so we can build a care plan that actually fits your life.</p>
+            <p>Your journey begins with a comprehensive evaluation designed with care, intention, and clarity. From there, your licensed Speech-Language Pathologist will guide you every step of the way.</p>
+          </div>
           <a
             href="/evaluation-booking"
             className="inline-flex items-center gap-2 bg-[#203936] text-white text-sm font-black px-8 py-4 rounded-full hover:bg-[#132D22] hover:scale-105 transition-all duration-200 shadow-xl group"
@@ -592,13 +633,13 @@ export default function LandingPage() {
               </span>
             </motion.div>
             <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-black text-[#F7EBD3] leading-tight mb-5">
-              Build your practice.<br />
-              <span className="text-[#B97B40]">We handle the rest.</span>
+              For Clinicians Who Want to Do This Work Differently
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-[#F7EBD3]/55 leading-relaxed mb-8 max-w-lg">
-              From automated billing to smart scheduling and a built-in client management system —
-              Rooted Voices lets you focus on what you love: helping people find their voice.
-            </motion.p>
+            <motion.div variants={fadeUp} className="text-[#F7EBD3]/80 leading-relaxed mb-8 max-w-lg space-y-4">
+              <p className="font-bold text-white text-lg">Build your practice in a space that values both clinical excellence and human connection.</p>
+              <p>At Rooted Voices, we believe therapists deserve the same level of care, intention, and support that we provide to our clients. This is more than a platform — it is a community of clinicians committed to culturally responsive, meaningful, high-quality care.</p>
+              <p>We handle the logistics so you can focus on what matters most: your clients and the work that brought you to this field in the first place.</p>
+            </motion.div>
             <motion.div variants={fadeUp} className="flex gap-4 flex-wrap">
               <a
                 href="/for-therapists"
@@ -621,25 +662,36 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 gap-4"
           >
-            {[
-              { icon: <CreditCard className="w-5 h-5" />, title: 'Automated Billing', desc: 'Never chase a payment again' },
-              { icon: <Calendar className="w-5 h-5" />, title: 'Smart Calendar', desc: 'Scheduling that works for you' },
-              { icon: <Brain className="w-5 h-5" />, title: 'Session Notes', desc: 'AI-assisted documentation' },
-              { icon: <Users className="w-5 h-5" />, title: 'Client Roster', desc: 'Full client history at a glance' }
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-white/6 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors group"
-              >
-                <div className="w-9 h-9 rounded-lg bg-[#B97B40]/20 text-[#B97B40] flex items-center justify-center mb-4 group-hover:bg-[#B97B40]/30 transition-colors">
-                  {item.icon}
-                </div>
-                <div className="font-bold text-sm text-[#F7EBD3] mb-1">{item.title}</div>
-                <div className="text-xs text-[#F7EBD3]/40">{item.desc}</div>
-              </div>
-            ))}
+            <div className="bg-[#1C3B2D] border border-white/10 rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-white mb-6">WHAT YOU CAN EXPECT:</h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0" />
+                  <span className="text-[#F7EBD3]/90">Streamlined scheduling and session management</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0" />
+                  <span className="text-[#F7EBD3]/90">Secure, reliable payment processing — no chasing invoices</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0" />
+                  <span className="text-[#F7EBD3]/90">Built-in tools for documentation and client tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0" />
+                  <span className="text-[#F7EBD3]/90">A supportive, growth-centered environment</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0" />
+                  <span className="text-[#F7EBD3]/90">Flexibility to build your caseload on your terms</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0" />
+                  <span className="text-[#F7EBD3]/90">A mission-driven community aligned with your values</span>
+                </li>
+              </ul>
+            </div>
           </motion.div>
         </div>
       </section>

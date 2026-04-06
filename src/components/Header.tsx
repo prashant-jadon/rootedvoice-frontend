@@ -1,4 +1,4 @@
-// import Link from "next/link"
+import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { Bell, Settings, LogOut, X, ExternalLink } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -119,19 +119,19 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-2">
             <div className="flex items-center space-x-8">
-              <a href="/" className="flex items-center gap-3 group">
+              <Link href="/" className="flex items-center gap-3 group">
                 <img
                   src="/logorooted 1.png"
                   alt="Rooted Voices"
                   className="h-[80px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
                 />
                 <span className="text-2xl font-bold text-gray-900 tracking-tight">Rooted Voices</span>
-              </a>
+              </Link>
 
               <nav className="hidden md:flex items-center space-x-6">
-                <a href="/" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
+                <Link href="/" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
                   Home
-                </a>
+                </Link>
                 <a href="/services" className="text-gray-600 hover:text-black transition-colors text-sm font-medium">
                   Services
                 </a>
@@ -169,14 +169,14 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center space-x-8">
-            <a href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-3 group">
               <img
                 src="/logorooted 1.png"
                 alt="Rooted Voices"
                 className="h-[104px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
               />
               <span className="text-2xl font-bold text-gray-900 tracking-tight hidden sm:block">Rooted Voices</span>
-            </a>
+            </Link>
 
             <nav className="hidden md:flex items-center space-x-6">
               {links.map((link) => (

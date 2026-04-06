@@ -123,16 +123,31 @@ export default function WhoWeArePage() {
           className="bg-white rounded-2xl premium-shadow p-8 mb-20"
         >
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-black mb-6 text-center">🌱 A Note From Our Founder</h2>
+            <h2 className="text-3xl font-bold text-black mb-6 text-center">A NOTE FROM OUR FOUNDER</h2>
             <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
               <p>
-                My grandmother experienced multiple strokes during my undergraduate years — and lost her ability to communicate. I watched a Black male speech-language pathologist not only help restore her voice, but become a meaningful part of her healing. That moment changed everything for me. It showed me that this work is not just clinical. It is deeply human. I now serve elder populations every day, and every patient carries a piece of that mission — to provide the care I would have wanted my own grandparents to receive. That is the heart of Rooted Voices.
+                Rooted Voices was created from both professional experience and lived understanding.
+              </p>
+              <p>
+                As a speech-language pathologist, I have witnessed the power of communication to transform lives — from first words spoken to confidence restored, from being misunderstood to finally being heard. I have also seen where traditional systems fall short, particularly for individuals and communities who are too often overlooked.
+              </p>
+              <p>
+                My passion for this work is deeply personal. Experiences within my own family and community shaped my understanding of how meaningful, culturally responsive care can impact not just communication, but quality of life.
+              </p>
+              <p>
+                Rooted Voices exists to do things differently.
+              </p>
+              <p>
+                This is a space built with intention — where clinical excellence and humanity coexist, and where every person receives care grounded in compassion, cultural humility, and genuine respect for who they are and where they come from. We believe communication is more than a skill. It is a bridge to connection, dignity, and belonging.
+              </p>
+              <p>
+                At Rooted Voices, no voice is overlooked. Every story matters. If you have found your way here, know that this space was created with you in mind.
               </p>
               <div className="pt-6 border-t border-gray-200 mt-8">
                 <p className="text-black font-semibold mb-2">With intention and care,</p>
                 <p className="text-black font-semibold">
                   Ashley Blocker-Wilbourn, MS, CCC-SLP<br />
-                  <span className="text-lg">Founder, Rooted Voices Speech & Language Therapy 🌱✨</span>
+                  <span className="text-lg">Founder, Rooted Voices</span>
                 </p>
               </div>
             </div>

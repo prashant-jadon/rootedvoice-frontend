@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Send } from 'lucide-react'
 import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 import { publicAPI } from '@/lib/api'
 
 export default function ContactPage() {
@@ -42,9 +41,9 @@ export default function ContactPage() {
       <main className="flex-grow pt-28 pb-20 px-5 sm:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-black text-[#132D22] mb-6">Contact Us</h1>
+            <h1 className="text-4xl md:text-5xl font-black text-[#132D22] mb-6">Let’s Connect</h1>
             <p className="text-lg text-[#203936]/80 max-w-2xl mx-auto leading-relaxed">
-              Have a question about our services, pricing, or looking to join our team? We're here to help. Reach out and our team will get back to you within 24 hours.
+              Whether you’re ready to schedule an evaluation or just exploring your options, we’re here to help you take the next step. Reach out below, and our team will be in touch within 24-48 hours.
             </p>
           </div>
 
@@ -64,8 +63,8 @@ export default function ContactPage() {
                       <p className="text-sm text-[#203936]/70 leading-relaxed">
                         Our friendly team is here to help.
                       </p>
-                      <a href="mailto:support@rootedvoices.com" className="text-sm font-semibold text-[#B97B40] hover:underline mt-1 inline-block">
-                        support@rootedvoices.com
+                      <a href="mailto:info@rootedvoices.com" className="text-sm font-semibold text-[#B97B40] hover:underline mt-1 inline-block">
+                        info@rootedvoices.com
                       </a>
                     </div>
                   </div>
@@ -233,8 +232,6 @@ export default function ContactPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

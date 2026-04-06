@@ -604,11 +604,6 @@ function PricingContent() {
                     </ul>
                   </div>
 
-                  <div className="bg-[#132D22]/5 rounded-xl p-4 mb-8 inline-block">
-                    <p className="text-sm font-bold text-[#132D22]">
-                      ✨ The {pricingTiers.find(t => t.id === 'evaluation')?.price} evaluation fee is credited toward your recommended subscription plan.
-                    </p>
-                  </div>
 
                   <button
                     onClick={() => handleSelectPlan('evaluation')}
@@ -631,7 +626,10 @@ function PricingContent() {
             <div className="pt-8 border-t border-gray-200">
               <div className="text-center mb-10">
                 <h2 className="text-3xl font-bold text-[#132D22] mb-4">Recommended Therapy Structures</h2>
-                <p className="text-lg text-[#203936]/70">Following your evaluation, your clinician may recommend one of the following care options:</p>
+                <p className="text-lg text-[#203936]/70 mb-4">Following your evaluation, your clinician may recommend one of the following care options:</p>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800 text-sm font-medium max-w-2xl mx-auto">
+                  Note: The prices below do not include the one-time evaluation fee, which is required prior to beginning any ongoing therapy plan.
+                </div>
               </div>
 
               <div className="grid md:grid-cols-3 gap-8">
@@ -833,10 +831,10 @@ function PricingContent() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
           
           <div className="max-w-4xl mx-auto relative z-10">
-            <h2 className="text-3xl font-bold mb-8 text-white text-center">Financial Accessibility & Private Pay</h2>
+            <h2 className="text-3xl font-bold mb-8 text-white text-center">Out-of-Network & Private Pay</h2>
             
             <p className="text-[#F7EBD3]/90 text-lg mb-10 text-center max-w-2xl mx-auto">
-              We operate as an out-of-network, private-pay practice. This model allows us to focus entirely on what's best for you—free from insurance-dictated timelines, session limits, or mandatory diagnoses.
+              Rooted Voices operates as a private-pay, out-of-network practice. This model allows us to focus entirely on what's best for you — free from insurance-dictated timelines, arbitrary session limits, or mandatory diagnoses.
             </p>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -860,16 +858,38 @@ function PricingContent() {
                 </p>
               </div>
               
-              <div className="bg-white/5 p-6 rounded-xl border border-white/10 md:col-span-2">
-                <div className="flex items-center gap-3 mb-4">
-                  <Heart className="w-6 h-6 text-[#B97B40]" />
-                  <h3 className="text-xl font-semibold text-white">Cost & Flexibility Options</h3>
-                </div>
-                <p className="text-[#F7EBD3]/80 leading-relaxed">
-                  "What if I want the service but cannot afford to pay?" We recognize that private-pay isn't accessible for everyone. While we do not currently offer direct financial assistance programs or sliding scales at launch, we purposefully structured our <strong>pay-as-you-go</strong> tier to offer maximum flexibility without a monthly commitment. Additionally, our initial evaluations give you actionable strategies you can implement on your own right away.
-                </p>
-              </div>
+
             </div>
+          </div>
+        </motion.div>
+
+        {/* How Superbills Work */}
+        <motion.div
+           initial={{ opacity: 0, y: 30 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.6 }}
+           className="bg-white rounded-2xl premium-shadow p-8 mb-16 max-w-4xl mx-auto"
+        >
+          <h2 className="text-2xl font-bold text-black text-center mb-8">How Superbills Work</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-black border-2 border-[#132D22]">1</div>
+              <h3 className="font-semibold text-black mb-2">You Pay Direct</h3>
+              <p className="text-sm text-gray-600">You pay for your session at the time of service via our secure portal.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-black border-2 border-[#132D22]">2</div>
+              <h3 className="font-semibold text-black mb-2">We Provide the Bill</h3>
+              <p className="text-sm text-gray-600">On the 1st of each month, we provide a detailed receipt (superbill) containing all necessary diagnostic and treatment codes.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-black border-2 border-[#132D22]">3</div>
+              <h3 className="font-semibold text-black mb-2">You Submit for Reimbursement</h3>
+              <p className="text-sm text-gray-600">You submit the superbill to your insurance company. If you have out-of-network benefits, they will reimburse you directly based on your plan.</p>
+            </div>
+          </div>
+          <div className="mt-8 bg-gray-50 p-4 rounded-lg text-sm text-gray-600 text-center">
+            <strong>Note:</strong> We highly recommend calling your insurance provider before starting therapy to ask: <br/>"What are my out-of-network benefits for speech-language evaluation (CPT 92523) and treatment (CPT 92507)?"
           </div>
         </motion.div>
 
