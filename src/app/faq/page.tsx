@@ -60,7 +60,7 @@ export default function FAQPage() {
       questions: [
         {
           question: 'What if my child has autism?',
-          answer: 'We warmly welcome autistic children and their families. Our approach focuses on connection, building upon your child\'s strengths, and supporting how they naturally communicate, rather than forcing them to communicate like neurotypical peers.'
+          answer: 'We warmly welcome children with autism and their families. Our approach focuses on connection, building upon your child\'s strengths, and supporting how they naturally communicate, rather than forcing them to communicate like neurotypical peers.'
         },
         {
           question: 'What if my loved one is aging?',

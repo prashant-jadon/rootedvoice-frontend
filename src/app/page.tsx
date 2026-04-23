@@ -418,7 +418,7 @@ export default function LandingPage() {
                 desc: "Who deserve care that genuinely respects and understands their language, culture, and identity — not just their diagnosis"
               },
               {
-                title: "Autistic Individuals",
+                title: "Individuals with Autism",
                 desc: "Who communicate differently and deserve support that honors, affirms, and celebrates who they are"
               },
               {

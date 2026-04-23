@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -376,7 +376,7 @@ export default function ForTherapistsPage() {
         </div>
       </section>
 
-      <Footer />
+
     </div>
   )
 }
