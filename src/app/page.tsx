@@ -354,7 +354,7 @@ export default function LandingPage() {
             >
               Care that honors where you come from — and meets you wherever you are.
             </motion.p>
-            
+
             <motion.p variants={fadeUp} className="text-sm text-white/60 mb-3 font-semibold tracking-wider uppercase">
               Your journey starts here.
             </motion.p>
@@ -418,7 +418,7 @@ export default function LandingPage() {
                 desc: "Who deserve care that genuinely respects and understands their language, culture, and identity — not just their diagnosis"
               },
               {
-                title: "Individuals with Autism",
+                title: "Individuals with autism and other communication differences",
                 desc: "Who communicate differently and deserve support that honors, affirms, and celebrates who they are"
               },
               {
@@ -543,7 +543,7 @@ export default function LandingPage() {
             <p>Because you deserve to be understood fully — not just clinically, but personally.</p>
             <p>Our platform, our therapists, and our entire approach are designed to meet you where you are — honoring your voice, your background, and your lived experience every step of the way.</p>
           </div>
-          
+
           <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
             {['Español', 'Français', 'العربية', 'Português', '中文', 'Tagalog', 'Tiếng Việt', '한국어', 'Русский', 'Deutsch', '日本語', 'Italiano', 'Polski', 'हिन्दी', 'اردو'].map((lang, i) => (
               <span key={i} className="px-5 py-2.5 bg-white/10 rounded-full text-[#F7EBD3] font-medium border border-white/20 backdrop-blur-sm shadow-sm hover:bg-white/20 transition-colors cursor-default">
@@ -569,29 +569,29 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 mb-16">
-            <TestimonialCard 
-              quote="Finding a therapist who truly understands our culture and speaks our language changed everything for our family. For the first time, my child felt comfortable, confident, and excited to communicate. We finally feel seen — not just supported." 
-              author="Maria V." 
-              role="Parent" 
-              rating={5} 
+            <TestimonialCard
+              quote="Finding a therapist who truly understands our culture and speaks our language changed everything for our family. For the first time, my child felt comfortable, confident, and excited to communicate. We finally feel seen — not just supported."
+              author="Maria V."
+              role="Parent"
+              rating={5}
             />
-            <TestimonialCard 
-              quote="After my stroke, I didn’t just lose my ability to speak — I lost a part of myself. My therapist at Rooted Voices didn’t just help me communicate again. They helped me reconnect with who I am. That meant everything." 
-              author="David L." 
-              role="Adult Client" 
-              rating={5} 
+            <TestimonialCard
+              quote="After my stroke, I didn’t just lose my ability to speak — I lost a part of myself. My therapist at Rooted Voices didn’t just help me communicate again. They helped me reconnect with who I am. That meant everything."
+              author="David L."
+              role="Adult Client"
+              rating={5}
             />
-            <TestimonialCard 
-              quote="What stood out most was how much care and intention went into understanding our daughter as a whole person. They didn’t try to change how she communicates — they supported her in a way that honors who she is. That is something we had never experienced before." 
-              author="Sarah & Tom" 
-              role="Parents" 
-              rating={5} 
+            <TestimonialCard
+              quote="What stood out most was how much care and intention went into understanding our daughter as a whole person. They didn’t try to change how she communicates — they supported her in a way that honors who she is. That is something we had never experienced before."
+              author="Sarah & Tom"
+              role="Parents"
+              rating={5}
             />
           </div>
           <div className="text-center max-w-2xl mx-auto">
             <p className="font-bold text-[#132D22] text-xl mb-4">Your story matters here, too.</p>
             <p className="text-lg text-[#203936]/80 mb-8">
-              Whether you are just beginning your journey or searching for support that truly aligns with your needs, Rooted Voices is here to walk alongside you.<br/><br/>
+              Whether you are just beginning your journey or searching for support that truly aligns with your needs, Rooted Voices is here to walk alongside you.<br /><br />
               Start with a comprehensive evaluation and let us build a plan that supports your voice, your goals, and your growth.
             </p>
           </div>
