@@ -114,12 +114,12 @@ export default function DashboardPage() {
       const profile = therapistRes.data.data
       
       // Onboarding Gateways
-      if (profile.status !== 'active' && profile.onboardingStatus === 'PENDING') {
+      if (profile.onboardingStatus === 'PENDING') {
         router.push('/therapist-pending-approval')
         return
       }
 
-      if (profile.status === 'active' && (!profile.complianceItems || !profile.complianceItems.icaSigned)) {
+      if (profile.onboardingStatus === 'APPROVED' && (!profile.complianceItems || !profile.complianceItems.icaSigned)) {
         router.push('/therapist/ica-agreement')
         return
       }
