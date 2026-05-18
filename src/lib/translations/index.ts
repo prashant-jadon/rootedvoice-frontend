@@ -409,7 +409,7 @@ export const translations = {
       backgroundCheckDocument: 'Background Check / Child Safety Clearance',
       wwccCheck: 'Background Check / Child Safety Clearance',
       policeCheck: 'Background Check / Child Safety Clearance',
-      questions: 'Questions? Contact us at support@rootedvoices.com',
+      questions: 'Questions? Contact us at admin@rootedvoicestherapy.com',
       returnToLogin: 'Return to Login',
     },
     // FAQ Page
@@ -504,7 +504,7 @@ export const translations = {
       callUs: 'Call Us',
       emailUs: 'Email Us',
       phoneNumber: '',
-      emailAddress: 'info@rootedvoices.com',
+      emailAddress: 'admin@rootedvoicestherapy.com',
       officeHours: 'Mon-Fri, 8AM-6PM',
       responseTime: '24-hour response',
     },
@@ -1011,7 +1011,7 @@ export const translations = {
       insuranceCertificate: 'Certificado de Seguro de Indemnización Profesional',
       wwccCheck: 'Verificación de Trabajo con Niños',
       policeCheck: 'Verificación Policial Nacional',
-      questions: '¿Preguntas? Contáctanos en support@rootedvoices.com',
+      questions: '¿Preguntas? Contáctanos en admin@rootedvoicestherapy.com',
       returnToLogin: 'Volver al Inicio de Sesión',
     },
     // FAQ Page
@@ -1475,7 +1475,7 @@ export const translations = {
       insuranceCertificate: 'Certificat d\'assurance responsabilité professionnelle',
       wwccCheck: 'Vérification du travail avec les enfants',
       policeCheck: 'Vérification policière nationale',
-      questions: 'Des questions? Contactez-nous à support@rootedvoices.com',
+      questions: 'Des questions? Contactez-nous à admin@rootedvoicestherapy.com',
       returnToLogin: 'Retour à la connexion',
     },
     // FAQ Page
@@ -1910,7 +1910,7 @@ export const translations = {
       insuranceCertificate: 'Berufshaftpflichtversicherungszertifikat',
       wwccCheck: 'Arbeit mit Kindern Prüfung',
       policeCheck: 'Nationale Polizeiprüfung',
-      questions: 'Fragen? Kontaktieren Sie uns unter support@rootedvoices.com',
+      questions: 'Fragen? Kontaktieren Sie uns unter admin@rootedvoicestherapy.com',
       returnToLogin: 'Zurück zur Anmeldung',
     },
     // FAQ Page

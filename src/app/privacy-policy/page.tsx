@@ -100,7 +100,7 @@ export default function PrivacyPolicy() {
             <li>Withdraw consent for certain communications</li>
           </ul>
           <p className="mb-8">
-            Requests may be submitted to <a href="mailto:support@rootedvoices.com" className="text-brand-600 hover:text-brand-800">support@rootedvoices.com</a>.
+            Requests may be submitted to <a href="mailto:admin@rootedvoicestherapy.com" className="text-brand-600 hover:text-brand-800">admin@rootedvoicestherapy.com</a>.
           </p>
 
           <h2 className="text-xl font-bold text-gray-900 mt-8 mb-4">7. Children&rsquo;s Privacy</h2>
@@ -127,8 +127,8 @@ export default function PrivacyPolicy() {
             If you have questions about this Privacy Policy or your personal information, please contact:
           </p>
           <p className="mb-4">
-            <a href="mailto:support@rootedvoices.com" className="text-brand-600 hover:text-brand-800">
-              support@rootedvoices.com
+            <a href="mailto:admin@rootedvoicestherapy.com" className="text-brand-600 hover:text-brand-800">
+              admin@rootedvoicestherapy.com
             </a>
           </p>
         </div>

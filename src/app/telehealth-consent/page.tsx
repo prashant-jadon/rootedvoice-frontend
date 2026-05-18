@@ -333,7 +333,7 @@ export default function TelehealthConsentPage() {
                 <Phone className="w-6 h-6 text-black" />
               </div>
               <h3 className="font-semibold text-black mb-1">Call Us</h3>
-              <p className="text-gray-600 text-sm">Contact Us</p>
+              <p className="text-gray-600 text-sm">+1 (773) 480-3236</p>
               <p className="text-gray-500 text-xs">Mon-Fri, 8AM-6PM</p>
             </div>
 
@@ -342,7 +342,7 @@ export default function TelehealthConsentPage() {
                 <Mail className="w-6 h-6 text-black" />
               </div>
               <h3 className="font-semibold text-black mb-1">Email Us</h3>
-              <p className="text-gray-600 text-sm">support@rootedvoices.com</p>
+              <p className="text-gray-600 text-sm">admin@rootedvoicestherapy.com</p>
               <p className="text-gray-500 text-xs">24-hour response</p>
             </div>
 
@@ -351,7 +351,7 @@ export default function TelehealthConsentPage() {
                 <Video className="w-6 h-6 text-black" />
               </div>
               <h3 className="font-semibold text-black mb-1">Tech Support</h3>
-              <p className="text-gray-600 text-sm">tech@rootedvoices.com</p>
+              <p className="text-gray-600 text-sm">admin@rootedvoicestherapy.com</p>
               <p className="text-gray-500 text-xs">Setup assistance</p>
             </div>
           </div>

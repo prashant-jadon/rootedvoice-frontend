@@ -244,7 +244,7 @@ export default function FAQPage() {
                 <Mail className="w-6 h-6 text-black" />
               </div>
               <h3 className="font-semibold text-black mb-1">Email Us</h3>
-              <p className="text-gray-600 text-sm">info@rootedvoices.com</p>
+              <p className="text-gray-600 text-sm">admin@rootedvoicestherapy.com</p>
               <p className="text-gray-500 text-xs mt-1">24-hour response</p>
             </div>
           </div>
