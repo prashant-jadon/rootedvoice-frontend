@@ -63,8 +63,8 @@ export default function ContactPage() {
                       <p className="text-sm text-[#203936]/70 leading-relaxed">
                         Our friendly team is here to help.
                       </p>
-                      <a href="mailto:info@rootedvoices.com" className="text-sm font-semibold text-[#B97B40] hover:underline mt-1 inline-block">
-                        info@rootedvoices.com
+                      <a href="mailto:admin@rootedvoicestherapy.com" className="text-sm font-semibold text-[#B97B40] hover:underline mt-1 inline-block">
+                        admin@rootedvoicestherapy.com
                       </a>
                     </div>
                   </div>
@@ -78,8 +78,8 @@ export default function ContactPage() {
                       <p className="text-sm text-[#203936]/70 leading-relaxed">
                         Mon-Fri from 8am to 5pm.
                       </p>
-                      <a href="tel:+18005550199" className="text-sm font-semibold text-[#B97B40] hover:underline mt-1 inline-block">
-                        +1 (800) 555-0199
+                      <a href="tel:+17734803236" className="text-sm font-semibold text-[#B97B40] hover:underline mt-1 inline-block">
+                        +1 (773) 480-3236
                       </a>
                     </div>
                   </div>
@@ -91,9 +91,9 @@ export default function ContactPage() {
                     <div>
                       <h4 className="font-semibold text-[#132D22] mb-1">Office</h4>
                       <p className="text-sm text-[#203936]/70 leading-relaxed">
-                        100 Therapy Way<br />
-                        Suite 100<br />
-                        Chicago, IL 60601
+                        4912 Louisa Dr<br />
+                        New Orleans, LA 70126-3516<br />
+                        US
                       </p>
                     </div>
                   </div>

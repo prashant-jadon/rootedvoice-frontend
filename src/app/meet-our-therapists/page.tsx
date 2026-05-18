@@ -265,8 +265,8 @@ export default function MeetOurTherapistsPage() {
               className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
             >
               <option value="all">All Rates / Tiers</option>
-              <option value="SLP">SLP ($40-$80/hr)</option>
-              <option value="SLPA">SLPA ($35-$60/hr)</option>
+              <option value="SLP">SLP ($40-$75/hr)</option>
+              <option value="SLPA">SLPA ($25-$55/hr)</option>
             </select>
 
             {/* Bilingual Toggle & Results Count */}
@@ -506,7 +506,7 @@ export default function MeetOurTherapistsPage() {
         >
           <h2 className="text-2xl font-bold text-black mb-4">Begin with a Comprehensive Evaluation</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                We combine approaches supported by science with care that understands who you are and where you come from, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized therapy that is proven to work.propriate.
+            We combine approaches supported by science with care that understands who you are and where you come from, multilingual accessibility and an ethical, evaluation-first model to ensure every client receives personalized therapy that is proven to work.propriate.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/pricing" className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center group">

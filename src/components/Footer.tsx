@@ -16,8 +16,16 @@ export default function Footer() {
             </p>
             <div className="space-y-4 text-sm text-gray-400">
               <div className="flex items-center space-x-2">
-                <Mail className="w-4 h-4" />
-                <span>info@rootedvoices.com</span>
+                <Mail className="w-4 h-4 shrink-0" />
+                <span>admin@rootedvoicestherapy.com</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="w-4 h-4 flex items-center justify-center shrink-0">📞</span>
+                <span>+1 (773) 480-3236</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <span className="w-4 h-4 flex items-center justify-center mt-1 shrink-0">📍</span>
+                <span>4912 Louisa Dr<br />New Orleans, LA 70126-3516</span>
               </div>
             </div>
           </div>
@@ -92,7 +100,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center mb-16 md:mb-6 md:pr-24 relative z-10">
           <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} Rooted Voices. All rights reserved.
+            © {new Date().getFullYear()} Rooted Voices Speech and Language Therapy LLC. All rights reserved.
           </p>
           <div className="flex items-center space-x-4 mt-6 md:mt-0 text-sm text-gray-400">
             <span className="flex items-center">
