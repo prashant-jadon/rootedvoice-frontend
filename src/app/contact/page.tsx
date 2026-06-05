@@ -70,7 +70,7 @@ export default function ContactPage() {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#203936]/10 flex items-center justify-center text-[#203936] shrink-0">
+                    {/* <div className="w-10 h-10 rounded-full bg-[#203936]/10 flex items-center justify-center text-[#203936] shrink-0">
                       <Phone className="w-5 h-5" />
                     </div>
                     <div>
@@ -81,11 +81,11 @@ export default function ContactPage() {
                       <a href="tel:+17734803236" className="text-sm font-semibold text-[#B97B40] hover:underline mt-1 inline-block">
                         +1 (773) 480-3236
                       </a>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#203936]/10 flex items-center justify-center text-[#203936] shrink-0">
+                    {/* <div className="w-10 h-10 rounded-full bg-[#203936]/10 flex items-center justify-center text-[#203936] shrink-0">
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
@@ -95,7 +95,7 @@ export default function ContactPage() {
                         New Orleans, LA 70126-3516<br />
                         US
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

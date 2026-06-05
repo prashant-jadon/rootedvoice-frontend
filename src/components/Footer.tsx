@@ -19,14 +19,14 @@ export default function Footer() {
                 <Mail className="w-4 h-4 shrink-0" />
                 <span>admin@rootedvoicestherapy.com</span>
               </div>
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <span className="w-4 h-4 flex items-center justify-center shrink-0">📞</span>
                 <span>+1 (773) 480-3236</span>
-              </div>
-              <div className="flex items-start space-x-2">
+              </div> */}
+              {/* <div className="flex items-start space-x-2">
                 <span className="w-4 h-4 flex items-center justify-center mt-1 shrink-0">📍</span>
                 <span>4912 Louisa Dr<br />New Orleans, LA 70126-3516</span>
-              </div>
+              </div> */}
             </div>
           </div>
 
