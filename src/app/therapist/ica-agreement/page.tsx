@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FileText, CheckCircle, Trash2, Clock } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -13,6 +13,14 @@ import ICAContent from '@/components/ICAContent'
 const ICA_VERSION = '1.0'
 
 export default function IcaAgreementPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" /></div>}>
+      <IcaAgreementContent />
+    </Suspense>
+  )
+}
+
+function IcaAgreementContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pendingCountersign = searchParams.get('status') === 'pending-countersign'
