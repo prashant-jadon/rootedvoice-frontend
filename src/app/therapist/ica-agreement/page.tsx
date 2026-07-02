@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FileText, CheckCircle, Trash2, Clock } from 'lucide-react'
+import { FileText, CheckCircle, Trash2, Clock, Download } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -11,6 +11,15 @@ import { useAuth } from '@/contexts/AuthContext'
 import ICAContent from '@/components/ICAContent'
 
 const ICA_VERSION = '1.0'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'
+
+const getSignatureUrl = (url: string) => {
+  if (!url) return url
+  if (url.includes('blob.vercel-storage.com')) {
+    return `${API_BASE_URL}/blob/proxy?url=${encodeURIComponent(url)}`
+  }
+  return url
+}
 
 export default function IcaAgreementPage() {
   return (
@@ -24,6 +33,7 @@ function IcaAgreementContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pendingCountersign = searchParams.get('status') === 'pending-countersign'
+  const viewSigned = searchParams.get('view') === 'signed'
   const { user } = useAuth()
   const [isSigning, setIsSigning] = useState(false)
   const [agreed, setAgreed] = useState(false)
@@ -31,13 +41,24 @@ function IcaAgreementContent() {
   const [error, setError] = useState('')
   const [address, setAddress] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [profile, setProfile] = useState<any>(null)
+  const [loadingProfile, setLoadingProfile] = useState(false)
 
-  // Signature canvas
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [hasSigned, setHasSigned] = useState(false)
 
   const contractorName = user ? `${user.firstName} ${user.lastName}` : ''
+
+  useEffect(() => {
+    if (viewSigned || pendingCountersign) {
+      setLoadingProfile(true)
+      therapistAPI.getMyProfile()
+        .then(res => setProfile(res.data.data))
+        .catch(err => console.error('Failed to load profile:', err))
+        .finally(() => setLoadingProfile(false))
+    }
+  }, [viewSigned, pendingCountersign])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -129,6 +150,21 @@ function IcaAgreementContent() {
     }
   }
 
+  const isFullySigned = viewSigned && profile?.complianceItems?.icaSigned && profile?.complianceItems?.icaCountersigned
+
+  if (loadingProfile) {
+    return (
+      <ProtectedRoute allowedRoles={['therapist']}>
+        <div className="min-h-screen bg-gray-50">
+          <Header />
+          <div className="flex items-center justify-center h-64">
+            <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          </div>
+        </div>
+      </ProtectedRoute>
+    )
+  }
+
   return (
     <ProtectedRoute allowedRoles={['therapist']}>
       <div className="min-h-screen bg-gray-50">
@@ -142,20 +178,160 @@ function IcaAgreementContent() {
           >
             {/* Header */}
             <div className="flex items-center space-x-4 mb-8">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${pendingCountersign ? 'bg-yellow-100' : 'bg-blue-100'}`}>
-                {pendingCountersign ? <Clock className="w-6 h-6 text-yellow-600" /> : <FileText className="w-6 h-6 text-blue-600" />}
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                isFullySigned ? 'bg-green-100' : pendingCountersign ? 'bg-yellow-100' : 'bg-blue-100'
+              }`}>
+                {isFullySigned ? <CheckCircle className="w-6 h-6 text-green-600" /> :
+                 pendingCountersign ? <Clock className="w-6 h-6 text-yellow-600" /> :
+                 <FileText className="w-6 h-6 text-blue-600" />}
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-black">Independent Contractor Agreement</h1>
                 <p className="text-gray-600">
-                  {pendingCountersign
+                  {isFullySigned
+                    ? 'This agreement has been fully executed by both parties.'
+                    : pendingCountersign
                     ? 'Your signature has been submitted. Awaiting company countersignature.'
                     : 'Please read, fill in your details, and sign to finalize your onboarding'}
                 </p>
               </div>
             </div>
 
-            {pendingCountersign && (
+            {/* Fully Signed View */}
+            {isFullySigned && (
+              <>
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    <p className="font-semibold text-green-800">Agreement Fully Executed</p>
+                  </div>
+                  <p className="text-sm text-green-700 mt-1 ml-7">
+                    Effective Date: {profile.complianceItems.icaEffectiveDate
+                      ? new Date(profile.complianceItems.icaEffectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                      : 'N/A'}
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 md:p-8 max-h-[60vh] overflow-y-auto mb-8">
+                  <ICAContent />
+                </div>
+
+                {/* Signature Block */}
+                <div className="border-t-2 border-gray-300 pt-6">
+                  <h3 className="text-lg font-bold text-black mb-6">Signatures</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Contractor Signature */}
+                    <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Contractor</p>
+                      <div className="space-y-2">
+                        <div>
+                          <p className="text-xs text-gray-500">Name</p>
+                          <p className="font-medium text-gray-900">{profile.userId?.firstName} {profile.userId?.lastName}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Address</p>
+                          <p className="text-sm text-gray-800">{profile.complianceItems.icaContractorAddress || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Signature</p>
+                          {profile.complianceItems.icaContractorSignatureUrl ? (
+                            <img
+                              src={getSignatureUrl(profile.complianceItems.icaContractorSignatureUrl)}
+                              alt="Contractor signature"
+                              className="max-h-16 object-contain mt-1 border border-gray-200 rounded bg-white p-1"
+                              onError={(e) => {
+                                const img = e.target as HTMLImageElement
+                                img.style.display = 'none'
+                                const fallback = document.createElement('p')
+                                fallback.className = 'text-xs text-gray-400 italic mt-1'
+                                fallback.textContent = 'Signature on file'
+                                img.parentElement?.appendChild(fallback)
+                              }}
+                            />
+                          ) : (
+                            <p className="text-xs text-gray-400 italic">Signature on file</p>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Date Signed</p>
+                          <p className="text-sm text-gray-800">
+                            {profile.complianceItems.icaSignedAt
+                              ? new Date(profile.complianceItems.icaSignedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                              : 'N/A'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Company Signature */}
+                    <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Company</p>
+                      <div className="space-y-2">
+                        <div>
+                          <p className="text-xs text-gray-500">Company</p>
+                          <p className="font-medium text-gray-900">Rooted Voices Speech &amp; Language Therapy, LLC</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Representative</p>
+                          <p className="text-sm text-gray-800">{profile.complianceItems.icaCompanySignerName || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Title</p>
+                          <p className="text-sm text-gray-800">{profile.complianceItems.icaCompanySignerTitle || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Signature</p>
+                          {profile.complianceItems.icaCompanySignatureUrl ? (
+                            <img
+                              src={getSignatureUrl(profile.complianceItems.icaCompanySignatureUrl)}
+                              alt="Company signature"
+                              className="max-h-16 object-contain mt-1 border border-gray-200 rounded bg-white p-1"
+                              onError={(e) => {
+                                const img = e.target as HTMLImageElement
+                                img.style.display = 'none'
+                                const fallback = document.createElement('p')
+                                fallback.className = 'text-xs text-gray-400 italic mt-1'
+                                fallback.textContent = 'Signature on file'
+                                img.parentElement?.appendChild(fallback)
+                              }}
+                            />
+                          ) : (
+                            <p className="text-xs text-gray-400 italic">Signature on file</p>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Date Signed</p>
+                          <p className="text-sm text-gray-800">
+                            {profile.complianceItems.icaCountersignedAt
+                              ? new Date(profile.complianceItems.icaCountersignedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                              : 'N/A'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-between items-center">
+                  <button
+                    onClick={() => router.push('/dashboard')}
+                    className="px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+                  >
+                    Back to Dashboard
+                  </button>
+                  <button
+                    onClick={() => window.print()}
+                    className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+                  >
+                    <Download className="w-4 h-4" />
+                    Print / Save PDF
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Pending Countersign View */}
+            {pendingCountersign && !isFullySigned && (
               <div className="mb-8 p-5 bg-yellow-50 border border-yellow-200 rounded-xl">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -170,9 +346,9 @@ function IcaAgreementContent() {
               </div>
             )}
 
-            {!pendingCountersign && (
+            {/* Signing Form */}
+            {!pendingCountersign && !isFullySigned && (
               <>
-                {/* Agreement Text */}
                 <div
                   ref={scrollRef}
                   onScroll={handleScroll}
@@ -187,11 +363,9 @@ function IcaAgreementContent() {
                   </p>
                 )}
 
-            {/* Contractor Details Section */}
             <div className={`mt-6 space-y-5 transition-opacity ${scrolledToBottom ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
               <h3 className="text-lg font-bold text-black border-b pb-2">Contractor Details</h3>
 
-              {/* Name (auto-filled) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Full Legal Name</label>
                 <input
@@ -203,7 +377,6 @@ function IcaAgreementContent() {
                 <p className="text-xs text-gray-500 mt-1">Auto-filled from your profile</p>
               </div>
 
-              {/* Address */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mailing Address <span className="text-red-500">*</span></label>
                 <input
@@ -215,7 +388,6 @@ function IcaAgreementContent() {
                 />
               </div>
 
-              {/* Signature */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Digital Signature <span className="text-red-500">*</span></label>
                 <p className="text-xs text-gray-500 mb-2">Draw your signature below using your mouse or finger</p>
@@ -249,7 +421,6 @@ function IcaAgreementContent() {
                 )}
               </div>
 
-              {/* Date (auto) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                 <input
@@ -260,7 +431,6 @@ function IcaAgreementContent() {
                 />
               </div>
 
-              {/* Consent Checkbox */}
               <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <input
                   type="checkbox"

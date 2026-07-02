@@ -555,6 +555,15 @@ export default function DashboardPage() {
                         </div>
                         <span className="text-sm font-medium text-black">View Calendar</span>
                       </Link>
+
+                      {therapistProfile?.complianceItems?.icaSigned && therapistProfile?.complianceItems?.icaCountersigned && (
+                        <Link href="/therapist/ica-agreement?view=signed" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                          <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-gray-600" />
+                          </div>
+                          <span className="text-sm font-medium text-black">View Signed ICA</span>
+                        </Link>
+                      )}
                     </div>
                   </motion.div>
                 </div>
