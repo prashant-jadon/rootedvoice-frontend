@@ -86,6 +86,10 @@ export const therapistAPI = {
   updateAvailability: (id: string, availability: any) =>
     api.put(`/therapists/${id}/availability`, { availability }),
   getStats: (id: string) => api.get(`/therapists/${id}/stats`),
+  signIca: (formData: FormData) =>
+    api.post('/therapists/sign-ica', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
   uploadDocuments: (formData: FormData) =>
     api.post('/therapists/upload-documents', formData, {
       headers: {

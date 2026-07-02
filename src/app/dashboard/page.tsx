@@ -124,6 +124,11 @@ export default function DashboardPage() {
         return
       }
 
+      if (profile.complianceItems?.icaSigned && !profile.complianceItems?.icaCountersigned) {
+        router.push('/therapist/ica-agreement?status=pending-countersign')
+        return
+      }
+
       setTherapistProfile(profile)
 
       // Fetch therapist stats
