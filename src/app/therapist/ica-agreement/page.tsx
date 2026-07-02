@@ -205,114 +205,23 @@ function IcaAgreementContent() {
                     <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <p className="font-semibold text-green-800">Agreement Fully Executed</p>
                   </div>
-                  <p className="text-sm text-green-700 mt-1 ml-7">
-                    Effective Date: {profile.complianceItems.icaEffectiveDate
-                      ? new Date(profile.complianceItems.icaEffectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-                      : 'N/A'}
-                  </p>
                 </div>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 md:p-8 max-h-[60vh] overflow-y-auto mb-8">
-                  <ICAContent />
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 md:p-8 max-h-[70vh] overflow-y-auto mb-6">
+                  <ICAContent signedData={{
+                    effectiveDate: profile.complianceItems.icaEffectiveDate,
+                    contractorName: `${profile.userId?.firstName || ''} ${profile.userId?.lastName || ''}`.trim(),
+                    contractorAddress: profile.complianceItems.icaContractorAddress,
+                    contractorSignatureUrl: profile.complianceItems.icaContractorSignatureUrl ? getSignatureUrl(profile.complianceItems.icaContractorSignatureUrl) : undefined,
+                    contractorSignedAt: profile.complianceItems.icaSignedAt,
+                    companySignerName: profile.complianceItems.icaCompanySignerName,
+                    companySignerTitle: profile.complianceItems.icaCompanySignerTitle,
+                    companySignatureUrl: profile.complianceItems.icaCompanySignatureUrl ? getSignatureUrl(profile.complianceItems.icaCompanySignatureUrl) : undefined,
+                    companySignedAt: profile.complianceItems.icaCountersignedAt,
+                  }} />
                 </div>
 
-                {/* Signature Block */}
-                <div className="border-t-2 border-gray-300 pt-6">
-                  <h3 className="text-lg font-bold text-black mb-6">Signatures</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Contractor Signature */}
-                    <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Contractor</p>
-                      <div className="space-y-2">
-                        <div>
-                          <p className="text-xs text-gray-500">Name</p>
-                          <p className="font-medium text-gray-900">{profile.userId?.firstName} {profile.userId?.lastName}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Address</p>
-                          <p className="text-sm text-gray-800">{profile.complianceItems.icaContractorAddress || 'N/A'}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Signature</p>
-                          {profile.complianceItems.icaContractorSignatureUrl ? (
-                            <img
-                              src={getSignatureUrl(profile.complianceItems.icaContractorSignatureUrl)}
-                              alt="Contractor signature"
-                              className="max-h-16 object-contain mt-1 border border-gray-200 rounded bg-white p-1"
-                              onError={(e) => {
-                                const img = e.target as HTMLImageElement
-                                img.style.display = 'none'
-                                const fallback = document.createElement('p')
-                                fallback.className = 'text-xs text-gray-400 italic mt-1'
-                                fallback.textContent = 'Signature on file'
-                                img.parentElement?.appendChild(fallback)
-                              }}
-                            />
-                          ) : (
-                            <p className="text-xs text-gray-400 italic">Signature on file</p>
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Date Signed</p>
-                          <p className="text-sm text-gray-800">
-                            {profile.complianceItems.icaSignedAt
-                              ? new Date(profile.complianceItems.icaSignedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-                              : 'N/A'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Company Signature */}
-                    <div className="border border-gray-200 rounded-xl p-5 bg-gray-50">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Company</p>
-                      <div className="space-y-2">
-                        <div>
-                          <p className="text-xs text-gray-500">Company</p>
-                          <p className="font-medium text-gray-900">Rooted Voices Speech &amp; Language Therapy, LLC</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Representative</p>
-                          <p className="text-sm text-gray-800">{profile.complianceItems.icaCompanySignerName || 'N/A'}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Title</p>
-                          <p className="text-sm text-gray-800">{profile.complianceItems.icaCompanySignerTitle || 'N/A'}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Signature</p>
-                          {profile.complianceItems.icaCompanySignatureUrl ? (
-                            <img
-                              src={getSignatureUrl(profile.complianceItems.icaCompanySignatureUrl)}
-                              alt="Company signature"
-                              className="max-h-16 object-contain mt-1 border border-gray-200 rounded bg-white p-1"
-                              onError={(e) => {
-                                const img = e.target as HTMLImageElement
-                                img.style.display = 'none'
-                                const fallback = document.createElement('p')
-                                fallback.className = 'text-xs text-gray-400 italic mt-1'
-                                fallback.textContent = 'Signature on file'
-                                img.parentElement?.appendChild(fallback)
-                              }}
-                            />
-                          ) : (
-                            <p className="text-xs text-gray-400 italic">Signature on file</p>
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Date Signed</p>
-                          <p className="text-sm text-gray-800">
-                            {profile.complianceItems.icaCountersignedAt
-                              ? new Date(profile.complianceItems.icaCountersignedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-                              : 'N/A'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-between items-center">
+                <div className="flex justify-between items-center">
                   <button
                     onClick={() => router.push('/dashboard')}
                     className="px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-medium hover:bg-gray-300 transition-colors"
