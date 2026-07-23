@@ -177,7 +177,7 @@ export default function SignupPage() {
       return
     }
 
-    if (formData.password.length < 6) {
+    if (formData.password.length < 8 || !/[A-Za-z]/.test(formData.password) || !/[^A-Za-z]/.test(formData.password)) {
       setError(t('signup.passwordMinLength'))
       setIsLoading(false)
       return
