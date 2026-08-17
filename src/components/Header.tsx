@@ -123,9 +123,9 @@ export default function Header() {
                 <img
                   src="/logorooted 1.png"
                   alt="Rooted Voices"
-                  className="h-[80px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  className="h-12 w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
                 />
-                <span className="text-2xl font-bold text-gray-900 tracking-tight">Rooted Voices</span>
+                <span className="text-xl font-bold text-gray-900 tracking-tight">Rooted Voices</span>
               </Link>
 
               <nav className="hidden md:flex items-center space-x-6">
@@ -173,9 +173,9 @@ export default function Header() {
               <img
                 src="/logorooted 1.png"
                 alt="Rooted Voices"
-                className="h-[104px] w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+                className="h-12 w-auto drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
               />
-              <span className="text-2xl font-bold text-gray-900 tracking-tight hidden sm:block">Rooted Voices</span>
+              <span className="text-xl font-bold text-gray-900 tracking-tight hidden sm:block">Rooted Voices</span>
             </Link>
 
             <nav className="hidden md:flex items-center space-x-6">
