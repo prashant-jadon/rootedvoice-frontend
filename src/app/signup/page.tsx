@@ -447,10 +447,10 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex selection:bg-[#203936]/10">
+    <div className={`min-h-screen flex selection:bg-[#203936]/10 transition-colors duration-500 ${userType === 'therapist' ? 'bg-[#F9FAFB]' : 'bg-white'}`}>
       {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-md w-full">
+        <div className={`w-full transition-all duration-500 ${userType === 'therapist' ? 'max-w-3xl' : 'max-w-md'}`}>
           {/* Back to Home */}
           <Link href="/" className="flex items-center text-[#203936]/60 hover:text-[#132D22] transition-colors mb-8 font-medium">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -461,6 +461,7 @@ export default function SignupPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' as const }}
+            className={`transition-all duration-500 ${userType === 'therapist' ? 'bg-white p-8 md:p-12 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100' : ''}`}
           >
             <div className="mb-10">
               <h1 className="text-3xl font-black text-[#132D22] mb-3 tracking-tight">
@@ -545,46 +546,48 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('signup.email')}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('signup.email')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Mail className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder={t('signup.email')}
+                    />
                   </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder={t('signup.email')}
-                  />
                 </div>
-              </div>
 
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('signup.phone')}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone className="h-5 w-5 text-gray-400" />
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('signup.phone')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Phone className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder={t('signup.phone')}
+                    />
                   </div>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder={t('signup.phone')}
-                  />
                 </div>
               </div>
 
@@ -626,9 +629,9 @@ export default function SignupPage() {
                   </div>
 
                   {/* Practice Locations */}
-                  <div className="border-t pt-4 mt-4">
+                  <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">Practice Locations <span className="text-red-500">*</span></h3>
+                      <h3 className="text-xl font-bold text-[#132D22] flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>Practice Locations <span className="text-red-500">*</span></h3>
                       <button
                         type="button"
                         onClick={addLocation}
@@ -723,8 +726,8 @@ export default function SignupPage() {
 
                   {/* ASHA Certification (SLP Only) */}
                   {formData.credentials === 'SLP' && (
-                    <div className="border-t pt-4 mt-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.ashaCertification')}</h3>
+                    <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
+                      <h3 className="text-xl font-bold text-[#132D22] mb-6 flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>{t('signup.ashaCertification')}</h3>
                       <div className="space-y-4">
                         <div>
                           <label htmlFor="ashaCertificationNumber" className="block text-sm font-medium text-gray-700 mb-2">
@@ -778,9 +781,9 @@ export default function SignupPage() {
                   )}
 
                   {/* State Licensure */}
-                  <div className="border-t pt-4 mt-4">
+                  <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">{t('signup.stateLicensure')}</h3>
+                      <h3 className="text-xl font-bold text-[#132D22] flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>{t('signup.stateLicensure')}</h3>
                       <button
                         type="button"
                         onClick={addLicense}
@@ -917,8 +920,8 @@ export default function SignupPage() {
 
                   {/* Supervision (SLPA Only) */}
                   {formData.credentials === 'SLPA' && (
-                    <div className="border-t pt-4 mt-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.supervision')}</h3>
+                    <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
+                      <h3 className="text-xl font-bold text-[#132D22] mb-6 flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>{t('signup.supervision')}</h3>
                       <div className="space-y-4">
                         <div>
                           <label htmlFor="supervisingSLPName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -1035,8 +1038,8 @@ export default function SignupPage() {
                   )}
 
                   {/* Professional Liability Insurance */}
-                  <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.professionalLiabilityInsurance')}</h3>
+                  <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
+                    <h3 className="text-xl font-bold text-[#132D22] mb-6 flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>{t('signup.professionalLiabilityInsurance')}</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -1115,8 +1118,8 @@ export default function SignupPage() {
                   </div>
 
                   {/* Police Check / Background Check (Optional) */}
-                  <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('signup.policeCheck')}</h3>
+                  <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
+                    <h3 className="text-xl font-bold text-[#132D22] mb-2 flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>{t('signup.policeCheck')}</h3>
                     <p className="text-sm text-gray-500 mb-4">Optional — you can submit this later</p>
                     <div className="space-y-4">
                       <div>
@@ -1177,8 +1180,12 @@ export default function SignupPage() {
                   </div>
 
                   {/* Specializations */}
-                  <div className="border-t pt-4 mt-4">
-                    <label htmlFor="specializations" className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
+                    <h3 className="text-xl font-bold text-[#132D22] mb-6 flex items-center gap-3">
+                      <span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>
+                      {t('signup.areasOfExpertise')}
+                    </h3>
+                    <label htmlFor="specializations" className="sr-only">
                       {t('signup.areasOfExpertise')}
                     </label>
                     <select
@@ -1209,8 +1216,8 @@ export default function SignupPage() {
 
 
                   {/* Banking Information */}
-                  <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('signup.bankingInformation')}</h3>
+                  <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
+                    <h3 className="text-xl font-bold text-[#132D22] mb-6 flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>{t('signup.bankingInformation')}</h3>
                     <div className="space-y-4">
                       <div>
                         <label htmlFor="bankName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -1276,58 +1283,60 @@ export default function SignupPage() {
                 </>
               )}
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('signup.password')}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('signup.password')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      required
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder={t('signup.createPassword')}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                      )}
+                    </button>
                   </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    required
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder={t('signup.createPassword')}
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                    )}
-                  </button>
                 </div>
-              </div>
 
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('signup.confirmPassword')}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('signup.confirmPassword')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      autoComplete="new-password"
+                      required
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder={t('signup.confirmYourPassword')}
+                    />
                   </div>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder={t('signup.confirmYourPassword')}
-                  />
                 </div>
               </div>
 
@@ -1402,76 +1411,50 @@ export default function SignupPage() {
       </div>
 
       {/* Right Side - Image/Content */}
-      <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-center bg-[#F7EBD3] relative overflow-hidden">
-        {/* Subtle background decoration */}
-        <div className="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent" />
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#203936 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+      {userType === 'client' && (
+        <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-center bg-[#F7EBD3] relative overflow-hidden">
+          {/* Subtle background decoration */}
+          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent" />
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#203936 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' as const }}
-          className="max-w-md text-left relative z-10 px-8"
-        >
-          <div className="bg-[#132D22]/5 border border-[#132D22]/10 rounded-2xl p-8 backdrop-blur-sm">
-            <h2 className="text-3xl font-black text-[#132D22] mb-4 leading-tight">
-              {userType === 'client' ? t('signup.findRightTherapist') : "A Practice That Supports You"}
-            </h2>
-            <p className="text-[#203936]/80 text-lg mb-8 leading-relaxed">
-              {userType === 'client'
-                ? t('signup.clientDescription')
-                : "Join a community of clinicians dedicated to providing intentional, high-quality care. We provide the infrastructure—you provide the care."
-              }
-            </p>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' as const }}
+            className="max-w-md text-left relative z-10 px-8"
+          >
+            <div className="bg-[#132D22]/5 border border-[#132D22]/10 rounded-2xl p-8 backdrop-blur-sm">
+              <h2 className="text-3xl font-black text-[#132D22] mb-4 leading-tight">
+                {t('signup.findRightTherapist')}
+              </h2>
+              <p className="text-[#203936]/80 text-lg mb-8 leading-relaxed">
+                {t('signup.clientDescription')}
+              </p>
 
-            <div className="space-y-4 pt-6 border-t border-[#132D22]/10">
-              {userType === 'client' ? (
-                <>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
-                      <ArrowLeft className="w-3 h-3 rotate-180" />
-                    </div>
-                    <span className="text-[#132D22]/80 font-medium">{t('signup.easyOnlineBooking')}</span>
+              <div className="space-y-4 pt-6 border-t border-[#132D22]/10">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                    <ArrowLeft className="w-3 h-3 rotate-180" />
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
-                      <ArrowLeft className="w-3 h-3 rotate-180" />
-                    </div>
-                    <span className="text-[#132D22]/80 font-medium">{t('signup.secureVideoSessions')}</span>
+                  <span className="text-[#132D22]/80 font-medium">{t('signup.easyOnlineBooking')}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                    <ArrowLeft className="w-3 h-3 rotate-180" />
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
-                      <ArrowLeft className="w-3 h-3 rotate-180" />
-                    </div>
-                    <span className="text-[#132D22]/80 font-medium">{t('signup.progressTracking')}</span>
+                  <span className="text-[#132D22]/80 font-medium">{t('signup.secureVideoSessions')}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
+                    <ArrowLeft className="w-3 h-3 rotate-180" />
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
-                      <ArrowLeft className="w-3 h-3 rotate-180" />
-                    </div>
-                    <span className="text-[#132D22]/80 font-medium">{t('signup.clientManagementTools')}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
-                      <ArrowLeft className="w-3 h-3 rotate-180" />
-                    </div>
-                    <span className="text-[#132D22]/80 font-medium">{t('signup.automatedBilling')}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#132D22] text-[#F7EBD3]">
-                      <ArrowLeft className="w-3 h-3 rotate-180" />
-                    </div>
-                    <span className="text-[#132D22]/80 font-medium">{t('signup.resourceLibrary')}</span>
-                  </div>
-                </>
-              )}
+                  <span className="text-[#132D22]/80 font-medium">{t('signup.progressTracking')}</span>
+                </div>
+              </div>
             </div>
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      )}
     </div >
   )
 }
