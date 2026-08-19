@@ -91,13 +91,13 @@ export default function ForTherapistsPage() {
               initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
               className="bg-[#F7EBD3]/30 p-8 sm:p-10 rounded-3xl border border-[#203936]/10 hover:shadow-lg transition-shadow duration-300"
             >
-              <h3 className="text-2xl font-bold text-[#132D22] mb-2">SLP (Speech-Language Pathologist) — $40–$75/hour</h3>
+              <h3 className="text-2xl font-bold text-[#132D22] mb-2">SLP (Speech-Language Pathologist) — $45–$75/hour</h3>
               <p className="text-[#203936]/80 font-medium mb-8">A transparent, growth-based pay model — no percentage splits, no hidden deductions</p>
               
               <div className="mb-8">
                 <h4 className="font-bold text-[#132D22] mb-4 text-sm tracking-widest uppercase">How Compensation Works:</h4>
                 <ul className="space-y-3">
-                  {['Start at $40/hour', 'Earn a $5 increase for every 5 hours worked', 'Progress up to $75/hour maximum', 'You are paid your full hourly rate for every completed session'].map((li, i) => (
+                  {['Start at $45/hour', 'Earn a $5 increase for every 5 hours worked', 'Progress up to $75/hour maximum', 'You are paid your full hourly rate for every completed session'].map((li, i) => (
                     <li key={i} className="flex items-start text-[#203936]/80 text-sm font-medium">
                       <CheckCircle className="w-5 h-5 text-[#B97B40] mr-3 shrink-0" />
                       <span>{li}</span>
@@ -130,13 +130,13 @@ export default function ForTherapistsPage() {
               initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
               className="bg-[#F7EBD3]/30 p-8 sm:p-10 rounded-3xl border border-[#203936]/10 hover:shadow-lg transition-shadow duration-300"
             >
-              <h3 className="text-2xl font-bold text-[#132D22] mb-2">SLPA (Speech-Language Pathology Assistant) — $25–$55/hour</h3>
+              <h3 className="text-2xl font-bold text-[#132D22] mb-2">SLPA (Speech-Language Pathology Assistant) — $30–$55/hour</h3>
               <p className="text-[#203936]/80 font-medium mb-8">A supportive, structured model designed for career growth and financial consistency</p>
               
               <div className="mb-8">
                 <h4 className="font-bold text-[#132D22] mb-4 text-sm tracking-widest uppercase">How Compensation Works:</h4>
                 <ul className="space-y-3">
-                  {['Start at $25/hour', 'Earn a $5 increase for every 5 hours worked', 'Progress up to $55/hour maximum', 'You are paid your full hourly rate for every completed session'].map((li, i) => (
+                  {['Start at $30/hour', 'Earn a $5 increase for every 5 hours worked', 'Progress up to $55/hour maximum', 'You are paid your full hourly rate for every completed session'].map((li, i) => (
                     <li key={i} className="flex items-start text-[#203936]/80 text-sm font-medium">
                       <CheckCircle className="w-5 h-5 text-[#B97B40] mr-3 shrink-0" />
                       <span>{li}</span>
