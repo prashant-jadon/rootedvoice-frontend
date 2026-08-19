@@ -58,6 +58,7 @@ export default function CompensationChart({
   })
   const currentTier = currentTierIndex >= 0 ? tiers[currentTierIndex] : tiers[0]
   const nextTier = tiers[currentTierIndex + 1]
+  const effectiveRate = currentTier.rate
 
   // Calculate progress to next tier
   const hoursToNextTier = nextTier ? nextTier.hours - hoursAccumulated : 0
@@ -83,7 +84,7 @@ export default function CompensationChart({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-blue-50 rounded-lg p-4">
           <div className="text-xs text-gray-600 mb-1">Current Rate</div>
-          <div className="text-2xl font-bold text-blue-600">${currentHourlyRate}/hr</div>
+          <div className="text-2xl font-bold text-blue-600">${effectiveRate}/hr</div>
         </div>
         <div className="bg-green-50 rounded-lg p-4">
           <div className="text-xs text-gray-600 mb-1">Hours Accumulated</div>

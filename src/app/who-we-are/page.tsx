@@ -148,6 +148,7 @@ export default function WhoWeArePage() {
                 <p className="text-black font-semibold">
                   Ashley Blocker-Wilbourn, MS, CCC-SLP<br />
                   <span className="text-lg">Founder, Rooted Voices</span>
+                  <span className="text-lg">Voices Speech & Language Therapy</span>
                 </p>
               </div>
             </div>
