@@ -2,43 +2,53 @@
 
 import { motion } from 'framer-motion'
 import { TrendingUp, Target, Clock, DollarSign } from 'lucide-react'
+import { useMemo } from 'react'
+
+interface CompensationConfig {
+  maxRate: number
+  baseRate: number
+  increment: number
+  hoursPerTier: number
+}
 
 interface CompensationChartProps {
   credentialType: 'SLP' | 'SLPA'
   hoursAccumulated: number
   currentHourlyRate: number
+  compensationConfig?: CompensationConfig | null
 }
 
-export default function CompensationChart({ 
-  credentialType, 
-  hoursAccumulated, 
-  currentHourlyRate 
+function buildTiers(config: CompensationConfig) {
+  const tiers: { hours: number; rate: number }[] = []
+  let rate = config.baseRate
+  let hours = 0
+  while (rate <= config.maxRate) {
+    tiers.push({ hours, rate })
+    rate += config.increment
+    hours += config.hoursPerTier
+    if (rate > config.maxRate) break
+  }
+  if (tiers[tiers.length - 1].rate < config.maxRate) {
+    tiers.push({ hours, rate: config.maxRate })
+  }
+  return tiers
+}
+
+const DEFAULT_CONFIGS: Record<string, CompensationConfig> = {
+  SLP: { maxRate: 75, baseRate: 35, increment: 5, hoursPerTier: 5 },
+  SLPA: { maxRate: 55, baseRate: 30, increment: 5, hoursPerTier: 5 },
+}
+
+export default function CompensationChart({
+  credentialType,
+  hoursAccumulated,
+  currentHourlyRate,
+  compensationConfig,
 }: CompensationChartProps) {
-  // Compensation tiers configuration
-  const SLP_TIERS = [
-    { hours: 0, rate: 40 },
-    { hours: 5, rate: 45 },
-    { hours: 10, rate: 50 },
-    { hours: 15, rate: 55 },
-    { hours: 20, rate: 60 },
-    { hours: 25, rate: 65 },
-    { hours: 30, rate: 70 },
-    { hours: 35, rate: 75 },
-    { hours: 40, rate: 80 },
-  ]
-
-  const SLPA_TIERS = [
-    { hours: 0, rate: 35 },
-    { hours: 5, rate: 40 },
-    { hours: 10, rate: 45 },
-    { hours: 15, rate: 50 },
-    { hours: 20, rate: 55 },
-    { hours: 25, rate: 60 },
-  ]
-
-  const tiers = credentialType === 'SLP' ? SLP_TIERS : SLPA_TIERS
-  const maxRate = credentialType === 'SLP' ? 80 : 60
-  const startingRate = credentialType === 'SLP' ? 40 : 35
+  const config = compensationConfig || DEFAULT_CONFIGS[credentialType] || DEFAULT_CONFIGS.SLP
+  const tiers = useMemo(() => buildTiers(config), [config.maxRate, config.baseRate, config.increment, config.hoursPerTier])
+  const maxRate = config.maxRate
+  const startingRate = config.baseRate
 
   // Find current tier
   const currentTierIndex = tiers.findIndex((tier, index) => {
@@ -51,7 +61,7 @@ export default function CompensationChart({
 
   // Calculate progress to next tier
   const hoursToNextTier = nextTier ? nextTier.hours - hoursAccumulated : 0
-  const progressToNextTier = nextTier 
+  const progressToNextTier = nextTier
     ? Math.min(100, ((hoursAccumulated - currentTier.hours) / (nextTier.hours - currentTier.hours)) * 100)
     : 100
 
@@ -115,8 +125,8 @@ export default function CompensationChart({
             />
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            {hoursToNextTier > 0 
-              ? `${hoursToNextTier} more hours needed for next $5 increase`
+            {hoursToNextTier > 0
+              ? `${hoursToNextTier} more hours needed for next $${config.increment} increase`
               : 'Ready for next tier increase!'}
           </p>
         </div>
@@ -216,7 +226,7 @@ export default function CompensationChart({
             <ul className="text-xs text-blue-800 space-y-1">
               <li>• Starting rate: ${startingRate}/hour</li>
               <li>• Maximum rate: ${maxRate}/hour</li>
-              <li>• Every 5 hours worked = +$5/hour increase</li>
+              <li>• Every {config.hoursPerTier} hours worked = +${config.increment}/hour increase</li>
               <li>• You are paid your current hourly rate for each session</li>
               <li>• No percentage splits - fixed hourly compensation</li>
             </ul>
@@ -226,4 +236,3 @@ export default function CompensationChart({
     </div>
   )
 }
-

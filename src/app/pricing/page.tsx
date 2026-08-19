@@ -601,6 +601,10 @@ function PricingContent() {
                         <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0 mt-0.5" />
                         <span className="text-gray-700 font-medium">Consultation / review session to discuss next steps</span>
                       </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="w-6 h-6 text-[#B97B40] shrink-0 mt-0.5" />
+                        <span className="text-gray-700 font-medium">Your $195 evaluation fee is credited toward your first month when you enroll in Rooted or Flourish.</span>
+                      </li>
                     </ul>
                   </div>
 

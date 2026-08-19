@@ -38,6 +38,7 @@ export default function DashboardPage() {
   const [missedSessions, setMissedSessions] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [therapistProfile, setTherapistProfile] = useState<any>(null)
+  const [compensationConfig, setCompensationConfig] = useState<any>(null)
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
 
@@ -130,6 +131,14 @@ export default function DashboardPage() {
       }
 
       setTherapistProfile(profile)
+
+      // Fetch compensation config (admin-configured rate caps)
+      try {
+        const compConfigRes = await therapistAPI.getCompensationConfig()
+        setCompensationConfig(compConfigRes.data.data)
+      } catch (e) {
+        console.error('Failed to load compensation config')
+      }
 
       // Fetch therapist stats
       if (therapistRes.data.data?._id) {
@@ -354,7 +363,8 @@ export default function DashboardPage() {
                   <CompensationChart
                     credentialType={therapistProfile.credentials || 'SLP'}
                     hoursAccumulated={therapistProfile.totalHoursWorked || 0}
-                    currentHourlyRate={therapistProfile.hourlyRate || (therapistProfile.credentials === 'SLPA' ? 35 : 40)}
+                    currentHourlyRate={therapistProfile.hourlyRate || (therapistProfile.credentials === 'SLPA' ? 30 : 35)}
+                    compensationConfig={compensationConfig?.[therapistProfile.credentials || 'SLP']}
                   />
                 </motion.div>
               )}
