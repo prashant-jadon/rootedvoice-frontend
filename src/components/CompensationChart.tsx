@@ -35,7 +35,7 @@ function buildTiers(config: CompensationConfig) {
 }
 
 const DEFAULT_CONFIGS: Record<string, CompensationConfig> = {
-  SLP: { maxRate: 75, baseRate: 35, increment: 5, hoursPerTier: 5 },
+  SLP: { maxRate: 75, baseRate: 45, increment: 5, hoursPerTier: 5 },
   SLPA: { maxRate: 55, baseRate: 30, increment: 5, hoursPerTier: 5 },
 }
 

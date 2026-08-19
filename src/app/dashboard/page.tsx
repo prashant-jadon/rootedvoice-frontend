@@ -363,7 +363,7 @@ export default function DashboardPage() {
                   <CompensationChart
                     credentialType={therapistProfile.credentials || 'SLP'}
                     hoursAccumulated={therapistProfile.totalHoursWorked || 0}
-                    currentHourlyRate={therapistProfile.hourlyRate || (therapistProfile.credentials === 'SLPA' ? 30 : 35)}
+                    currentHourlyRate={therapistProfile.hourlyRate || (therapistProfile.credentials === 'SLPA' ? 30 : 45)}
                     compensationConfig={compensationConfig?.[therapistProfile.credentials || 'SLP']}
                   />
                 </motion.div>
