@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import LiveChatWidget from '../components/LiveChatWidget'
 import Footer from '../components/Footer'
@@ -34,6 +35,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-881WW0WRCG"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-881WW0WRCG');
+          `}
+        </Script>
         <AuthProvider>
           {children}
           <Footer />
