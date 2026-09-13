@@ -11,6 +11,7 @@ import { AuthProvider } from '../contexts/AuthContext'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://rootedvoicestherapy.com'),
   title: 'Rooted Voices - Telehealth & Practice Management',
   description: 'Make speech & language therapy accessible, private, and effective for everyone.',
   icons: {

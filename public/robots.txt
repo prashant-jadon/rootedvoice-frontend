@@ -1,0 +1,47 @@
+# Rooted Voices - robots.txt
+# https://rootedvoicestherapy.com
+
+User-agent: *
+Allow: /
+Allow: /services
+Allow: /client-services
+Allow: /meet-our-therapists
+Allow: /therapist-profile/*
+Allow: /pricing
+Allow: /who-we-are
+Allow: /for-therapists
+Allow: /faq
+Allow: /contact
+Allow: /evaluation-booking
+Allow: /community
+Allow: /cancellation-policy
+Allow: /telehealth-consent
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /login
+Allow: /signup
+
+# Protected Portals & Private Healthcare Data (HIPAA / Authenticated Area)
+Disallow: /dashboard
+Disallow: /client-dashboard
+Disallow: /my-practice
+Disallow: /sessions
+Disallow: /assignments
+Disallow: /book-session
+Disallow: /client-evaluation
+Disallow: /client-intake
+Disallow: /client-profile
+Disallow: /client-view
+Disallow: /payments
+Disallow: /profile
+Disallow: /resources
+Disallow: /therapist-pending-approval
+Disallow: /therapist
+Disallow: /video-call
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /api
+
+# Host & Sitemap
+Host: https://rootedvoicestherapy.com
+Sitemap: https://rootedvoicestherapy.com/sitemap.xml
