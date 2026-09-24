@@ -27,6 +27,7 @@ interface ICAContentProps {
     effectiveDate?: string;
     contractorName?: string;
     contractorAddress?: string;
+    contractorEmail?: string;
     contractorSignatureUrl?: string;
     contractorSignedAt?: string;
     companySignerName?: string;
@@ -48,6 +49,9 @@ export default function ICAContent({ signedData }: ICAContentProps = {}) {
   const dayNum = effectiveDate ? effectiveDate.getDate().toString() : undefined;
   const monthName = effectiveDate ? effectiveDate.toLocaleDateString('en-US', { month: 'long' }) : undefined;
   const yearSuffix = effectiveDate ? effectiveDate.getFullYear().toString().slice(2) : undefined;
+
+  const companyName = s?.companySignerName || 'Ashley Blocker Wilbourn';
+  const companyTitle = s?.companySignerTitle || 'Founder & CEO';
 
   return (
     <div className="ica-content text-gray-800 text-sm leading-relaxed">
@@ -104,8 +108,8 @@ export default function ICAContent({ signedData }: ICAContentProps = {}) {
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 6 &ndash; HIPAA AND CONFIDENTIALITY</h3>
       <p className="mb-2"><strong>6.1</strong> Contractor shall comply with the Health Insurance Portability and Accountability Act (HIPAA) and all applicable privacy laws.</p>
       <p className="mb-2"><strong>6.2</strong> Contractor shall safeguard Protected Health Information (PHI).</p>
-      <p className="mb-2"><strong>6.3</strong> Contractor agrees to execute a Business Associate Addendum where applicable.</p>
-      <p className="mb-2"><strong>6.4</strong> Contractor shall comply with Exhibit D (HIPAA / Business Associate Addendum).</p>
+      <p className="mb-2"><strong>6.3 Business Associate Agreement.</strong> Exhibit D (HIPAA / Business Associate Addendum) constitutes the complete Business Associate Agreement (&quot;BAA&quot;) between the Company and Contractor with respect to the Services performed under this Agreement and is incorporated into and made a part of this Agreement. Contractor agrees to comply with all obligations set forth in Exhibit D. No separate Business Associate Agreement or additional BAA signature shall be required unless otherwise required by applicable law or expressly agreed to in writing by the parties.</p>
+      <p className="mb-2"><strong>6.4 HIPAA Compliance.</strong> Contractor shall comply with Exhibit D, all applicable HIPAA requirements, and all applicable federal and state privacy and data-security laws governing the Services.</p>
 
       {/* ARTICLE 7 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 7 &ndash; NON-SOLICITATION AND NON-CIRCUMVENTION</h3>
@@ -134,12 +138,12 @@ export default function ICAContent({ signedData }: ICAContentProps = {}) {
       {/* ARTICLE 9 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 9 &ndash; PROFESSIONAL LIABILITY INSURANCE</h3>
       <p className="mb-2"><strong>9.1 Professional Liability Insurance.</strong> Contractor shall maintain professional liability (malpractice) insurance throughout the term of this Agreement in accordance with Contractor classification as follows:</p>
-      <p className="mb-1 ml-4"><strong>a. Speech-Language Pathologists (SLPs).</strong> Minimum limits of:</p>
+      <p className="mb-1 ml-4"><strong>a. Speech-Language Pathologists (SLPs).</strong> Speech-Language Pathologists (&quot;SLPs&quot;) shall maintain professional liability insurance with minimum limits of:</p>
       <ul className="list-disc pl-10 mb-2 space-y-1">
         <li>One Million Dollars ($1,000,000.00) per occurrence; and</li>
         <li>Three Million Dollars ($3,000,000.00) aggregate.</li>
       </ul>
-      <p className="mb-1 ml-4"><strong>b. Speech-Language Pathology Assistants (SLPAs).</strong> Minimum limits of:</p>
+      <p className="mb-1 ml-4"><strong>b. Speech-Language Pathology Assistants (SLPAs).</strong> Speech-Language Pathology Assistants (SLPAs) shall maintain professional liability insurance with minimum limits of:</p>
       <ul className="list-disc pl-10 mb-2 space-y-1">
         <li>Five Hundred Thousand Dollars ($500,000.00) per occurrence; and</li>
         <li>One Million Five Hundred Thousand Dollars ($1,500,000.00) aggregate.</li>
@@ -213,8 +217,7 @@ export default function ICAContent({ signedData }: ICAContentProps = {}) {
 
       {/* ARTICLE 14 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 14 &ndash; PEDIATRIC SAFETY, BACKGROUND SCREENING, AND CHILD PROTECTION COMPLIANCE</h3>
-      <p className="mb-2"><strong>14.1 Pediatric Service Delivery Acknowledgment.</strong> Contractor acknowledges that the Company may provide speech-language therapy and related telehealth services to pediatric Clients, including minors and other legally protected individuals, through the Company-approved Platform.</p>
-      <p className="mb-2">Contractor further acknowledges that pediatric service delivery requires heightened professional responsibility, child safety protections, safeguarding obligations, supervision compliance, confidentiality protections, and compliance with all applicable federal, state, and local child protection laws, professional standards, and telehealth requirements applicable within each Service Jurisdiction.</p>
+      <p className="mb-2"><strong>14.1 Pediatric Service Delivery Acknowledgment.</strong> Contractor acknowledges that the Company may provide speech-language therapy and related telehealth services to pediatric Clients, including minors and other legally protected individuals, through the Company-approved Platform. Contractor further acknowledges that pediatric service delivery requires heightened professional responsibility, child safety protections, safeguarding obligations, supervision compliance, confidentiality protections, and compliance with all applicable federal, state, and local child protection laws, professional standards, and telehealth requirements applicable within each Service Jurisdiction.</p>
       <p className="mb-2"><strong>14.2 Background Check and Screening Requirements.</strong> The Company reserves the right to require Contractor to successfully complete background screening, credential verification, identity verification, professional license verification, sanction screening, exclusion screening, reference verification, and other compliance-related screening procedures prior to the commencement of Services and at any time during the term of this Agreement.</p>
       <p className="mb-1">Background screening requirements may include, but are not limited to:</p>
       <ul className="list-disc pl-6 mb-2 space-y-1">
@@ -231,51 +234,244 @@ export default function ICAContent({ signedData }: ICAContentProps = {}) {
         <li>and other screening procedures deemed appropriate by the Company.</li>
       </ul>
       <p className="mb-2">The Company reserves the right to determine the scope, frequency, timing, acceptability, and sufficiency of all screening procedures in its discretion and in accordance with applicable law.</p>
-      <p className="mb-2"><strong>14.3 Pediatric-Facing Contractor Clearances.</strong> Contractors providing services to pediatric Clients may be required to maintain additional clearances, certifications, authorizations, screenings, or child safety documentation as required by applicable federal law, state law, licensing board requirements, payer requirements, school-based service requirements, telehealth regulations, Company operational standards, or child protection laws applicable within the relevant Service Jurisdiction.</p>
+      <p className="mb-2"><strong>14.3 Pediatric-Facing Contractor Clearances.</strong> Contractors providing services to pediatric Clients may be required to maintain additional clearances, certifications, authorizations, screenings, or child safety documentation as required by:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>applicable federal law;</li>
+        <li>state law;</li>
+        <li>licensing board requirements;</li>
+        <li>payer requirements;</li>
+        <li>school-based service requirements;</li>
+        <li>telehealth regulations;</li>
+        <li>Company operational standards;</li>
+        <li>or child protection laws applicable within the relevant Service Jurisdiction.</li>
+      </ul>
+      <p className="mb-1">Such additional pediatric-facing clearances may include, but are not limited to:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>fingerprint-based background clearances;</li>
+        <li>child abuse clearances;</li>
+        <li>school-system vendor clearances;</li>
+        <li>pediatric safety certifications;</li>
+        <li>mandatory reporter training;</li>
+        <li>abuse prevention training;</li>
+        <li>and other child protection-related compliance requirements.</li>
+      </ul>
       <p className="mb-2">Contractor shall remain solely responsible for timely obtaining, maintaining, renewing, and complying with all required clearances and certifications applicable to pediatric service delivery.</p>
       <p className="mb-2"><strong>14.4 Child Safety and Mandatory Reporting Obligations.</strong> Contractor shall comply with all applicable child safety laws, safeguarding requirements, abuse prevention laws, mandatory reporting obligations, supervision requirements, confidentiality laws, and professional conduct standards applicable to pediatric service delivery.</p>
-      <p className="mb-2">Contractor acknowledges and agrees that Contractor may be deemed a mandatory reporter under applicable law and shall comply with all legal obligations relating to suspected child abuse, neglect, exploitation, endangerment, unsafe conditions, or other reportable conduct involving pediatric Clients.</p>
-      <p className="mb-2">Contractor shall immediately notify the Company of any reportable incident, governmental investigation, licensing complaint, child safety concern, arrest, criminal charge, loss of clearance, or other event that could impact Contractor&apos;s eligibility to provide pediatric services.</p>
+      <p className="mb-1">Contractor acknowledges and agrees that Contractor may be deemed a mandatory reporter under applicable law and shall comply with all legal obligations relating to:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>suspected child abuse;</li>
+        <li>neglect;</li>
+        <li>exploitation;</li>
+        <li>endangerment;</li>
+        <li>unsafe conditions;</li>
+        <li>or other reportable conduct involving pediatric Clients.</li>
+      </ul>
+      <p className="mb-1">Contractor shall immediately notify the Company of any:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>reportable incident;</li>
+        <li>governmental investigation;</li>
+        <li>licensing complaint;</li>
+        <li>child safety concern;</li>
+        <li>arrest;</li>
+        <li>criminal charge;</li>
+        <li>loss of clearance;</li>
+        <li>or other event that could impact Contractor&apos;s eligibility to provide pediatric services.</li>
+      </ul>
       <p className="mb-2">Nothing in this Agreement shall be construed to limit Contractor&apos;s independent legal obligations under mandatory reporting laws.</p>
       <p className="mb-2"><strong>14.5 Professional Conduct and Pediatric Interaction Standards.</strong> Contractor shall maintain appropriate professional boundaries, ethical conduct, safeguarding practices, and clinically appropriate behavior in all interactions involving pediatric Clients and their families.</p>
+      <p className="mb-1">Contractor shall not engage in:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>inappropriate communications;</li>
+        <li>unauthorized off-platform interactions;</li>
+        <li>unapproved recording of pediatric sessions;</li>
+        <li>conduct inconsistent with child safety obligations;</li>
+        <li>or any behavior prohibited under applicable law, Company policy, professional standards, or safeguarding requirements.</li>
+      </ul>
       <p className="mb-2">All pediatric-related communications, scheduling, documentation, telehealth sessions, and Client interactions shall occur exclusively through Company-approved Platform systems unless otherwise authorized by the Company in writing.</p>
-      <p className="mb-2"><strong>14.6 Ongoing Compliance and Company Rights.</strong> The Company reserves the right to require updated screenings or clearances at any time, monitor compliance with pediatric safety requirements, restrict or prohibit Contractor from providing pediatric services, suspend Platform access, reassign pediatric Clients, require additional training, or terminate this Agreement where the Company reasonably determines that such action is necessary to protect pediatric Clients, maintain compliance, satisfy payer or regulatory requirements, or preserve Platform safety and operational integrity.</p>
+      <p className="mb-2"><strong>14.6 Ongoing Compliance and Company Rights.</strong> The Company reserves the right to:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>require updated screenings or clearances at any time;</li>
+        <li>monitor compliance with pediatric safety requirements;</li>
+        <li>restrict or prohibit Contractor from providing pediatric services;</li>
+        <li>suspend Platform access;</li>
+        <li>reassign pediatric Clients;</li>
+        <li>require additional training;</li>
+        <li>or terminate this Agreement.</li>
+      </ul>
+      <p className="mb-2">Where the Company reasonably determines that such action is necessary to protect pediatric Clients, maintain compliance, satisfy payer or regulatory requirements, or preserve Platform safety and operational integrity.</p>
       <p className="mb-2">Failure to comply with pediatric safety requirements, background screening obligations, mandatory reporting obligations, or child protection standards may result in immediate suspension, restriction of services, removal from pediatric assignments, compensation limitations, or immediate termination of this Agreement.</p>
 
       {/* ARTICLE 15 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 15 &ndash; TELEHEALTH SAFETY, EMERGENCY RESPONSE, AND CLIENT PROTECTION</h3>
-      <p className="mb-2"><strong>15.1 Telehealth Safety Acknowledgment.</strong> Contractor acknowledges that Services under this Agreement are delivered through a multi-state telehealth platform and that telehealth services may present unique operational, clinical, technological, emergency-response, and client safety considerations. Contractor agrees to comply with all Company telehealth safety procedures, emergency-response protocols, crisis-management requirements, mandatory reporting obligations, and applicable federal, state, and local laws governing telehealth practice within each applicable Service Jurisdiction.</p>
+      <p className="mb-2"><strong>15.1 Telehealth Safety Acknowledgment.</strong> Contractor acknowledges that Services under this Agreement are delivered through a multi-state telehealth platform and that telehealth services may present unique operational, clinical, technological, emergency-response, and client safety considerations.</p>
+      <p className="mb-2">Contractor agrees to comply with all Company telehealth safety procedures, emergency-response protocols, crisis-management requirements, mandatory reporting obligations, and applicable federal, state, and local laws governing telehealth practice within each applicable Service Jurisdiction.</p>
       <p className="mb-2"><strong>15.2 Client Physical Location Verification.</strong> Contractor shall verify and document the Client&apos;s physical location at the time of each telehealth session to the extent required under applicable law, payer requirements, professional standards, Company policy, or clinical necessity.</p>
+      <p className="mb-1">Contractor acknowledges that the Client&apos;s physical location at the time Services are rendered may determine:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>applicable licensure requirements;</li>
+        <li>telehealth authorization requirements;</li>
+        <li>emergency-response obligations;</li>
+        <li>mandatory reporting obligations;</li>
+        <li>jurisdiction-specific compliance requirements;</li>
+        <li>and applicable standards of care.</li>
+      </ul>
+      <p className="mb-2">Where required by Company policy or applicable law, Contractor shall document the Client&apos;s current physical location within Company-approved Platform systems at the beginning of the session or as otherwise required.</p>
       <p className="mb-2">If Contractor determines that the Client is physically located within a jurisdiction where Contractor is not authorized or licensed to provide Services, Contractor shall immediately discontinue or refrain from providing Services unless otherwise permitted under applicable law or Company authorization procedures.</p>
       <p className="mb-2"><strong>15.3 Emergency Contact Documentation Requirements.</strong> Contractor shall comply with Company operational procedures regarding collection, verification, maintenance, and documentation of emergency contact information for Clients receiving telehealth services.</p>
+      <p className="mb-2">Where applicable, Contractor shall ensure that available emergency contact information, caregiver information, guardian information, or emergency-response information is properly documented within Company-approved Platform systems in accordance with Company procedures and applicable law.</p>
+      <p className="mb-2">Contractor shall promptly notify the Company of missing, incomplete, inaccurate, or unavailable emergency contact information where such information is required for telehealth service delivery or client safety purposes.</p>
       <p className="mb-2"><strong>15.4 Crisis Response and Emergency Procedures.</strong> Contractor shall comply with all Company crisis-response protocols, emergency procedures, escalation procedures, safeguarding requirements, and telehealth emergency-management policies applicable to the Services.</p>
-      <p className="mb-2"><strong>15.5 Mandatory Reporting Compliance.</strong> Contractor shall comply with all mandatory reporting laws, abuse-reporting obligations, safeguarding requirements, and child-protection laws applicable within each Service Jurisdiction. Nothing contained in this Agreement shall limit Contractor&apos;s independent legal obligations under applicable mandatory reporting laws.</p>
-      <p className="mb-2"><strong>15.6 Escalation Procedures for Safety Concerns.</strong> Contractor shall promptly escalate and report to the Company any client safety concerns, emergency situations, crisis events, safeguarding concerns, suspected abuse or neglect, inappropriate caregiver conduct, technological failures impacting client safety, or other incidents requiring operational review or intervention.</p>
-      <p className="mb-2"><strong>15.7 Telehealth Environment and Safety Obligations.</strong> Contractor shall maintain a professional, safe, secure, and clinically appropriate telehealth environment when providing Services through the Platform. Contractor shall not provide Services while impaired, distracted, operating a vehicle, or otherwise unable to safely and professionally perform Services.</p>
-      <p className="mb-2"><strong>15.8 Company Operational Authority and Emergency Oversight.</strong> The Company reserves the right to establish telehealth safety procedures, require crisis-management training, implement emergency-response protocols, monitor telehealth safety compliance, impose documentation requirements, restrict service delivery, suspend Platform access, require additional operational safeguards, or take any other action reasonably necessary to protect Clients, maintain regulatory compliance, preserve Platform integrity, or address safety-related concerns.</p>
+      <p className="mb-1">Where Contractor reasonably determines that a Client may present:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>an imminent safety concern;</li>
+        <li>risk of harm to self or others;</li>
+        <li>abuse concerns;</li>
+        <li>neglect concerns;</li>
+        <li>medical emergencies;</li>
+        <li>psychiatric emergencies;</li>
+        <li>crisis situations;</li>
+        <li>or other urgent safety-related conditions,</li>
+      </ul>
+      <p className="mb-1">Contractor shall take clinically appropriate action consistent with:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>applicable law;</li>
+        <li>professional standards;</li>
+        <li>Company policies;</li>
+        <li>mandatory reporting obligations;</li>
+        <li>and emergency-response procedures.</li>
+      </ul>
+      <p className="mb-1">Such actions may include:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>contacting emergency contacts;</li>
+        <li>contacting emergency responders;</li>
+        <li>initiating mandated reports;</li>
+        <li>escalating concerns to the Company;</li>
+        <li>coordinating with caregivers or guardians;</li>
+        <li>or taking other clinically appropriate protective actions permitted under applicable law.</li>
+      </ul>
+      <p className="mb-2"><strong>15.5 Mandatory Reporting Compliance.</strong> Contractor shall comply with all mandatory reporting laws, abuse-reporting obligations, safeguarding requirements, and child-protection laws applicable within each Service Jurisdiction.</p>
+      <p className="mb-1">Contractor acknowledges that Contractor may be considered a mandatory reporter under applicable law and shall independently remain responsible for complying with all legal reporting obligations relating to:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>suspected abuse;</li>
+        <li>neglect;</li>
+        <li>exploitation;</li>
+        <li>endangerment;</li>
+        <li>threats of harm;</li>
+        <li>vulnerable-person concerns;</li>
+        <li>or other reportable conduct.</li>
+      </ul>
+      <p className="mb-2">Contractor shall additionally comply with Company reporting procedures relating to reportable incidents, safety concerns, crisis events, or emergency situations involving Clients.</p>
+      <p className="mb-2">Nothing contained in this Agreement shall limit Contractor&apos;s independent legal obligations under applicable mandatory reporting laws.</p>
+      <p className="mb-2"><strong>15.6 Escalation Procedures for Safety Concerns.</strong> Contractor shall promptly escalate and report to the Company any:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>client safety concerns;</li>
+        <li>emergency situations;</li>
+        <li>crisis events;</li>
+        <li>safeguarding concerns;</li>
+        <li>suspected abuse or neglect;</li>
+        <li>inappropriate caregiver conduct;</li>
+        <li>technological failures impacting client safety;</li>
+        <li>or other incidents requiring operational review or intervention.</li>
+      </ul>
+      <p className="mb-2">Contractor shall cooperate with Company investigations, documentation requests, compliance reviews, crisis-management procedures, and operational follow-up relating to safety-related events or emergency-response situations.</p>
+      <p className="mb-2"><strong>15.7 Telehealth Environment and Safety Obligations.</strong> Contractor shall maintain a professional, safe, secure, and clinically appropriate telehealth environment when providing Services through the Platform.</p>
+      <p className="mb-1">Contractor shall take reasonable steps to:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>protect Client confidentiality;</li>
+        <li>minimize disruptions;</li>
+        <li>maintain appropriate technological functionality;</li>
+        <li>ensure clinically appropriate communication;</li>
+        <li>and comply with Company telehealth operational standards and HIPAA requirements.</li>
+      </ul>
+      <p className="mb-2">Contractor shall not provide Services while impaired, distracted, operating a vehicle, or otherwise unable to safely and professionally perform Services.</p>
+      <p className="mb-2"><strong>15.8 Company Operational Authority and Emergency Oversight.</strong> The Company reserves the right to:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>establish telehealth safety procedures;</li>
+        <li>require crisis-management training;</li>
+        <li>implement emergency-response protocols;</li>
+        <li>monitor telehealth safety compliance;</li>
+        <li>impose documentation requirements;</li>
+        <li>restrict service delivery;</li>
+        <li>suspend Platform access;</li>
+        <li>require additional operational safeguards;</li>
+        <li>or take any other action reasonably necessary to protect Clients, maintain regulatory compliance, preserve Platform integrity, or address safety-related concerns.</li>
+      </ul>
+      <p className="mb-2">Failure to comply with telehealth safety obligations, emergency-response procedures, mandatory reporting obligations, or crisis-management requirements may result in corrective action, operational restrictions, suspension of Platform participation, reassignment of Clients, compensation limitations, or immediate termination of this Agreement.</p>
 
       {/* ARTICLE 16 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 16 &ndash; AI ASSISTED DOCUMENTATION, TRANSCRIPTION, AND TECHNOLOGY COMPLIANCE</h3>
-      <p className="mb-2"><strong>16.1 Company-approved Platform AI and Documentation Systems.</strong> Contractor acknowledges that the Company may utilize Company-approved Platform artificial intelligence (&quot;AI&quot;) systems, AI-assisted documentation technologies, multilingual transcription tools, automated note-generation systems, speech-recognition software, language-processing systems, translation tools, and other technology-assisted documentation platforms in connection with the Services and operation of the Platform. Contractor shall use only Company-approved Platform AI-assisted systems, documentation platforms, transcription systems, translation tools, and operational technologies authorized by the Company.</p>
-      <p className="mb-2"><strong>16.2 Prohibition on Unauthorized Third-Party AI Systems.</strong> Contractor shall not utilize, upload, disclose, transmit, process, record, store, generate, or input Company data, Client information, confidential information, session information, recordings, documentation, or Protected Health Information into any unauthorized third-party artificial intelligence platform, transcription tool, recording application, documentation system, translation service, note-generation tool, chatbot system, cloud-based AI service, or other unauthorized technology platform.</p>
+      <p className="mb-2"><strong>16.1 Company-approved Platform AI and Documentation Systems.</strong> Contractor acknowledges that the Company may utilize Company-approved Platform artificial intelligence (&quot;AI&quot;) systems, AI-assisted documentation technologies, multilingual transcription tools, automated note-generation systems, speech-recognition software, language-processing systems, translation tools, and other technology-assisted documentation platforms in connection with the Services and operation of the Platform.</p>
+      <p className="mb-2">Contractor shall use only Company-approved Platform AI-assisted systems, documentation platforms, transcription systems, translation tools, and operational technologies authorized by the Company for use in connection with Company Services, Client interactions, documentation preparation, telehealth operations, scheduling, communications, or Protected Health Information (&quot;PHI&quot;).</p>
+      <p className="mb-2"><strong>16.2 Prohibition on Unauthorized Third-Party AI Systems.</strong> Contractor shall not utilize, upload, disclose, transmit, process, record, store, generate, or input Company data, Client information, confidential information, session information, recordings, documentation, or Protected Health Information (&quot;PHI&quot;) into any unauthorized third-party artificial intelligence platform, transcription tool, recording application, documentation system, translation service, note-generation tool, chatbot system, cloud-based AI service, or other unauthorized technology platform.</p>
       <p className="mb-2">Unauthorized use of third-party AI systems, documentation systems, or transcription platforms involving Company information or Protected Health Information shall constitute a material violation of this Agreement and may result in immediate suspension or termination of Platform access and/or this Agreement.</p>
       <p className="mb-2"><strong>16.3 Contractor Clinical Responsibility and Documentation Review.</strong> Contractor acknowledges and agrees that any AI-assisted documentation, transcription output, automated note-generation content, translation output, or technology-assisted clinical documentation generated through Company-approved Platform systems is intended solely as a supplemental administrative or operational aid.</p>
-      <p className="mb-2">Contractor shall remain solely and independently responsible for reviewing all AI-assisted documentation, verifying the accuracy and completeness of documentation, correcting errors or inaccuracies, validating clinical appropriateness, ensuring compliance with applicable standards of care, and ensuring that all finalized documentation accurately reflects the Services provided.</p>
-      <p className="mb-2">Contractor shall not rely exclusively on AI-generated documentation or transcription output without independent professional review and clinical validation. The use of AI-assisted systems shall not reduce, transfer, replace, or limit Contractor&apos;s independent professional judgment, documentation obligations, supervision responsibilities, legal obligations, or clinical accountability.</p>
-      <p className="mb-2"><strong>16.4 HIPAA, Confidentiality, and PHI Protection Requirements.</strong> All Company-approved Platform AI-assisted systems, transcription technologies, multilingual documentation tools, and technology-assisted operational systems shall remain subject to all applicable HIPAA requirements, privacy laws, confidentiality obligations, data-security requirements, telehealth regulations, Business Associate Agreement obligations, and Company operational standards governing Protected Health Information (&quot;PHI&quot;) and confidential information.</p>
-      <p className="mb-2"><strong>16.5 Recording, Storage, and Data Handling Restrictions.</strong> Contractor shall not independently create, retain, download, store, transfer, export, duplicate, record, or maintain copies of AI-generated documentation, session recordings, transcription outputs, translated documentation, Client communications, or other Company data outside of Company-approved Platform systems unless expressly authorized in writing by the Company and permitted under applicable law.</p>
-      <p className="mb-2"><strong>16.6 Company Operational Authority and Technology Governance.</strong> The Company reserves the right to approve or prohibit AI systems and documentation technologies, modify authorized technology platforms, impose technology usage requirements, monitor compliance with AI-related operational standards, audit documentation practices, restrict system access, suspend use of technology tools, require training relating to AI-assisted systems, or implement additional safeguards deemed necessary to protect Clients, PHI, operational integrity, or legal compliance.</p>
+      <p className="mb-1">Contractor shall remain solely and independently responsible for:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>reviewing all AI-assisted documentation;</li>
+        <li>verifying the accuracy and completeness of documentation;</li>
+        <li>correcting errors or inaccuracies;</li>
+        <li>validating clinical appropriateness;</li>
+        <li>ensuring compliance with applicable standards of care;</li>
+        <li>and ensuring that all finalized documentation accurately reflects the Services provided.</li>
+      </ul>
+      <p className="mb-2">Contractor shall not rely exclusively on AI-generated documentation or transcription output without independent professional review and clinical validation.</p>
+      <p className="mb-2">The use of AI-assisted systems shall not reduce, transfer, replace, or limit Contractor&apos;s independent professional judgment, documentation obligations, supervision responsibilities, legal obligations, or clinical accountability.</p>
+      <p className="mb-2"><strong>16.4 HIPAA, Confidentiality, and PHI Protection Requirements.</strong> All Company-approved Platform AI-assisted systems, transcription technologies, multilingual documentation tools, and technology-assisted operational systems shall remain subject to all applicable:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>HIPAA requirements;</li>
+        <li>privacy laws;</li>
+        <li>confidentiality obligations;</li>
+        <li>data-security requirements;</li>
+        <li>telehealth regulations;</li>
+        <li>Business Associate Agreement obligations;</li>
+        <li>and Company operational standards governing Protected Health Information (&quot;PHI&quot;) and confidential information.</li>
+      </ul>
+      <p className="mb-2">Contractor shall comply with all Company operational safeguards, security procedures, access controls, authentication requirements, confidentiality standards, and data-protection requirements relating to Company-approved Platform AI and documentation systems.</p>
+      <p className="mb-1">Contractor acknowledges that PHI protections apply equally to:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>AI-assisted systems;</li>
+        <li>automated documentation platforms;</li>
+        <li>transcription technologies;</li>
+        <li>translation systems;</li>
+        <li>speech-recognition systems;</li>
+        <li>and all other Company-approved Platform technology-assisted operational tools.</li>
+      </ul>
+      <p className="mb-2"><strong>16.5 Recording, Storage, and Data Handling Restrictions.</strong> Contractor shall not independently create, retain, download, store, transfer, export, duplicate, record, or maintain copies of:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>AI-generated documentation;</li>
+        <li>session recordings;</li>
+        <li>transcription outputs;</li>
+        <li>translated documentation;</li>
+        <li>Client communications;</li>
+        <li>or other Company data</li>
+      </ul>
+      <p className="mb-2">outside of Company-approved Platform systems unless expressly authorized in writing by the Company and permitted under applicable law.</p>
+      <p className="mb-2">Any storage, handling, retention, or transmission of documentation or recordings outside Company-approved Platform systems is strictly prohibited unless specifically authorized by the Company.</p>
+      <p className="mb-2"><strong>16.6 Company Operational Authority and Technology Governance.</strong> The Company reserves the right to:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>approve or prohibit AI systems and documentation technologies;</li>
+        <li>modify authorized technology platforms;</li>
+        <li>impose technology usage requirements;</li>
+        <li>monitor compliance with AI-related operational standards;</li>
+        <li>audit documentation practices;</li>
+        <li>restrict system access;</li>
+        <li>suspend use of technology tools;</li>
+        <li>require training relating to AI-assisted systems;</li>
+        <li>or implement additional safeguards deemed necessary to protect Clients, PHI, operational integrity, or legal compliance.</li>
+      </ul>
+      <p className="mb-2">Contractor shall cooperate with all Company technology compliance procedures, documentation audits, operational reviews, and security investigations relating to AI-assisted systems or technology usage.</p>
+      <p className="mb-2">Failure to comply with Company AI policies, confidentiality requirements, HIPAA obligations, technology restrictions, or documentation review responsibilities may result in corrective action, operational restrictions, suspension of Platform participation, compensation limitations, revocation of system access, or immediate termination of this Agreement.</p>
 
       {/* ARTICLE 17 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 17 &ndash; PLATFORM USE AND DATA SECURITY</h3>
-      <p className="mb-2"><strong>17.1 Approved Platform Use.</strong> Contractors shall use only Company-approved Platform systems, platforms, applications, and technology for all services performed under this Agreement, including but not limited to communications, scheduling, documentation, recordkeeping, telehealth sessions, and payment processing relating to Platform Clients.</p>
-      <p className="mb-2"><strong>17.2 Ownership of Platform Data and Records.</strong> All client-related records, documentation, communications, session data, therapy notes, evaluations, treatment plans, platform-generated records, analytics, and other materials created or maintained through Company-approved Platform systems shall remain subject to Article 8 of this Agreement.</p>
+      <p className="mb-2"><strong>17.1 Approved Platform Use.</strong> Contractors shall use only Company-approved Platform systems, platforms, applications, and technology for all services performed under this Agreement, including but not limited to communications, scheduling, documentation, recordkeeping, telehealth sessions, and payment processing relating to Platform Clients. Approved systems include the Company&apos;s website, mobile application, and any associated software or digital systems authorized by the Company.</p>
+      <p className="mb-2"><strong>17.2 Ownership of Platform Data and Records.</strong> All client-related records, documentation, communications, session data, therapy notes, evaluations, treatment plans, platform-generated records, analytics, and other materials created or maintained through Company-approved Platform systems shall remain subject to Article 8 of this Agreement. Contractor shall not retain, disclose, distribute, or use such materials outside the scope of authorized Services except as permitted by applicable law or expressly authorized in writing by the Company.</p>
       <p className="mb-2"><strong>17.3 Prohibited External Communications.</strong> Unless expressly authorized in writing by the Company, Contractor shall not communicate with Platform Clients through personal phone numbers, personal email accounts, text messaging, social media platforms, third-party applications, or any unauthorized communication systems. All client-related communications shall occur exclusively through Company-approved Platform systems.</p>
       <p className="mb-2"><strong>17.4 Data Security and HIPAA Compliance.</strong> Contractors shall comply with all applicable privacy, confidentiality, data security, and HIPAA requirements and shall implement reasonable administrative, technical, and physical safeguards to protect Protected Health Information (PHI), confidential information, and Company data from unauthorized access, use, disclosure, alteration, or transmission.</p>
       <p className="mb-2"><strong>17.5 Application Across Company Systems.</strong> The operational, confidentiality, HIPAA, documentation, platform integrity, and data security obligations under this Agreement shall apply to all Company-approved Platform systems, platforms, applications, and digital environments utilized in connection with the Services.</p>
-      <p className="mb-2"><strong>17.6 Restriction of Platform Access and Credential Deactivation.</strong> The Company reserves the right to immediately restrict, suspend, deactivate, or terminate Contractor&apos;s access to the Platform, associated accounts, credentials, systems, or applications where the Company reasonably determines that such action is necessary to protect clients, Protected Health Information (PHI), Company data, operational integrity, or compliance with applicable law and Company standards.</p>
-      <p className="mb-2"><strong>17.7 Temporary Suspension Pending Investigation.</strong> The Company may temporarily suspend Contractor&apos;s access to the Platform and related systems pending investigation of any alleged misconduct, policy violation, legal or regulatory concern, security incident, or client-related complaint.</p>
-      <p className="mb-2"><strong>17.8 Unauthorized Systems and Security Violations.</strong> Contractors shall not use unauthorized systems, software, applications, recording tools, storage methods, or communication channels in connection with Platform Clients or Company operations. Any unauthorized use, disclosure, retention, or transmission of Company data or Protected Health Information may result in suspension or termination of platform access and/or this Agreement.</p>
+      <p className="mb-2"><strong>17.6 Restriction of Platform Access and Credential Deactivation.</strong> The Company reserves the right to immediately restrict, suspend, deactivate, or terminate Contractor&apos;s access to the Platform, associated accounts, credentials, systems, or applications where the Company reasonably determines that such action is necessary to protect clients, Protected Health Information (PHI), Company data, operational integrity, or compliance with applicable law and Company standards. Such action may be taken in connection with actual or suspected documentation failures, client complaints, HIPAA or privacy concerns, ethical violations, clinical deficiencies, platform misuse, unauthorized communications, security concerns, or other violations of this Agreement or Company policies.</p>
+      <p className="mb-2"><strong>17.7 Temporary Suspension Pending Investigation.</strong> The Company may temporarily suspend Contractor&apos;s access to the Platform and related systems pending investigation of any alleged misconduct, policy violation, legal or regulatory concern, security incident, or client-related complaint. During any period of suspension, Contractor shall immediately cease access to Company systems and shall cooperate with any reasonable Company investigation or compliance review.</p>
+      <p className="mb-2"><strong>17.8 Unauthorized Systems and Security Violations.</strong> Contractors shall not use unauthorized systems, software, applications, recording tools, storage methods, or communication channels in connection with Platform Clients or Company operations. Any unauthorized use, disclosure, retention, or transmission of Company data or Protected Health Information may result in suspension or termination of platform access and/or this Agreement, in addition to any other remedies available under applicable law or this Agreement.</p>
 
       {/* ARTICLE 18 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 18 &ndash; AUDIT AND CLASSIFICATION PROTECTION</h3>
@@ -288,98 +484,136 @@ export default function ICAContent({ signedData }: ICAContentProps = {}) {
 
       {/* ARTICLE 20 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 20 &ndash; NOTICE</h3>
-      <p className="mb-2"><strong>20.1 Method of Notice.</strong> Any notice required under this Agreement shall be in writing and delivered via email or certified mail to the addresses provided by the parties.</p>
+      <p className="mb-2"><strong>20.1 Method of Notice.</strong> Any notice required under this Agreement shall be in writing and delivered by email or certified mail to the addresses designated below, or to such other address or email address as either party may subsequently designate in writing:</p>
+      <div className="mb-3 ml-4">
+        <p className="font-semibold text-black">Company:</p>
+        <p>ROOTED VOICES SPEECH &amp; LANGUAGE THERAPY, LLC</p>
+        <p>Mailing Address: 10765 Clocktower Dr., La Grange Highlands, IL 60525</p>
+        <p>Email Address: admin@rootedvoicestherapy.com</p>
+      </div>
+      <div className="mb-3 ml-4">
+        <p className="font-semibold text-black">Contractor:</p>
+        <p>Mailing Address: <FilledField value={s?.contractorAddress} /></p>
+        <p>Email Address: <FilledField value={s?.contractorEmail} /></p>
+      </div>
+      <p className="mb-2">Notice delivered by email shall be deemed effective upon confirmation of transmission, provided that no delivery failure or rejection notice is received. Notice delivered by certified mail shall be deemed effective upon confirmed delivery or refusal.</p>
       <p className="mb-2"><strong>20.2 Timing of Notice.</strong> Unless otherwise specified, a minimum of fourteen (14) days&apos; prior written notice shall be provided for any material changes to this Agreement.</p>
 
       {/* ARTICLE 21 */}
       <h3 className="text-lg font-bold text-black mt-6 mb-2">ARTICLE 21 &ndash; EXHIBITS</h3>
-      <p className="mb-4">The following Exhibits are incorporated into and made part of this Agreement.</p>
+      <p className="mb-2">The following Exhibits are incorporated into and made a part of this Agreement by reference and shall have the same force and effect as if fully set forth herein:</p>
+      <ul className="list-disc pl-6 mb-4 space-y-1">
+        <li>Exhibit A &ndash; Scope of Services</li>
+        <li>Exhibit B &ndash; Compensation Schedule</li>
+        <li>Exhibit C &ndash; Insurance Requirements</li>
+        <li>Exhibit D &ndash; HIPAA / Business Associate Agreement</li>
+      </ul>
 
       {/* EXHIBIT A */}
       <h3 className="text-lg font-bold text-black mt-8 mb-2 border-t-2 border-black pt-6">EXHIBIT A &ndash; SCOPE OF SERVICES</h3>
       <p className="mb-2 italic">Exhibit A outlines the scope of services to be performed by Contractor.</p>
 
       <p className="mb-2"><strong>1. Platform Care Delivery Model and Services Provided.</strong> The Company operates a multi-state telehealth speech-language therapy platform utilizing an evaluation-first care model designed to support clinically appropriate treatment planning, continuity of care, service matching, operational efficiency, and compliance with applicable telehealth and licensure requirements.</p>
-      <p className="mb-2">Except where otherwise approved by the Company or clinically inappropriate under applicable law, Clients shall generally be required to complete an initial evaluation prior to the initiation of ongoing therapy services.</p>
+      <p className="mb-2">Except where otherwise approved by the Company or clinically inappropriate under applicable law, Clients shall generally be required to complete an initial evaluation prior to the initiation of ongoing therapy services. Initial evaluations are intended to assess Client needs, determine clinical appropriateness, establish treatment recommendations, and identify the most appropriate service structure available through the Platform.</p>
       <p className="mb-2">Contractors shall provide speech-language therapy services via telehealth, including but not limited to evaluations, assessments, treatment planning, therapy sessions, progress monitoring, consultations, discharge planning, recurring care services, and other Company-approved Platform speech-language therapy services delivered through the Platform.</p>
-      <p className="mb-2 ml-4"><strong>(a)</strong> Speech-Language Pathologists (SLPs) may evaluate, diagnose, and treat Clients independently and shall be responsible for clinical decision-making in accordance with applicable standards of care. SLPs may provide services through the Company&apos;s recurring subscription services, enhanced subscription service models, pay-as-you-go services, evaluations, consultations, and other Company-approved Platform operational care structures.</p>
+      <p className="mb-2 ml-4"><strong>(a)</strong> Speech-Language Pathologists (SLPs) may evaluate, diagnose, and treat Clients independently and shall be responsible for clinical decision-making in accordance with applicable standards of care. SLPs shall perform evaluations, develop treatment plans, provide therapy, conduct re-evaluations, complete discharge planning, and provide other clinically appropriate services permitted under applicable law.</p>
+      <p className="mb-2 ml-4">SLPs may provide services through the Company&apos;s recurring subscription services, enhanced subscription service models, pay-as-you-go services, evaluations, consultations, and other Company-approved Platform operational care structures.</p>
       <p className="mb-2 ml-4"><strong>(b)</strong> Speech-Language Pathology Assistants (SLPAs) shall provide services only under the supervision of a licensed SLP, may not independently evaluate or diagnose Clients, and shall follow the direction and clinical oversight of the supervising SLP at all times.</p>
+      <p className="mb-2 ml-4">SLPAs shall be limited to therapy implementation and related support services permitted under applicable law and shall practice strictly within the scope authorized by the applicable Service Jurisdiction and supervising SLP oversight requirement.</p>
       <p className="mb-2 ml-4"><strong>(c)</strong> Supervising SLP Responsibilities and Oversight. Supervising SLPs shall remain responsible for clinical oversight, delegated treatment supervision, documentation review, treatment direction, and supervision compliance required under applicable law and Company policy.</p>
       <p className="mb-2 ml-4"><strong>(d)</strong> State-Specific Supervision Compliance. Contractor acknowledges that supervision requirements applicable to SLPA services may vary by jurisdiction and both the Supervising SLP and SLPA remain solely responsible for compliance with all applicable supervision standards.</p>
       <p className="mb-2 ml-4"><strong>(e)</strong> Documentation Review and Supervisory Documentation Requirements. Supervising SLPs shall review and oversee SLPA documentation as required under applicable law, payer requirements, Company policy, and professional standards.</p>
 
-      <p className="mb-2"><strong>2. General Operational Standards.</strong> Contractor acknowledges and agrees that all Services performed under this Agreement shall be subject to, and governed by, the applicable provisions of this Agreement. Contractors shall perform all Services in accordance with applicable federal, state, and local laws, professional standards, Company policies, and the operational requirements established by the Company from time to time.</p>
+      <p className="mb-2"><strong>2. General Operational Standards and Incorporation of Agreement Requirements.</strong> Contractor acknowledges and agrees that all Services performed under this Agreement shall be subject to, and governed by, the applicable provisions of this Agreement, including but not limited to requirements relating to professional licensure, supervision, documentation, telehealth compliance, HIPAA compliance, confidentiality, data security, platform usage, pediatric safety, emergency-response procedures, AI-assisted documentation, quality assurance standards, operational policies, safeguarding obligations, and all other applicable Company requirements.</p>
+      <p className="mb-2">Contractors shall perform all Services in accordance with applicable federal, state, and local laws, professional standards, Company policies, and the operational requirements established by the Company from time to time.</p>
+      <p className="mb-2">All obligations, requirements, restrictions, responsibilities, standards, and compliance requirements contained elsewhere in this Agreement are incorporated into this Exhibit A by reference as though fully set forth herein.</p>
 
       <p className="mb-2"><strong>3. Rooted Subscription Services.</strong> The Company may offer recurring therapy services under the &quot;Rooted&quot; subscription service model. Rooted services are designed to provide structured recurring therapy support, continuity of care, ongoing treatment progression, recurring scheduling, and ongoing clinical engagement through the Company-approved Platform.</p>
+      <p className="mb-2">Contractors providing services under the Rooted service model shall comply with Company scheduling procedures, recurring care expectations, documentation requirements, operational workflows, continuity-of-care standards, and platform participation requirements.</p>
 
       <p className="mb-2"><strong>4. Flourish Subscription Services.</strong> The Company may additionally offer enhanced recurring therapy services under the &quot;Flourish&quot; subscription service model. Flourish services may include increased service frequency, expanded clinical support, enhanced care coordination, additional therapy engagement opportunities, or other enhanced service structures established by the Company.</p>
+      <p className="mb-2">Contractors participating in Flourish services shall comply with all Company operational procedures, scheduling standards, supervision requirements (where applicable), documentation obligations, quality assurance standards, and recurring care expectations associated with enhanced subscription-based care delivery.</p>
 
       <p className="mb-2"><strong>5. Bloom Pay-As-You-Go Services.</strong> The Company may offer flexible individual-session or limited-engagement therapy services under the &quot;Bloom&quot; pay-as-you-go service model. Bloom services are designed to provide flexible therapy access for Clients seeking individual sessions, consultations, follow-up care, screenings, limited-duration support, or other Company-approved Platform services without recurring subscription enrollment.</p>
+      <p className="mb-2">Services delivered under the Bloom service model shall remain subject to all Company operational procedures, documentation standards, scheduling requirements, telehealth compliance requirements, platform rules, and applicable clinical standards.</p>
 
       {/* EXHIBIT B */}
       <h3 className="text-lg font-bold text-black mt-8 mb-2 border-t-2 border-black pt-6">EXHIBIT B &ndash; COMPENSATION SCHEDULE</h3>
 
       <p className="mb-2"><strong>1.</strong> The Contractor acknowledges and agrees that compensation under this Agreement is performance-based, documentation-dependent, and operationally tied to Company compliance standards, platform requirements, and ongoing quality expectations. Compensation progression opportunities are earned and are not guaranteed, automatic, vested, fixed, or permanent.</p>
+      <p className="mb-2">The Company reserves the right to establish, modify, interpret, or adjust compensation tiers, review criteria, operational requirements, and compensation qualification standards upon reasonable prior written notice to Contractor.</p>
+      <p className="mb-2">Contractor compensation under this Agreement applies to services performed through the Company&apos;s Rooted, Flourish, and Bloom service models, as well as evaluations, consultations, and other Company-approved Platform care delivery structures.</p>
 
-      <p className="mb-2"><strong>1.1 Definition of Qualifying Service Hours.</strong> A &quot;Qualifying Service Hour&quot; means one (1) completed hour of direct client-related professional services properly performed through the Company-approved Platform and documented in compliance with Company requirements.</p>
+      <p className="mb-2"><strong>1.1 Definition of Qualifying Service Hours.</strong> For purposes of compensation, advancement reviews, and performance assessments under this Agreement, a &quot;Qualifying Service Hour&quot; means one (1) completed hour of direct client-related professional services properly performed through the Company-approved Platform and documented in compliance with Company requirements.</p>
+      <p className="mb-2">Qualifying Service Hours shall be prorated based upon the actual duration of completed and billable Services. For example, a completed thirty (30)-minute billable session shall constitute 0.5 Qualifying Service Hours, and other completed partial-hour billable Services shall be calculated proportionately based upon the actual duration of the Service.</p>
       <p className="mb-1">Qualifying Service Hours may include:</p>
       <ul className="list-disc pl-6 mb-2 space-y-1">
         <li>Completed speech-language therapy sessions;</li>
-        <li>Completed evaluations and re-evaluations performed by licensed SLPs;</li>
+        <li>Completed evaluations and re-evaluations performed by licensed Speech-Language Pathologists (SLPs);</li>
         <li>Completed consultations authorized by the Company;</li>
         <li>Services performed through the Rooted, Flourish, and Bloom service models; and</li>
         <li>Other Company-approved billable clinical services performed through the Platform.</li>
       </ul>
-      <p className="mb-1">The following shall not constitute Qualifying Service Hours:</p>
+      <p className="mb-1">The following shall not constitute Qualifying Service Hours unless otherwise expressly approved in writing by the Company:</p>
       <ul className="list-disc pl-6 mb-2 space-y-1">
         <li>Cancelled appointments;</li>
         <li>Client no-show sessions;</li>
-        <li>Administrative activities, internal meetings, or training;</li>
+        <li>Administrative activities, Internal meetings, or Training;</li>
         <li>Documentation completed without a corresponding billable service;</li>
         <li>Corrective work arising from documentation deficiencies; or</li>
         <li>Any other non-billable activities designated by the Company.</li>
       </ul>
+      <p className="mb-2">Qualifying Service Hours shall be calculated based upon completed and properly documented services recorded within Company-approved Platform systems. The Company reserves the right to review, audit, verify, adjust, reject, or recalculate reported Qualifying Service Hours where documentation deficiencies, compliance concerns, or other inaccuracies are identified.</p>
 
       <p className="mb-2"><strong>1.2 Quarterly Compensation Review Structure.</strong> The Company shall conduct compensation advancement reviews on a quarterly basis. A Contractor&apos;s first quarterly compensation review shall become eligible to occur after the Contractor has completed their first full calendar quarter of active platform participation following their onboarding effective date.</p>
+      <p className="mb-2">Subsequent reviews shall occur on a quarterly basis thereafter, subject to the Company scheduling, operational needs, and the satisfaction of applicable advancement criteria.</p>
+      <p className="mb-2">Completion of a full calendar quarter does not automatically guarantee a compensation increase. Advancement eligibility requires satisfaction of the criteria set forth in this Exhibit B and remains subject to Company discretion.</p>
 
       <p className="mb-2"><strong>1.3 Compensation Advancement Criteria.</strong> To be considered for a compensation advancement during a quarterly review, a Contractor should generally demonstrate all of the following during the review period:</p>
       <ul className="list-disc pl-6 mb-2 space-y-1">
-        <li><strong>Active Platform Participation:</strong> An average of at least five (5) Qualifying Service Hours per week;</li>
-        <li><strong>Documentation Compliance:</strong> A documentation completion rate of ninety-five percent (95%) or greater;</li>
-        <li><strong>Attendance and Session Reliability:</strong> A scheduled session completion rate of ninety-five percent (95%) or greater;</li>
-        <li><strong>Supervision Compliance (SLPAs):</strong> Full compliance with all applicable supervision requirements;</li>
-        <li><strong>Licensure and Insurance Compliance:</strong> All required licensure, certifications, and professional liability insurance maintained;</li>
-        <li><strong>No Unresolved Compliance Concerns:</strong> No unresolved compliance, disciplinary, quality assurance, or platform integrity concerns; and</li>
-        <li><strong>Overall Platform Contribution:</strong> Consistent professionalism, client continuity, responsiveness, and contribution to Platform quality and growth.</li>
+        <li><strong>Active Platform Participation:</strong> Contractor maintained an average of at least five (5) Qualifying Service Hours per week during the applicable quarter, reflecting active and consistent caseload engagement through the Platform;</li>
+        <li><strong>Documentation Compliance:</strong> Contractor maintained a documentation completion rate of ninety-five percent (95%) or greater;</li>
+        <li><strong>Attendance and Session Reliability:</strong> Contractor maintained a scheduled session completion rate of ninety-five percent (95%) or greater;</li>
+        <li><strong>Supervision Compliance (SLPAs):</strong> Contractor maintained full compliance with all applicable supervision requirements and supervisory documentation obligations (where applicable);</li>
+        <li><strong>Licensure and Insurance Compliance:</strong> Contractor maintained all required licensure, certifications, and professional liability insurance throughout the review period;</li>
+        <li><strong>No Unresolved Compliance Concerns:</strong> Contractor had no unresolved compliance, disciplinary, quality assurance, or platform integrity concerns during the review period; and</li>
+        <li><strong>Overall Platform Contribution:</strong> Contractor demonstrated consistent professionalism, client continuity, responsiveness to Company operational requirements, and contribution to Platform quality and growth.</li>
       </ul>
-      <p className="mb-2">Advancement decisions remain discretionary and shall be determined solely by the Company.</p>
+      <p className="mb-2">The active platform participation threshold referenced above is intended solely as an indicator of meaningful caseload engagement and is not a minimum weekly schedule requirement. Nothing contained herein shall be construed to require Contractor to maintain any specific minimum schedule, workload, or availability commitment beyond those voluntarily selected by Contractor consistent with Contractor&apos;s independent contractor status.</p>
+      <p className="mb-2">Advancement decisions remain discretionary and shall be determined solely by the Company based upon the totality of Contractor performance, operational needs, Platform demands, quality standards, and business considerations. Nothing contained herein shall be construed as creating a guaranteed right to any compensation increase.</p>
 
       <p className="mb-2"><strong>2. Fully Licensed Speech-Language Pathologist (SLP) Compensation Structure.</strong></p>
-      <p className="mb-2 ml-4"><strong>2.1</strong> Starting compensation rate: <strong>$40.00</strong> per Qualifying Service Hour.</p>
-      <p className="mb-2 ml-4"><strong>2.2</strong> Eligible for increases in <strong>$5.00 increments</strong> per Qualifying Service Hour following each qualifying quarterly review.</p>
-      <p className="mb-2 ml-4"><strong>2.3</strong> Maximum compensation rate: <strong>$75.00</strong> per Qualifying Service Hour.</p>
-      <p className="mb-2 ml-4"><strong>2.4</strong> Evaluation services compensated at the Contractor&apos;s then-current hourly rate.</p>
+      <p className="mb-2 ml-4"><strong>2.1 Starting Compensation Rate.</strong> Fully Licensed Speech-Language Pathologists (&quot;SLPs&quot;) shall begin at a starting compensation rate of forty-five dollars (<strong>$45.00</strong>) per Qualifying Service Hour.</p>
+      <p className="mb-2 ml-4"><strong>2.2 Productivity-Based Compensation Progression.</strong> SLPs may become eligible for compensation increases in five-dollar (<strong>$5.00</strong>) increments per Qualifying Service Hour following each quarterly review in which the applicable advancement criteria set forth in Section 1.3 are satisfied.</p>
+      <p className="mb-2 ml-4">Advancement consideration does not create a guaranteed right to any compensation increase. Each advancement decision remains subject to Company discretion, operational needs, and continued compliance with all Company requirements.</p>
+      <p className="mb-2 ml-4"><strong>2.3 Maximum Compensation Eligibility.</strong> SLPs may become eligible to progress to a maximum compensation rate of seventy-five dollars (<strong>$75.00</strong>) per Qualifying Service Hour. Eligibility for higher compensation tiers requires sustained performance, documentation compliance, quality assurance, and continued platform engagement consistent with the criteria set forth in this Exhibit B.</p>
+      <p className="mb-2 ml-4"><strong>2.4 Evaluation Compensation.</strong> Evaluation services completed by a licensed SLP shall be compensated at the Contractor&apos;s then-current hourly compensation rate applicable at the time the evaluation services are performed. Evaluation services shall constitute Qualifying Service Hours under this Agreement and shall be compensated in the same manner as other qualifying billable clinical services unless otherwise provided by the Company.</p>
+      <p className="mb-2 ml-4">The Company does not currently maintain a separate evaluation compensation schedule. Notwithstanding the foregoing, the Company reserves the right, in its sole discretion, to establish, modify, or implement a separate evaluation compensation structure, rate schedule, or methodology upon reasonable prior written notice to Contractor. Any such modification shall apply prospectively only and shall not affect compensation earned for evaluation services completed prior to the effective date of such modification.</p>
 
       <p className="mb-2"><strong>3. Speech-Language Pathology Assistant (SLPA) Compensation Structure.</strong></p>
-      <p className="mb-2 ml-4"><strong>3.1</strong> Starting compensation rate: <strong>$25.00</strong> per Qualifying Service Hour.</p>
-      <p className="mb-2 ml-4"><strong>3.2</strong> Eligible for increases in <strong>$5.00 increments</strong> per Qualifying Service Hour following each qualifying quarterly review.</p>
-      <p className="mb-2 ml-4"><strong>3.3</strong> Maximum compensation rate: <strong>$55.00</strong> per Qualifying Service Hour.</p>
+      <p className="mb-2 ml-4"><strong>3.1 Starting Compensation Rate.</strong> Speech-Language Pathology Assistants (&quot;SLPAs&quot;) shall begin at a starting compensation rate of thirty dollars (<strong>$30.00</strong>) per Qualifying Service Hour.</p>
+      <p className="mb-2 ml-4"><strong>3.2 Productivity-Based Compensation Progression.</strong> SLPAs may become eligible for compensation increases in five-dollar (<strong>$5.00</strong>) increments per Qualifying Service Hour following each quarterly review in which the applicable advancement criteria set forth in Section 1.3 are satisfied, including full compliance with all applicable supervision requirements.</p>
+      <p className="mb-2 ml-4">Advancement consideration does not create a guaranteed right to any compensation increase. Each advancement decision remains subject to the Company&apos;s discretion, supervision, compliance, operational needs, and continued compliance with all Company requirements.</p>
+      <p className="mb-2 ml-4"><strong>3.3 Maximum Compensation Eligibility.</strong> SLPAs may become eligible to progress to a maximum compensation rate of fifty-five dollars (<strong>$55.00</strong>) per Qualifying Service Hour. Eligibility for higher compensation tiers requires sustained supervision compliance, documentation compliance, quality assurance, and continued platform engagement consistent with the criteria set forth in this Exhibit B.</p>
 
-      <p className="mb-2"><strong>4. Biweekly Payment Cycle.</strong> Payments shall be issued on a biweekly basis. Compensation shall apply only to completed sessions, properly documented Qualifying Service Hours, and services performed in compliance with Company operational standards and Platform requirements.</p>
+      <p className="mb-2"><strong>4. Biweekly Payment Cycle.</strong> Payments shall be issued on a biweekly basis in accordance with the Company-established payroll cycles and payment processing schedules. Compensation shall apply only to completed sessions, properly documented Qualifying Service Hours, and services performed in compliance with Company operational standards and Platform requirements.</p>
+      <p className="mb-2">The Company reserves the right to delay, withhold, adjust, offset, or deny compensation where documentation deficiencies, compliance concerns, billing discrepancies, operational violations, platform misuse, supervision deficiencies, or policy violations exist.</p>
 
       <p className="mb-2"><strong>5. Cancellation and No-Show Compensation.</strong></p>
-      <p className="mb-2 ml-4"><strong>5.1</strong> SLP: flat-rate cancellation/no-show payment of <strong>$20.00</strong>.</p>
-      <p className="mb-2 ml-4"><strong>5.2</strong> SLPA: flat-rate cancellation/no-show payment of <strong>$15.00</strong>.</p>
-      <p className="mb-1 ml-4"><strong>5.3 Conditions:</strong></p>
+      <p className="mb-2 ml-4"><strong>5.1 SLP Cancellation Compensation.</strong> A Fully Licensed Speech-Language Pathologist (SLP) may receive a flat-rate cancellation or no-show payment of twenty dollars (<strong>$20.00</strong>) for a qualifying cancelled, missed, or no-show session.</p>
+      <p className="mb-2 ml-4"><strong>5.2 SLPA Cancellation Compensation.</strong> A Speech-Language Pathology Assistant (SLPA) may receive a flat-rate cancellation or no-show payment of fifteen dollars (<strong>$15.00</strong>) for a qualifying cancelled, missed, or no-show session.</p>
+      <p className="mb-1 ml-4"><strong>5.3 Conditions for Eligibility.</strong> Cancellation or no-show compensation shall only apply where all of the following conditions are satisfied:</p>
       <ul className="list-disc pl-10 mb-2 space-y-1">
-        <li>Session was properly scheduled through the Platform;</li>
-        <li>Contractor was present, available, and prepared at the scheduled time;</li>
+        <li>The session was properly scheduled through the Company-approved Platform;</li>
+        <li>Contractor was present, available, prepared, and capable of rendering Services at the scheduled session time;</li>
         <li>All required documentation was timely completed;</li>
-        <li>Contractor complied with all Company operational standards; and</li>
-        <li>The cancellation/no-show was properly documented within the Platform.</li>
+        <li>Contractor complied with all Company operational standards, supervision requirements, policies, and procedures; and</li>
+        <li>The cancellation or no-show event was properly documented within Company-approved Platform systems in accordance with Company requirements.</li>
       </ul>
+      <p className="mb-2 ml-4">Failure to properly document a cancellation, missed session, or no-show event may result in forfeiture or denial of cancellation compensation. All cancellation and no-show compensation remains subject to Company review, verification, and compliance audit.</p>
 
-      <p className="mb-2"><strong>6. Incentives, Bonuses, and Compensation Modifications.</strong> The Company may, in its discretion, offer incentives, bonuses, productivity programs, or supplemental compensation opportunities. The Company reserves the right to modify compensation structures upon reasonable prior written notice. Any such modification shall apply prospectively only.</p>
+      <p className="mb-2"><strong>6. Incentives, Bonuses, and Compensation Modifications.</strong> The Company may, in its discretion, offer incentives, bonuses, productivity programs, or supplemental compensation opportunities based upon productivity, operational performance, quality assurance, documentation compliance, client retention, scheduling reliability, or other Company-established criteria.</p>
+      <p className="mb-2">The Company reserves the right to modify compensation structures, incentive programs, rate schedules, or compensation qualification criteria upon reasonable prior written notice. Any such modification shall apply prospectively only and shall not retroactively affect compensation previously earned for completed Services.</p>
 
       {/* EXHIBIT C */}
       <h3 className="text-lg font-bold text-black mt-8 mb-2 border-t-2 border-black pt-6">EXHIBIT C &ndash; INSURANCE REQUIREMENTS</h3>
@@ -394,17 +628,28 @@ export default function ICAContent({ signedData }: ICAContentProps = {}) {
         <li>$500,000 per occurrence</li>
         <li>$1,500,000 aggregate</li>
       </ul>
+      <p className="mb-2">Such coverage levels reflect the differing levels of clinical responsibility and risk exposure, with SLPs maintaining primary diagnostic and treatment authority, and SLPAs operating under supervision.</p>
       <p className="mb-2"><strong>2. Proof of Coverage.</strong> Contractor shall provide proof of insurance coverage prior to commencing Services and upon each renewal of coverage.</p>
       <p className="mb-2"><strong>3. Additional Coverage.</strong> Contractor shall maintain any additional insurance required by applicable law, licensure requirements, or professional regulations applicable to Contractor&apos;s scope of practice.</p>
       <p className="mb-2"><strong>4. Failure to Maintain Coverage.</strong> Failure to maintain required coverage, provide proof of coverage, or comply with this Exhibit may result in suspension, restriction of Platform participation, or termination of this Agreement.</p>
 
       {/* EXHIBIT D */}
       <h3 className="text-lg font-bold text-black mt-8 mb-2 border-t-2 border-black pt-6">EXHIBIT D &ndash; HIPAA / BUSINESS ASSOCIATE ADDENDUM</h3>
-      <p className="mb-2">This Business Associate Agreement (&quot;BAA&quot;) is entered into pursuant to the Health Insurance Portability and Accountability Act of 1996 (HIPAA), including the Privacy Rule, Security Rule, and Breach Notification Rule (45 CFR Parts 160 and 164).</p>
+      <p className="mb-2">This Business Associate Agreement (&quot;BAA&quot;) is incorporated into and made a part of the Independent Contractor Agreement (&quot;Agreement&quot;) between ROOTED VOICES SPEECH &amp; LANGUAGE THERAPY, LLC (&quot;Company&quot;) and Contractor. This BAA constitutes the complete Business Associate Agreement between the Company and Contractor with respect to the Services and Protected Health Information (&quot;PHI&quot;) covered by the Agreement, unless otherwise required by applicable law or expressly agreed to in writing by the parties.</p>
+      <p className="mb-2">This BAA is entered into pursuant to the Health Insurance Portability and Accountability Act of 1996 (&quot;HIPAA&quot;), including the Privacy Rule, Security Rule, and Breach Notification Rule (45 CFR Parts 160 and 164).</p>
       <p className="mb-2"><strong>1. Definitions.</strong> Terms used in this Addendum shall have the meanings set forth in HIPAA, including but not limited to Protected Health Information (PHI), Breach, and Security Incident.</p>
       <p className="mb-2"><strong>2. Permitted Uses and Disclosures.</strong> Contractor may use or disclose PHI solely to perform obligations under this Agreement and as permitted by HIPAA.</p>
-      <p className="mb-2"><strong>3. Prohibited Uses.</strong> Contractor shall not use PHI for personal or unauthorized purposes, or sell or improperly disclose PHI.</p>
-      <p className="mb-2"><strong>4. Safeguards.</strong> Contractor shall implement administrative, technical, and physical safeguards, including encrypted communications, secure login credentials, and device-level protections.</p>
+      <p className="mb-2"><strong>3. Prohibited Uses.</strong> Contractor shall not:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>Use PHI for personal or unauthorized purposes;</li>
+        <li>Sell or improperly disclose PHI.</li>
+      </ul>
+      <p className="mb-2"><strong>4. Safeguards.</strong> Contractor shall implement administrative, technical, and physical safeguards, including:</p>
+      <ul className="list-disc pl-6 mb-2 space-y-1">
+        <li>Encrypted communications;</li>
+        <li>Secure login credentials;</li>
+        <li>Device-level protections.</li>
+      </ul>
       <p className="mb-2"><strong>5. Minimum Necessary Standard.</strong> Contractor shall limit PHI use to the minimum necessary to perform services.</p>
       <p className="mb-2"><strong>6. Breach Notification.</strong> Contractor shall report any breach or unauthorized disclosure to Company within forty-eight (48) hours of discovery.</p>
       <p className="mb-2"><strong>7. Mitigation.</strong> Contractors shall take immediate steps to mitigate any harmful effects of a breach.</p>
@@ -430,11 +675,11 @@ export default function ICAContent({ signedData }: ICAContentProps = {}) {
             </div>
             <div className="flex items-end gap-2">
               <span className="text-gray-700 w-20 shrink-0">Name:</span>
-              {s?.companySignerName ? <span className="font-semibold text-black">{s.companySignerName}</span> : <span className="flex-1 border-b border-gray-400" />}
+              <span className="font-semibold text-black">{companyName}</span>
             </div>
             <div className="flex items-end gap-2">
               <span className="text-gray-700 w-20 shrink-0">Title:</span>
-              {s?.companySignerTitle ? <span className="font-semibold text-black">{s.companySignerTitle}</span> : <span className="flex-1 border-b border-gray-400" />}
+              <span className="font-semibold text-black">{companyTitle}</span>
             </div>
             {s?.companySignedAt && (
               <div className="flex items-end gap-2">
