@@ -187,7 +187,22 @@ export default function SessionsPage() {
         price: 85
       })
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to create session')
+      const data = error.response?.data || {}
+      let message = data.message || 'Failed to create session'
+      if (data.requiresIntake) {
+        message = 'This client has not finished their intake form yet. Ask them to complete it from their dashboard before booking.'
+      } else if (data.requiresTelehealthConsent) {
+        message = 'This client has not signed the telehealth consent yet. Booking is blocked until consent is on file.'
+      } else if (data.requiresTherapistOnboarding) {
+        message = 'Your onboarding review is not complete — bookings open once admin approves your profile.'
+      } else if (data.requiresTherapistCompliance) {
+        message = 'Your ICA has not been fully executed yet. Finish signing it from your dashboard to unlock bookings.'
+      } else if (data.subscriptionPastDue) {
+        message = 'This client\'s subscription payment failed. They need to update billing before new sessions can be booked.'
+      } else if (data.requiresEvaluation) {
+        message = 'This client needs to complete an Initial Evaluation before regular sessions can be booked.'
+      }
+      alert(message)
     }
   }
 

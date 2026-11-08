@@ -127,6 +127,10 @@ export const sessionAPI = {
   getUpcoming: () => api.get('/sessions/upcoming'),
   getById: (id: string) => api.get(`/sessions/${id}`),
   create: (data: any) => api.post('/sessions', data),
+  outstanding: () => api.get('/sessions/outstanding'),
+  finalizeSoap: (id: string) => api.post(`/sessions/${id}/soap-note/finalize`),
+  addSoapAddendum: (id: string, body: string) =>
+    api.post(`/sessions/${id}/soap-note/addendum`, { body }),
   update: (id: string, data: any) => api.put(`/sessions/${id}`, data),
   cancel: (id: string, data: { reason?: string; loggedByTherapist?: boolean }) =>
     api.delete(`/sessions/${id}`, { data }),
@@ -135,6 +139,10 @@ export const sessionAPI = {
     api.post(`/sessions/${id}/complete`, { notes }),
   saveSoapNote: (id: string, soapNote: any) =>
     api.post(`/sessions/${id}/soap-note`, soapNote),
+  recordAttendance: (id: string, data: { status: 'attended' | 'no-show' | 'cancelled-by-client' | 'cancelled-by-therapist' | 'late-cancel'; notes?: string }) =>
+    api.post(`/sessions/${id}/attendance`, data),
+  generateSoap: (id: string, notes?: string) =>
+    api.post(`/sessions/${id}/generate-soap`, { notes }),
   saveTranscript: (id: string, data: { text: string; originalLanguage: string; translatedText?: any }) =>
     api.post(`/sessions/${id}/transcript`, data),
   getTranscriptTranslation: (id: string, language: string) =>

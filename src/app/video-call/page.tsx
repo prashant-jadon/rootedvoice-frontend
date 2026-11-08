@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { PhoneOff, Languages, MessageCircle, Mic, MicOff, ChevronRight, ChevronLeft, Clock, Shield, Wifi } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { sessionAPI } from '@/lib/api'
+import SessionTimer from '@/components/SessionTimer'
+import PostSessionWrapUp from '@/components/PostSessionWrapUp'
 
 declare global {
   interface Window {
@@ -85,6 +87,8 @@ function VideoCallContent() {
   const captionsRef = useRef(captions)
   const [showSettings, setShowSettings] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting')
+  const [showWrapUp, setShowWrapUp] = useState(false)
+  const [timeUpBanner, setTimeUpBanner] = useState<null | 'warning' | 'overtime'>(null)
 
   // Keep captions ref in sync
   useEffect(() => {
@@ -433,7 +437,18 @@ function VideoCallContent() {
     stopSpeechRecognition()
     if (jitsiApiRef.current) {
       jitsiApiRef.current.dispose()
+      jitsiApiRef.current = null
     }
+    // Therapists on real sessions get the wrap-up modal
+    if (user?.role === 'therapist' && sessionId) {
+      setShowWrapUp(true)
+    } else {
+      router.push(user?.role === 'therapist' ? '/dashboard' : '/client-dashboard')
+    }
+  }
+
+  const handleWrapUpClose = () => {
+    setShowWrapUp(false)
     router.push(user?.role === 'therapist' ? '/dashboard' : '/client-dashboard')
   }
 
@@ -477,6 +492,16 @@ function VideoCallContent() {
               <Clock className="w-3.5 h-3.5" />
               <span className="font-mono">{formatDuration(callDuration)}</span>
             </div>
+          )}
+          {jitsiReady && session?.duration && (
+            <SessionTimer
+              compact
+              scheduledDurationMinutes={session.duration}
+              startTimeMs={callStartRef.current}
+              warningMinutesBeforeEnd={Math.min(5, Math.max(1, Math.floor(session.duration / 6)))}
+              onWarning={() => setTimeUpBanner('warning')}
+              onTimeUp={() => setTimeUpBanner('overtime')}
+            />
           )}
           {session && (
             <div className="hidden sm:flex items-center gap-2 text-white/70 text-sm">
@@ -688,6 +713,45 @@ function VideoCallContent() {
           )}
         </div>
       </div>
+
+      {/* Floating warning / overtime banner */}
+      {timeUpBanner && (
+        <div
+          className={`fixed top-16 left-1/2 -translate-x-1/2 z-30 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border ${
+            timeUpBanner === 'overtime'
+              ? 'bg-red-600 text-white border-red-400 animate-pulse'
+              : 'bg-red-500/95 text-white border-red-300'
+          }`}
+        >
+          <span className="font-semibold text-sm">
+            {timeUpBanner === 'overtime'
+              ? 'Scheduled time has ended — please wrap up.'
+              : 'Heads up: 5 minutes remaining in this session.'}
+          </span>
+          <button
+            onClick={() => setTimeUpBanner(null)}
+            className="ml-2 text-white/80 hover:text-white"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Post-session wrap-up modal */}
+      {showWrapUp && sessionId && (
+        <PostSessionWrapUp
+          sessionId={sessionId}
+          clientName={
+            session?.clientId?.userId
+              ? `${session.clientId.userId.firstName} ${session.clientId.userId.lastName}`
+              : undefined
+          }
+          onClose={handleWrapUpClose}
+          onSubmitted={() => {
+            // Allow user to see success state before manual close
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -303,17 +303,54 @@ function BookSessionContent() {
       console.error('Error response:', error.response?.data)
       console.error('Error status:', error.response?.status)
 
+      const data = error.response?.data || {}
+      const status = error.response?.status
+
       // Handle specific "Requires Evaluation" error
-      if (error.response?.status === 403 && error.response?.data?.requiresEvaluation) {
+      if (status === 403 && data.requiresEvaluation) {
         setError('You must complete an Initial Evaluation before booking regular sessions. Please select "Initial Consultation" above to book your evaluation.')
-        // Optionally force switch to 'initial' type?
-        // setSessionType('initial')
+        return;
+      }
+
+      // Client intake not completed
+      if (status === 403 && data.requiresIntake) {
+        setError('Please finish your intake form before booking your first session. You can complete it from your client dashboard.')
+        return;
+      }
+
+      // Telehealth consent not signed
+      if (status === 403 && data.requiresTelehealthConsent) {
+        setError('Telehealth consent is required before booking. Open your intake form from your dashboard to sign the consent.')
+        return;
+      }
+
+      // Therapist still in onboarding review
+      if (status === 403 && data.requiresTherapistOnboarding) {
+        setError('This therapist is not yet available for bookings — their onboarding is still under review. Please pick another therapist.')
+        return;
+      }
+
+      // Therapist ICA not fully executed
+      if (status === 403 && data.requiresTherapistCompliance) {
+        setError('This therapist is finishing their contractor agreement and cannot accept bookings yet. Please pick another therapist or try again soon.')
+        return;
+      }
+
+      // Subscription past_due — payment on file failed
+      if (status === 402 && data.subscriptionPastDue) {
+        setError('Your most recent subscription payment failed, so booking is paused. Please update your payment method on the billing tab, then try again.')
+        return;
+      }
+
+      // Bloom tier evaluation fee not paid
+      if (status === 403 && data.requiresPayment) {
+        setError(data.message || 'Payment is required before this session can be booked.')
         return;
       }
 
       // Get detailed error message
-      const errorMessage = error.response?.data?.message ||
-        error.response?.data?.error ||
+      const errorMessage = data.message ||
+        data.error ||
         error.message ||
         'Failed to book session. Please try again.'
 

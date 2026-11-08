@@ -7,6 +7,7 @@ import Footer from '../components/Footer'
 import AccessibilityFeatures from '../components/AccessibilityFeatures'
 import GoogleTranslateWidget from '../components/GoogleTranslateWidget'
 import { AuthProvider } from '../contexts/AuthContext'
+import ImpersonationBanner from '../components/ImpersonationBanner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -50,6 +51,7 @@ export default function RootLayout({
           `}
         </Script>
         <AuthProvider>
+          <ImpersonationBanner />
           {children}
           <Footer />
           <LiveChatWidget />

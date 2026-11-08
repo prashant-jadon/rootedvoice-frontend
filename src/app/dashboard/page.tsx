@@ -27,6 +27,8 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import CompensationChart from '@/components/CompensationChart'
+import OnboardingTour, { THERAPIST_DASHBOARD_TOUR } from '@/components/OnboardingTour'
+import OutstandingDocsBadge from '@/components/OutstandingDocsBadge'
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview')
@@ -39,6 +41,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [therapistProfile, setTherapistProfile] = useState<any>(null)
   const [compensationConfig, setCompensationConfig] = useState<any>(null)
+  const [showTour, setShowTour] = useState(false)
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
 
@@ -263,6 +266,11 @@ export default function DashboardPage() {
             </nav>
           </div>
 
+          {/* Outstanding documentation badge */}
+          <div className="mb-6">
+            <OutstandingDocsBadge />
+          </div>
+
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {statCards.map((stat, index) => (
@@ -366,12 +374,31 @@ export default function DashboardPage() {
                     currentHourlyRate={therapistProfile.hourlyRate || (therapistProfile.credentials === 'SLPA' ? 30 : 45)}
                     compensationConfig={compensationConfig?.[therapistProfile.credentials || 'SLP']}
                   />
+                  {/* Evaluation flat-rate callout — paid separately from the hourly progression */}
+                  {(compensationConfig?.[therapistProfile.credentials || 'SLP']?.evaluationFlatRate || 0) > 0 && (
+                    <div className="mt-4 p-5 rounded-2xl bg-amber-50 border border-amber-200">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                          ${compensationConfig[therapistProfile.credentials || 'SLP'].evaluationFlatRate}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-amber-900">Diagnostic Evaluations — ${compensationConfig[therapistProfile.credentials || 'SLP'].evaluationFlatRate} flat per completed evaluation</h4>
+                          <p className="text-sm text-amber-800 mt-1">
+                            Paid separately from your treatment hourly rate. Covers intake review, up to a 60-minute diagnostic assessment, finalizing the evaluation report, and documenting treatment recommendations — AI-assisted documentation tools included.
+                          </p>
+                          <p className="text-xs text-amber-700 mt-2 italic">
+                            Evaluation hours do NOT count toward the $5/5-hour treatment pay progression above.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               )}
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Upcoming Sessions */}
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2" data-tour="upcoming-sessions">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -422,6 +449,7 @@ export default function DashboardPage() {
                                 href={`/video-call?sessionId=${session._id}`}
                                 className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                 title="Start Video Call"
+                                data-tour="join-session"
                               >
                                 <Video className="w-4 h-4" />
                               </Link>
@@ -444,7 +472,41 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Sidebar */}
-                <div className="space-y-6">
+                <div className="space-y-6" data-tour="clients">
+                  {/* Training & Mock Session CTA */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.25 }}
+                    className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl premium-shadow p-5 text-white"
+                    data-tour="mock-session"
+                  >
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wide font-semibold mb-2 opacity-90">
+                      <Clock className="w-3.5 h-3.5" /> Therapist training
+                    </div>
+                    <h3 className="font-bold text-lg mb-1">Run a mock session</h3>
+                    <p className="text-sm text-white/90 mb-3">
+                      Practice the full flow — timer, warnings, attendance, SOAP — in 2 minutes.
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Link
+                        href="/mock-session"
+                        className="inline-flex items-center gap-1.5 bg-white text-emerald-700 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-emerald-50"
+                      >
+                        Start walkthrough →
+                      </Link>
+                      <button
+                        onClick={() => {
+                          try { localStorage.removeItem('rv_therapist_tour_v1') } catch {}
+                          setShowTour(true)
+                        }}
+                        className="inline-flex items-center gap-1.5 bg-white/10 border border-white/30 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-white/20"
+                      >
+                        Replay tour
+                      </button>
+                    </div>
+                  </motion.div>
+
                   {/* Recent Clients */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -635,6 +697,15 @@ export default function DashboardPage() {
             </motion.div>
           )}
         </div>
+
+        {/* Therapist onboarding tour — auto-runs on first visit, replayable from the CTA */}
+        <OnboardingTour
+          key={showTour ? `tour-${showTour}` : 'tour-auto'}
+          steps={THERAPIST_DASHBOARD_TOUR}
+          storageKey="rv_therapist_tour_v1"
+          autoStart={true}
+          onDone={() => setShowTour(false)}
+        />
       </div>
     </ProtectedRoute>
   )

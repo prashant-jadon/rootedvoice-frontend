@@ -57,11 +57,6 @@ export default function SignupPage() {
     policeCheckExpiration: '',
     hourlyRate: 75,
     specializations: [] as string[],
-    // Banking Information (Therapist only)
-    bankName: '',
-    accountName: '',
-    routingNumber: '',
-    accountNumber: '',
     // Document files
     ashaCertificationFile: null as File | null,
     licenseFile: null as File | null,
@@ -206,19 +201,7 @@ export default function SignupPage() {
         return
       }
 
-      // Validate banking info for therapists
-      if (userType === 'therapist') {
-        if (!formData.bankName || !formData.accountName || !formData.routingNumber || !formData.accountNumber) {
-          setError('Please provide all banking information')
-          setIsLoading(false)
-          return
-        }
-        if (!/^\d{9}$/.test(formData.routingNumber)) {
-          setError('Routing number must be exactly 9 digits')
-          setIsLoading(false)
-          return
-        }
-      }
+      // Banking info is collected later during onboarding via Gusto — not at registration.
 
       // Supervision optional for SLPA now
       // if (formData.credentials === 'SLPA') {
@@ -254,13 +237,6 @@ export default function SignupPage() {
             postcode: formData.practicePostcode,
           },
           practiceLocations: formData.practiceLocations,
-          // Banking details (Therapist only)
-          bankDetails: userType === 'therapist' ? {
-            accountName: formData.accountName,
-            bankName: formData.bankName,
-            routingNumber: formData.routingNumber,
-            accountNumber: formData.accountNumber
-          } : undefined,
           // ASHA Certification (SLP only)
           ashaCertification: formData.credentials === 'SLP' ? {
             certificationNumber: formData.ashaCertificationNumber,
@@ -1215,70 +1191,12 @@ export default function SignupPage() {
                   </div>
 
 
-                  {/* Banking Information */}
+                  {/* Payment & Direct Deposit — handled later via Gusto */}
                   <div className="bg-[#F9FAFB]/50 border border-gray-100/80 rounded-2xl p-6 md:p-8 mt-8">
-                    <h3 className="text-xl font-bold text-[#132D22] mb-6 flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>{t('signup.bankingInformation')}</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label htmlFor="bankName" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.bankName')} <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="bankName"
-                          type="text"
-                          required
-                          value={formData.bankName}
-                          onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                          placeholder={t('signup.enterBankName')}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="accountName" className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('signup.accountName')} <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="accountName"
-                          type="text"
-                          required
-                          value={formData.accountName}
-                          onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
-                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                          placeholder={t('signup.enterAccountName')}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="routingNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.routingNumber')} <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            id="routingNumber"
-                            type="text"
-                            required
-                            maxLength={9}
-                            value={formData.routingNumber}
-                            onChange={(e) => setFormData({ ...formData, routingNumber: e.target.value.replace(/\D/g, '') })}
-                            className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                            placeholder={t('signup.enterRoutingNumber')}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('signup.accountNumber')} <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            id="accountNumber"
-                            type="text"
-                            required
-                            value={formData.accountNumber}
-                            onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value.replace(/\D/g, '') })}
-                            className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                            placeholder={t('signup.enterAccountNumber')}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    <h3 className="text-xl font-bold text-[#132D22] mb-3 flex items-center gap-3"><span className="w-1.5 h-6 bg-[#B97B40] rounded-full block"></span>Payment & Direct Deposit</h3>
+                    <p className="text-sm text-[#203936]/70 leading-relaxed">
+                      You do <strong>not</strong> need to provide any banking or payment information to register. Once your application is reviewed and your onboarding is complete, you will be invited to set up direct deposit securely through <strong>Gusto</strong>, our payroll partner. Rooted Voices never collects or stores your bank account details.
+                    </p>
                   </div>
                 </>
               )}

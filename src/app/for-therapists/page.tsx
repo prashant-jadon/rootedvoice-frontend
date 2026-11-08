@@ -91,19 +91,43 @@ export default function ForTherapistsPage() {
               initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
               className="bg-[#F7EBD3]/30 p-8 sm:p-10 rounded-3xl border border-[#203936]/10 hover:shadow-lg transition-shadow duration-300"
             >
-              <h3 className="text-2xl font-bold text-[#132D22] mb-2">SLP (Speech-Language Pathologist) — $45–$75/hour</h3>
+              <h3 className="text-2xl font-bold text-[#132D22] mb-2">SLP (Speech-Language Pathologist)</h3>
               <p className="text-[#203936]/80 font-medium mb-8">A transparent, growth-based pay model — no percentage splits, no hidden deductions</p>
-              
+
               <div className="mb-8">
-                <h4 className="font-bold text-[#132D22] mb-4 text-sm tracking-widest uppercase">How Compensation Works:</h4>
+                <h4 className="font-bold text-[#132D22] mb-4 text-sm tracking-widest uppercase">Treatment Sessions — $45–$75/hour</h4>
                 <ul className="space-y-3">
-                  {['Start at $45/hour', 'Earn a $5 increase for every 5 hours worked', 'Progress up to $75/hour maximum', 'You are paid your full hourly rate for every completed session'].map((li, i) => (
+                  {['Start at $45/hour', 'Earn a $5 increase for every 5 completed treatment hours', 'Progress up to $75/hour maximum', 'You are paid your full hourly rate for every completed session'].map((li, i) => (
                     <li key={i} className="flex items-start text-[#203936]/80 text-sm font-medium">
                       <CheckCircle className="w-5 h-5 text-[#B97B40] mr-3 shrink-0" />
                       <span>{li}</span>
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              <div className="mb-8 p-5 rounded-2xl bg-[#B97B40]/5 border border-[#B97B40]/20">
+                <h4 className="font-bold text-[#132D22] mb-3 text-sm tracking-widest uppercase">Diagnostic Evaluations — $85 flat per completed evaluation</h4>
+                <p className="text-[#203936]/80 text-sm font-medium mb-3">
+                  Paid separately from your treatment hourly rate. The $85 flat rate covers the full evaluation workflow:
+                </p>
+                <ul className="space-y-2">
+                  {[
+                    'Reviewing the client’s intake information',
+                    'Conducting the diagnostic assessment (up to 60 minutes)',
+                    'Reviewing and finalizing the evaluation report',
+                    'Documenting clinical findings and treatment recommendations',
+                    'AI-assisted documentation tools included to streamline reporting',
+                  ].map((li, i) => (
+                    <li key={i} className="flex items-start text-[#203936]/80 text-sm font-medium">
+                      <CheckCircle className="w-4 h-4 text-[#B97B40] mr-2.5 mt-0.5 shrink-0" />
+                      <span>{li}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-[#203936]/70 text-xs mt-3 italic">
+                  Evaluation pay is separate from the hourly treatment progression — evaluation hours do not count toward the $5/5-hour pay increases.
+                </p>
               </div>
 
               <div>
